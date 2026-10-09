@@ -1,7 +1,8 @@
 # UI Layout — Taskbar & Start Menu
 
-> Device: Desktop PC | Updated: 17 Aug 2026
-> Coordination rule: taskbar = daily drivers / AI agents; Start = everything else.
+> Device: Desktop PC | Updated: 09 Oct 2026
+> Rule: taskbar = daily drivers / AI agents; Start = everything else.
+> Pin lists verified live (registry `Taskband\Favorites` + `Export-StartLayout`), not recalled.
 
 ---
 
@@ -10,17 +11,17 @@
 1. File Explorer
 2. Google Chrome
 3. LocalSend
-4. Zed
-5. Kimi
-6. MiniMax Code
-7. OpenWork
-8. Antigravity
-9. PXN SimRacing
-10. Content Manager
-11. ShareX
-12. FxSound
+4. Kimi
+5. MiniMax Code
+6. OpenWork
+7. Antigravity
+8. PXN SimRacing
+9. Content Manager
+10. ShareX
+11. FxSound
+12. Cursor
 
-## Start Menu (pinned)
+## Start Menu (pinned, in order)
 
 1. Settings
 2. Terminal
@@ -36,16 +37,16 @@
 12. Steam
 13. Twinkle Tray
 14. PotPlayer 64 bit
-15. Audacity
-16. 7-Zip File Manager
-17. AMD Install Manager
-18. PowerShell 7 (x64)
-19. PicoTorrent
-20. IDLE (Python 3.14 64-bit)
+15. 7-Zip File Manager
+16. AMD Install Manager
+17. PowerShell 7 (x64)
+18. PicoTorrent
+19. IDLE (Python 3.14 64-bit)
 
 ---
 
 ## Notes
 
-- **Backup shortcuts:** none kept on disk. The previous `Desktop\Start Menu Pins\` folder was removed on 17 Aug 2026 (see `desktop.md`). If you need to re-pin a taskbar app, just drag it from Start back onto the taskbar.
-- Apps on the taskbar are intentionally NOT pinned in Start (and vice-versa) to avoid redundancy.
+- No pin backup on disk. Re-pin by dragging from Start back to the taskbar.
+- Taskbar and Start are deliberately disjoint — nothing is pinned in both.
+- **Reviewed, not acted on (09 Oct 2026):** PXN SimRacing + Content Manager are session-only; FxSound already lives in the tray; 5 AI agents are pinned — Start suits any that aren't genuinely daily.

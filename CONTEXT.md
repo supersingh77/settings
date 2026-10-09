@@ -43,13 +43,12 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## Active Threads
 
-- C: drive critically low (12.7 GB free) — needs cleanup
+- C: drive critically low (13.0 GB free) — needs cleanup; app-removal candidates sized in `device/desktop/disk-cleanup.md` §6, awaiting go-ahead
 - Net worth / assets & liabilities feature was spec'd but the finance project is now in a separate repo
 
 ## What Changed Recently
 
-- Finance project removed from this repo (moved to separate repo)
-- `CONTEXT.md` created (2026-10-09)
-- Outbox system created (2026-10-09)
-- Bootup sequence added to agent config (2026-10-09)
-- Desktop software inventory refreshed (2026-10-09)
+- Start menu / taskbar docs verified live against registry (2026-10-09): Zed → Cursor, Audacity unpinned
+- `software.md` reconciled with real installs — stale apps removed, AutoClaw/ZCode/MiniMax Code added
+- App-removal candidates sized and parked in `disk-cleanup.md` (no app changes made)
+- Finance project moved to separate repo; `CONTEXT.md` created (2026-10-09)

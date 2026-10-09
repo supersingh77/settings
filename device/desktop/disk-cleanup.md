@@ -46,10 +46,30 @@
 - **Weekly habit:** empty Downloads of installers, clear Spotify offline songs when done.
 - **Storage Sense:** Settings → System → Storage → enable Storage Sense (auto-clean temp files).
 
-## 5. Drive Map (as of Aug 2026)
+## 5. Drive Map (09 Oct 2026)
 
-| Drive | Purpose |
-|-------|---------|
-| C: (126 GB NVMe) | OS + apps — keep lean |
-| V: (350 GB) | Games (Steam, Riot, Liftoff) — was nearly full, watch this |
-| Z: (1 TB HDD) | Mods, media, recordings — the overflow target |
+| Drive | Free | Purpose |
+|-------|------|---------|
+| C: (126 GB NVMe) | **13.0 GB** | OS + apps — critical, keep lean |
+| V: (350 GB) | 32.4 GB | Games (Steam) — watch this |
+| Z: (1 TB HDD) | 302.9 GB | Mods, media, recordings — overflow target |
+
+## 6. App-Level Wins (sized 09 Oct 2026, nothing actioned yet)
+
+Biggest lever is the AI toolkit — 9 tools installed, ~5 GB total.
+
+| App | Size | Case for removal |
+|-----|------|------------------|
+| AutoClaw + ZCode + updater | 1,736 MB | Two ZhipuAI agents among 9 AI tools |
+| Kimi | 1,037 MB | AI tool — if not daily |
+| MiniMax Code | 895 MB | AI tool — if not daily |
+| LibreOffice | 702 MB | Office Pro Plus 2021 installed |
+| Foxit PDF Reader | 676 MB | Edge/Chrome/Office read PDFs |
+| Antigravity | 559 MB | AI tool — if not daily |
+| Firefox | 351 MB | Edge is the backup browser |
+| ExitLag | 251 MB | Marginal benefit |
+| VLC | 188 MB | PotPlayer is the pinned player |
+| HandBrake | 106 MB | FFmpeg + DaVinci cover it |
+| Leftover empty folders | ~2 MB | Audacity, Streamlabs OBS, Zed |
+
+Also free: Clockify 2.3.3 (older of the duplicate pair), one of the two auto-clickers.
