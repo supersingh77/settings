@@ -1,0 +1,25 @@
+# OpenWork internal
+.opencode/
+
+# Git backup (temporary)
+.git-backup/
+
+# OS junk
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Game config backups
+*Backup_Original/
+
+# Binary / document files
+*.xlsx
+*.xls
+*.ods
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp

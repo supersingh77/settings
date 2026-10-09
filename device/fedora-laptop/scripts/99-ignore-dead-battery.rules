@@ -1,0 +1,22 @@
+# Ignore dead ASUS battery (BAT0) to prevent UPower daemon crashes
+# Battery reports 0 Wh capacity causing "-nan" errors every 5 seconds
+# System always runs on AC power — battery is non-functional
+#
+# Created: 2026-02-12
+# NOTE (2026-09-19): INERT — neither UPOWER_IGNORE nor UPOWER_IGNORE_DEVICE is
+# read by current UPower (verified against the 1.91.x source). UPower never
+# checks this rule, so BAT0 stays exposed. Kept only as documentation of intent;
+# the real mitigation is the UPower.conf changes (NoPollBatteries/IgnoreLid/
+# UsePercentageForPolicy + AllowRiskyCriticalPowerAction=true).
+#
+# INSTALL:
+#   sudo cp ~/Desktop/settings/device/fedora-laptop/scripts/99-ignore-dead-battery.rules \
+#       /etc/udev/rules.d/99-ignore-dead-battery.rules
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#   sudo systemctl restart upower
+#
+# VERIFY:
+#   udevadm info /sys/class/power_supply/BAT0   ← rule applies, but UPower ignores it
+
+# Tell UPower to completely ignore BAT0 (dead battery, 0 Wh capacity)
+SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{type}=="Battery", ENV{UPOWER_IGNORE_DEVICE}="1"
