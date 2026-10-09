@@ -84,7 +84,7 @@ This repository is shared across multiple machines (Windows desktop, Windows lap
 When an AI agent assists with this repository, it must follow these principles:
 
 1. **Fidelity of Canonical Data**: Never summarize away, re-categorize, or aggregate historical data without explicit instruction.
-2. **No Invented Values**: Do guess values, balances, or specs. Mark unverified values as `needs-review`.
+2. **No Invented Values**: Do not guess values, balances, or specs. Mark unverified values as `needs-review`.
 3. **Preserve Provenance**: Keep original inbox notes as provenance until feature specs are fully implemented and verified.
 4. **Clean Commits**: Commit changes with clear, concise messages and verify `git status` before completing turns.
 5. **Step-by-Step**: Work in small steps, commit after each — don't batch everything into one giant change.

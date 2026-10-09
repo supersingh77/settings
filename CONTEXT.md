@@ -22,7 +22,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 | Device | Key Files |
 |--------|-----------|
-| Windows Desktop | `device/desktop/hardware.md`, `software.md`, `startmenu-taskbar.md`, `scripts/` |
+| Windows Desktop | `device/desktop/hardware.md`, `software.md`, `startmenu-taskbar.md`, `audit-playbook.md`, `scripts/` |
 | Windows Laptop | `device/laptop/hardware.md`, `software.md`, `scripts/` |
 | Fedora Laptop | `device/fedora-laptop/` — full setup, scripts, docs |
 | Phone | `device/phone/hardware.md`, `apps/`, `scripts/` |
@@ -32,6 +32,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 - **Inbox pattern**: One small `.md` file per idea with title, device metadata, date, core thoughts. Process into canonical folders over time.
 - **Outbox pattern**: Structured `.md` files ready to dispatch. Agent puts completed work here for user review before sending.
 - **Scripts**: Live inside their owning device folder (e.g. `device/desktop/scripts/`), not in a shared top-level `scripts/`.
+- **Desktop audits**: read `device/desktop/audit-playbook.md` first — verified commands for live pin/app/Steam state before editing those docs.
 - **Git workflow**: `git pull` before starting, `git add . && git commit && git push` after changes.
 - **Commit style**: `area: brief description` (e.g. `desktop: fix stale notes`, `fedora-laptop: add lessons-learned doc`).
 
@@ -48,6 +49,8 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## What Changed Recently
 
+- Added `device/desktop/audit-playbook.md` — verified commands for live pin/app/Steam audits (2026-10-09)
+- Fixed inverted "No Invented Values" rule in `README.md` (it read "Do guess")
 - Start menu / taskbar docs verified live against registry (2026-10-09): Zed → Cursor, Audacity unpinned
 - `software.md` reconciled with real installs — stale apps removed, AutoClaw/ZCode/MiniMax Code added
 - App-removal candidates sized and parked in `disk-cleanup.md` (no app changes made)
