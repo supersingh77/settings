@@ -21,7 +21,7 @@
 | **Antigravity** | 2.21.1 | Google agentic IDE |
 | **AutoClaw** | 2.0.2 | ZhipuAI agent |
 | **AutoHotkey** | 2.0.30 | Mouse scroll fix + automation |
-| **ChatGPT** | 26.1002.7124.0 | AI assistant (MSIX) |
+| **ChatGPT / Codex** | 26.1002.7124.0 | OpenAI assistant (MSIX package `OpenAI.Codex`; taskbar pin reads "Codex") |
 | **Claude** | 2.31226.0.0 | AI assistant |
 | **Clockify** | 2.3.3 + 2.3.4 | ⚠ installed twice |
 | **CPUID CPU-Z** | 3.01 | Hardware monitoring |
@@ -130,7 +130,7 @@ Steam libraries: `V:\Games\SteamLibrary` (main) and `Z:\Games\SteamLibrary`.
 ## Notes
 
 - **Scoop → winget (Aug/Sep 2026):** GUI and CLI apps moved to winget; scoop kept only for `dark` + `innounp`.
-- **AI tools (Oct 2026):** 9 installed — Claude, ChatGPT, Kimi, Cursor, OpenWork Cloud, AutoClaw, ZCode, MiniMax Code, Antigravity. Roughly 5 GB on C:.
+- **AI tools (Oct 2026):** 9 installed — Claude, ChatGPT/Codex, Kimi, Cursor, OpenWork Cloud, AutoClaw, ZCode, MiniMax Code, Antigravity. Roughly 5 GB on C:.
 - **Maintenance:** `scripts/cleanup-system.ps1` (exposes `update` and `cleanup` profile functions).
 - **Disks:** C: 126 GB — **13.0 GB free (critical)** · V: 350 GB — 32.4 GB free · Z: 1 TB — 302.9 GB free.
-- **GPU driver** 32.0.31041.1004 (Adrenalin 26.8.1) · **RAM** 2×8 GB KF3200C16D4 @ 3200 MHz (one stick reports 3000 MHz).
+- **GPU driver** 32.0.31041.1004 (Adrenalin 26.8.1) · **RAM** 2×8 GB DDR4 (Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB) running at 3000 MT/s (below the modules' 3200 rating).

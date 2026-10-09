@@ -1,6 +1,6 @@
 # PC Hardware Documentation
 
-> Generated: 30 May 2026
+> Generated: 30 May 2026 | Updated: 09 Oct 2026 — specs, driver and free space re-verified live (CIM/WMI + `Get-Volume`)
 > Purpose: Streaming setup baseline
 
 ---
@@ -11,6 +11,7 @@
 |-----------|--------|
 | **OS** | Microsoft Windows 11 Pro — Version 23H2 (Build 22631) |
 | **Form Factor** | Desktop (Custom build, ASRock B450M-HDV R4.0 motherboard) |
+| **BIOS** | American Megatrends P10.60 (2026-04-17) |
 
 ---
 
@@ -33,10 +34,10 @@
 | Property | Value |
 |----------|-------|
 | **Model** | AMD Radeon RX 7600 |
-| **VRAM** | 4 GB GDDR6 |
-| **Driver** | AMD Software: Adrenalin Edition v32.0.31007.5012 (dated 12 May 2026) |
+| **VRAM** | 8 GB GDDR6 |
+| **Driver** | AMD Software: Adrenalin Edition 26.8.1 (driver 32.0.31041.1004) |
 | **Monitor** | MSI MAG 255XF — 1920×1080 |
-| **Notes** | RX 7600 supports **AMD AMF** hardware encoding (H.264/H.265) for OBS. 4GB VRAM is tight for 1080p streaming + gaming — consider closing background apps. |
+| **Notes** | RX 7600 supports **AMD AMF** hardware encoding (H.264/H.265) for OBS. WMI `AdapterRAM` reports ~4 GB because it is a 32-bit field; the card's actual VRAM is **8 GB** (64-bit registry `HardwareInformation.qwMemorySize` = 8,573,157,376 bytes). 8 GB is comfortable for 1080p gaming + streaming. |
 
 ---
 
@@ -45,7 +46,8 @@
 | Property | Value |
 |----------|-------|
 | **Total** | 16 GB (15.9 GB usable) |
-| **Type** | _(not detected — check speed via CPU-Z: 2×8GB?)_ |
+| **Configuration** | 2 × 8 GB DDR4 (Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB) |
+| **Speed** | 3000 MT/s (both modules report 3000, below their 3200 rated speed) |
 | **Notes** | 16 GB is the minimum recommended for streaming. Fine for Assetto Corsa + OBS at 1080p, but closing browser tabs before streaming helps. |
 
 ---
@@ -54,9 +56,9 @@
 
 | Drive | Label | Type | Capacity | Free Space | Notes |
 |-------|-------|------|----------|------------|-------|
-| **C:** | _(System)_ | SSD (NVMe) — XPG GAMMIX S11 Pro | 126 GB partition | **22.6 GB** | ⚠️ Critically low. Windows + core apps only. |
-| **V:** | Vacuum Drive | SSD (NVMe) — XPG GAMMIX S11 Pro | 350 GB | 60 GB | ✅ Good for games & streaming software. Assetto Corsa lives here. |
-| **Z:** | Mass Storage | HDD — Seagate ST1000DM010 (1 TB) | 931 GB | 287.9 GB | ✅ Good for recordings, VODs, clips, OBS recording output. |
+| **C:** | _(System)_ | SSD (NVMe) — XPG GAMMIX S11 Pro | 126 GB partition | **13.0 GB** | ⚠️ Critically low. Windows + core apps only. |
+| **V:** | Vacuum Drive | SSD (NVMe) — XPG GAMMIX S11 Pro | 350 GB | 32.4 GB | ✅ Games & streaming software. Assetto Corsa lives here. |
+| **Z:** | Mass Storage | HDD — Seagate ST1000DM010 (1 TB) | 931 GB | 302.9 GB | ✅ Recordings, VODs, clips, OBS recording output. |
 
 **SSD Details:**
 - XPG GAMMIX S11 Pro — NVMe, 512 GB total (partitioned as C: + V:)
@@ -64,8 +66,8 @@
 - Both healthy
 
 ### ⚠️ Storage Action Needed
-- **C: drive is critically low** (22.6 GB free, down from 30.5 GB). Before installing streaming software, you should free up space on C: or move OBS + DroidCam to **V:** drive instead.
-- **Z: drive dropped** from 401 GB → 287.9 GB free (≈113 GB used since last check) — check for large recordings/VODs.
+- **C: drive is critically low** (13.0 GB free, down from 22.6 GB in May). Free space on C: or move installs to **V:** — sized removal candidates are parked in [`disk-cleanup.md`](disk-cleanup.md) §6.
+- **Z: drive recovered** to 302.9 GB free (was 287.9 GB) — still the overflow/recordings target.
 
 ---
 
@@ -111,9 +113,9 @@
 | Area | Verdict |
 |------|---------|
 | **CPU** | ✅ Ryzen 7 5700X (8C/16T) — excellent for gaming + streaming |
-| **GPU** | ⚠️ RX 7600 4GB is capable but VRAM-limited at higher settings. Use AMD AMF encoder in OBS. |
+| **GPU** | ✅ RX 7600 8GB — comfortable for 1080p gaming + streaming. Use AMD AMF encoder in OBS. |
 | **RAM** | ✅ 16 GB — adequate for 1080p streaming |
-| **Storage** | ⚠️ C: drive critically low (22.6 GB). Move installs to V: drive. Z: also losing space. |
+| **Storage** | ⚠️ C: drive critically low (13.0 GB). Move installs to V: drive. Z: has 302.9 GB free. |
 | **Network** | ✅ 1 Gbps Ethernet — plenty of headroom |
 | **Webcam** | ⏳ DroidCam via Wi-Fi/LAN (phone connects to same network) |
 | **Audio** | ✅ Multiple audio devices available — will need OBS routing setup |

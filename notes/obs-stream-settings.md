@@ -1,6 +1,6 @@
 # 03 — OBS Streaming Settings
 
-> Hardware: Ryzen 7 5700X | RX 7600 4GB | 16GB RAM
+> Hardware: Ryzen 7 5700X | RX 7600 8GB | 16GB RAM
 > Internet: 40 Mbps Airtel (ethernet, 4ms ping)
 > Platform: Twitch
 

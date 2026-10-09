@@ -176,11 +176,7 @@ Stream #1 — 30 May 2026
 
 ## Git History (your docs)
 
-```
-3a4a459 — Update software.md with installed versions
-a1111c7 — Add notes: DroidCam, AC optimization, OBS settings, VOD guide
-39b7d30 — Update software.md: DroidCam OBS Plugin removed
-a4628ba — Initial setup: document PC hardware and software plan
-```
+This repo was re-initialised with a clean history (2026-10-09), so earlier hashes no
+longer apply. Run `git log --oneline` inside the repo for current history.
 
-All docs live at: `C:\Users\amar\Desktop\config\`
+All docs live at: `C:\Users\amar\Desktop\settings\`

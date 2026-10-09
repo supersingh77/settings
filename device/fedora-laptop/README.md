@@ -210,6 +210,7 @@ device/fedora-laptop/
     ├── bootstrap.sh                 ← 🌟 START HERE on a fresh install
     ├── setup-phase2.sh              ← Phase 2: RPM repos + layered packages + reboot
     ├── setup-phase3.sh              ← Phase 3: toolbox container + OpenWork AppImage
+    ├── install-links.sh             ← Symlink runtime scripts into ~/.local/bin
     ├── update-system.sh             ← Fast daily update (alias: update)
     ├── cleanup-system.sh            ← Slow maintenance: btrfs scrub, flatpak cleanup, DNS flush, trash (alias: cleanup)
     ├── update-openwork.sh           ← OpenWork AppImage update (alias: update-openwork)

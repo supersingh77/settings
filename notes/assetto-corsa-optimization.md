@@ -1,7 +1,7 @@
 # 02 — Assetto Corsa Optimization
 
 > Goal: Higher FPS for smoother gameplay + streaming
-> Hardware: Ryzen 7 5700X | RX 7600 4GB | 16GB RAM | 1080p @ 120Hz
+> Hardware: Ryzen 7 5700X | RX 7600 8GB | 16GB RAM | 1080p @ 120Hz
 
 ---
 

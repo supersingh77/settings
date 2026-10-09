@@ -8,14 +8,42 @@
 
 ## 1. Taskbar pins — names and order
 
+**Preferred — UI Automation.** This is the only method that returns packaged/Store
+pins in true order:
+
+```powershell
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
+$root = [System.Windows.Automation.AutomationElement]::RootElement
+$tray = $root.FindFirst([System.Windows.Automation.TreeScope]::Children,
+  (New-Object System.Windows.Automation.PropertyCondition(
+    [System.Windows.Automation.AutomationElement]::ClassNameProperty, 'Shell_TrayWnd')))
+$tray.FindAll([System.Windows.Automation.TreeScope]::Descendants,
+  (New-Object System.Windows.Automation.PropertyCondition(
+    [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+    [System.Windows.Automation.ControlType]::Button))) |
+  Where-Object { $_.Current.ClassName -eq 'Taskbar.TaskListButtonAutomationPeer' } |
+  ForEach-Object { $_.Current.Name }
+```
+
+- Filter by ClassName `Taskbar.TaskListButtonAutomationPeer` for user pins. The
+  Start/Search buttons are `ToggleButton`; tray/clock items are `SystemTrayIcon`.
+- `AutomationId` starts `Appid: ...`; packaged apps look like
+  `Microsoft.WindowsTerminal_8wekyb3d8bbwe!App`, unpackaged ones carry a path or ProgID.
+
+**Registry shortcut (misses packaged pins):**
+
 ```powershell
 $tb = Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband'
-[Text.Encoding]::UTF8.GetString($tb.Favorites)   # .lnk names appear in pin order
+[Text.Encoding]::UTF8.GetString($tb.Favorites)   # only unpackaged .lnk pins appear as clean names
 ```
 
 - **Gotcha:** the `Favorites` blob is **UTF-8 / single-byte**, not UTF-16. Decoding as Unicode gives mojibake.
+- **Gotcha:** the registry decode surfaces only unpackaged `.lnk` pins in readable form;
+  packaged pins (Settings, Terminal, Notepad, Claude, Codex) live in the same blob but
+  are easy to miss. Use UI Automation for the complete order.
 - The `.lnk` files in `%APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\` are the same set but **alphabetical** — they do not give order.
-- Windows-managed pins (Search, Task View) are not in this list.
+- Windows-managed buttons (Start, Search, Task View) are not `TaskListButtonAutomationPeer`.
 
 ## 2. Start menu pins — names and order
 

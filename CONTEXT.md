@@ -22,7 +22,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 | Device | Key Files |
 |--------|-----------|
-| Windows Desktop | `device/desktop/hardware.md`, `software.md`, `startmenu-taskbar.md`, `audit-playbook.md`, `scripts/` |
+| Windows Desktop | `device/desktop/hardware.md`, `software.md`, `desktop.md`, `startmenu-taskbar.md`, `disk-cleanup.md`, `audit-playbook.md`, `scripts/` |
 | Windows Laptop | `device/laptop/hardware.md`, `software.md`, `scripts/` |
 | Fedora Laptop | `device/fedora-laptop/` — full setup, scripts, docs |
 | Phone | `device/phone/hardware.md`, `apps/`, `scripts/` |
@@ -49,6 +49,12 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## What Changed Recently
 
+- Full repo cleanup pass (2026-10-09): corrected desktop GPU to **8 GB** (WMI 32-bit cap explained), driver → 26.8.1, free space C: 13.0 / V: 32.4 / Z: 302.9 GB, RAM module detail, BIOS
+- `startmenu-taskbar.md` taskbar list corrected to the real **17** pins; "taskbar and Start disjoint" note fixed (they overlap on Settings/Terminal/Notepad)
+- `audit-playbook.md` §1 now documents the UI Automation method and the registry decode's packaged-app blind spot
+- `desktop.md` rewritten to the live `C:\Users\amar\Desktop` layout (`bills/`, `statements/`, `settings/`, `8/`; `Personal/` and `config/` no longer exist)
+- Fixed stale refs: streaming-workflow path → `settings\` + removed dead commit hashes; VRAM 4GB→8GB in notes/laptop docs
+- Added `install-links.sh` to the Fedora README tree
 - Added `device/desktop/audit-playbook.md` — verified commands for live pin/app/Steam audits (2026-10-09)
 - Fixed inverted "No Invented Values" rule in `README.md` (it read "Do guess")
 - Start menu / taskbar docs verified live against registry (2026-10-09): Zed → Cursor, Audacity unpinned

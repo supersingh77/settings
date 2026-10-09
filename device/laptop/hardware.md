@@ -99,6 +99,6 @@ MAC addresses: Ethernet `04-42-1A-D1-63-9C`, Wi-Fi `90-E8-68-D1-2B-81`
 ## Summary & Hardware Notes vs Desktop
 
 - **Processing & Memory**: Ryzen 9 5900HX + 32 GB RAM provides ample compute and memory for gaming, development, and streaming.
-- **VRAM Headroom**: 12 GB VRAM on RX 6800M resolves the 4 GB VRAM bottleneck present on the desktop RX 7600.
+- **VRAM Headroom**: 12 GB VRAM on RX 6800M vs 8 GB on the desktop RX 7600.
 - **Storage Strategy**: Keep `C:` for OS and core apps; route Steam library and OBS recordings to `D:\`.
 - **Power & Fan Control**: Use ASUS Armoury Crate or G-Helper for fan profiles (Performance / Turbo / Silent). Ryzen Master is excluded — mobile CPUs handle thermal targets dynamically.
