@@ -117,6 +117,7 @@ When **MPRT** is enabled in the monitor OSD, the backlight is strobed to reduce 
 
 - For software brightness control: turn **MPRT off** in the OSD.
 - If you want MPRT on: adjust brightness from the monitor's OSD joystick instead.
+- **No DDC/CI toggle:** the MAG 255XF capability string exposes no MPRT VCP code, so Twinkle Tray and generic DDC/CI tools cannot switch it. There is no documented MSI software control for this model; use the OSD or a Navi Key shortcut.
 
 ### Known quirk — Xbox 360 receiver opens Task View
 
