@@ -22,6 +22,17 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Resolve FFmpeg: PATH first, then the machine-wide install used on this desktop.
+$ffmpeg = (Get-Command ffmpeg -ErrorAction SilentlyContinue).Source
+if (-not $ffmpeg) {
+    $candidate = "C:\Program Files\FFmpeg\bin\ffmpeg.exe"
+    if (Test-Path $candidate) { $ffmpeg = $candidate }
+}
+if (-not $ffmpeg) {
+    Write-Host "FFmpeg not found. Install it or add C:\Program Files\FFmpeg\bin to PATH." -ForegroundColor Red
+    exit 1
+}
+
 # Resolve folder
 $dir = (Resolve-Path $Folder).Path
 
@@ -48,7 +59,7 @@ $clips | ForEach-Object { "file '$($_.Name)'" } | Set-Content -Path $listFile -E
 $outPath = Join-Path $dir $Output
 
 Write-Host "`nJoining losslessly -> $outPath" -ForegroundColor Cyan
-ffmpeg -f concat -safe 0 -i $listFile -c copy $outPath
+& $ffmpeg -f concat -safe 0 -i $listFile -c copy $outPath
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "`nDone. Output: $outPath" -ForegroundColor Green

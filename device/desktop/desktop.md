@@ -1,28 +1,23 @@
 # Desktop Layout — Files, Folders & Shortcuts
 
-> Device: Desktop PC | Updated: 09 Oct 2026
-> Scope: the actual `C:\Users\amar\Desktop` folder (not the UI layout — see `startmenu-taskbar.md`).
+> Device: Desktop PC | Updated: 23 Oct 2026
+> Scope: the actual `C:\Users\amar\Desktop` folder. For taskbar/Start pins see [startmenu-taskbar.md](startmenu-taskbar.md).
 
----
+## Current Contents
 
-## Desktop (current)
+| Type | Items |
+|------|-------|
+| **Folders** | `accounts/` — finance/ID material (contents not enumerated) · `statements/` — bank/credit statements (contents not enumerated) · `settings/` — this repo |
+| **Shortcuts** | `DeepSeek Harness.lnk` · `Discord.lnk` · `Twinkle Tray.lnk` |
+| **Files** | No user files at the desktop root; `desktop.ini` is hidden/system |
 
-> Verified live 09 Oct 2026.
+## Conventions
 
-- **Shortcuts:** `Atlas.lnk`, `MiniMax Code.lnk`, `Clockify.lnk`
-- **Folders:** `settings/` (this repo), `bills/`, `statements/`, `8/` (purpose unverified)
-- **Files:** `prompt.txt`
+- An app lives in exactly **one** place: taskbar for daily drivers, Start for everything else, desktop only for one-click shortcuts and active folders.
+- Finance documents stay in `accounts/` and `statements/`; do not create a catch-all `Personal/` folder again.
+- The desktop root should not hold installers, archives, or generated reports. Use Downloads, E:, or D: instead.
 
-## `bills/` and `statements/`
+## History
 
-Finance/ID material formerly kept in a `Personal/` catch-all. `Personal/` no longer
-exists; the finance project moved to its own repo. Contents are not enumerated here.
-
----
-
-## Notes
-
-- **"All apps" folder:** Windows doesn't auto-create one on the desktop. The built-in equivalent is **Start → All apps** (~120 shortcuts). Don't create a desktop copy — it just duplicates Start and adds clutter.
-- **Coordination rule:** an app lives in exactly **one** of taskbar / Start / desktop — no redundancy. Taskbar = daily drivers; Start = everything else; desktop = only one-click-worthy shortcuts + active files/folders.
-- **Cleanup (17 Aug 2026):** removed redundant shortcuts (Kimi, MiniMax, OpenWork, Zed, Audacity, Chrome), moved `life.jpg` → Pictures, deleted `line_items.*` + `Start Menu Pins/`, consolidated finance folders into `Personal/`.
-- **Finance project** moved to a separate repo (2026-10-09); the `Personal/` catch-all was dissolved and its remaining finance/ID material now sits in `bills/` + `statements/`. `finance/` paths are no longer referenced here.
+- **23 Oct 2026 — 26H2 clean install:** desktop reset to `accounts/`, `statements/`, `settings/`, plus the three current shortcuts. Older shortcuts and folders were removed with the old install.
+- Prior shortcut/finance-folder changes are preserved in Git history.

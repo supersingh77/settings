@@ -1,27 +1,20 @@
 # =============================================================================
-# cleanup-system.ps1 — Slow maintenance tasks for Windows Desktop PC
+# cleanup-system.ps1 - Safe maintenance for the Windows desktop
 #
-# Safe maintenance tasks to reclaim space on C:\ drive and clean system caches.
-# Run occasionally (e.g. weekly/monthly).
-#
-# Cleans:
-#   1. Scoop download cache (scoop cache rm *)
-#   2. Scoop old versions (scoop cleanup *)
-#   3. User + system temp files
-#   4. Windows Update component cleanup (DISM)
-#   5. Recycle Bin
-#   6. DNS cache flush
-#   7. Delivery Optimization cache
+# Reclaims space on C: without touching personal files or the driver stash.
+# Run occasionally (weekly/monthly), ideally from an elevated PowerShell 7.
 #
 # Usage:
 #   pwsh device/desktop/scripts/cleanup-system.ps1
-#   cleanup-system          # via PowerShell alias
+#   pwsh device/desktop/scripts/cleanup-system.ps1 -DryRun
 # =============================================================================
 
-# Don't exit on error — each section handles its own failures
+param(
+    [switch]$DryRun
+)
+
 $ErrorActionPreference = 'Continue'
 
-# ── Colors & helpers ────────────────────────────────────────────────────────
 $BOLD   = "`e[1m"
 $GREEN  = "`e[32m"
 $YELLOW = "`e[33m"
@@ -29,126 +22,113 @@ $CYAN   = "`e[36m"
 $RED    = "`e[31m"
 $RESET  = "`e[0m"
 
-function info    { Write-Host "${CYAN}ℹ️  $($args -join ' ')${RESET}" }
-function success { Write-Host "${GREEN}✅ $($args -join ' ')${RESET}" }
-function warn    { Write-Host "${YELLOW}⚠️  $($args -join ' ')${RESET}" }
-function step    { Write-Host "`n${BOLD}━━━ $($args -join ' ') ━━━${RESET}" }
+function info    { Write-Host "${CYAN}[info]${RESET}  $($args -join ' ')" }
+function success { Write-Host "${GREEN}[ok]${RESET}    $($args -join ' ')" }
+function warn    { Write-Host "${YELLOW}[warn]${RESET}  $($args -join ' ')" }
+function step    { Write-Host "`n${BOLD}--- $($args -join ' ') ---${RESET}" }
 
-function run_or_warn {
-    param(
-        [string]$Description,
-        [scriptblock]$Command
-    )
-    try {
-        & $Command
-        return $true
-    } catch {
-        warn "${Description} — continuing anyway."
-        return $false
+function Get-FolderMB {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return 0 }
+    $sum = (Get-ChildItem -LiteralPath $Path -Recurse -File -Force -ErrorAction SilentlyContinue |
+        Measure-Object -Property Length -Sum).Sum
+    if ($null -eq $sum) { return 0 }
+    return [math]::Round(($sum / 1MB), 1)
+}
+
+function Clear-FolderContents {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+    $before = Get-FolderMB $Path
+    if ($DryRun) {
+        info "Would clear $Path ($before MB)"
+        return
     }
+    Get-ChildItem -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue |
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    $after = Get-FolderMB $Path
+    success "$Path : $before MB -> $after MB"
 }
 
-Write-Host "${YELLOW}ℹ️  This is a slow maintenance task — it may take several minutes.${RESET}"
-
-# ── 1. Scoop download cache ──────────────────────────────────────────────────
-step "Clearing Scoop download cache"
-
-if (Get-Command scoop -ErrorAction SilentlyContinue) {
-    run_or_warn "Scoop cache cleanup had issues" { scoop cache rm * }
-    success "Scoop cache step complete."
+if ($DryRun) {
+    Write-Host "${YELLOW}[dry-run] No files will be deleted.${RESET}"
 } else {
-    info "Scoop not installed — skipping."
+    Write-Host "${YELLOW}[info] Slow maintenance task - this can take several minutes.${RESET}"
 }
 
-# ── 2. Scoop old versions ────────────────────────────────────────────────────
-step "Removing old Scoop versions"
-
-if (Get-Command scoop -ErrorAction SilentlyContinue) {
-    run_or_warn "Scoop cleanup had issues" { scoop cleanup * }
-    success "Scoop cleanup complete."
-} else {
-    info "Scoop not installed — skipping."
-}
-
-# ── 3. Temp files ────────────────────────────────────────────────────────────
+# --- 1. Temp files ----------------------------------------------------------
 step "Cleaning temp files"
+Clear-FolderContents $env:TEMP
+Clear-FolderContents "$env:SystemRoot\Temp"
 
-$tempDirs = @(
-    $env:TEMP,
-    "$env:SystemRoot\Temp"
-)
-
-foreach ($dir in $tempDirs) {
-    if (Test-Path -LiteralPath $dir) {
-        $before = (Get-ChildItem -LiteralPath $dir -Recurse -Force -ErrorAction SilentlyContinue |
-            Measure-Object -Property Length -Sum).Sum
-        $beforeMB = [math]::Round(($before / 1MB), 1)
-
-        Get-ChildItem -LiteralPath $dir -Recurse -Force -ErrorAction SilentlyContinue |
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-
-        $after = (Get-ChildItem -LiteralPath $dir -Recurse -Force -ErrorAction SilentlyContinue |
-            Measure-Object -Property Length -Sum).Sum
-        $afterMB = [math]::Round(($after / 1MB), 1)
-
-        success "$dir : $beforeMB MB → $afterMB MB"
-    }
-}
-
-# ── 4. Windows Update component cleanup ──────────────────────────────────────
+# --- 2. Windows Update component cleanup -----------------------------------
 step "Cleaning Windows Update components (DISM)"
-
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
     [Security.Principal.WindowsBuiltInRole]::Administrator
 )
-
-if ($isAdmin) {
-    run_or_warn "DISM component cleanup had issues" {
-        & Dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Host
-    }
-    success "DISM step complete."
+if (-not $isAdmin) {
+    warn "Not elevated - skipping DISM component cleanup."
+} elseif ($DryRun) {
+    info "Would run: Dism.exe /Online /Cleanup-Image /StartComponentCleanup"
 } else {
-    warn "Not running as administrator — skipping DISM component cleanup."
-    warn "Re-run from an elevated terminal to clean Windows Update components."
+    & Dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Host
+    success "DISM component cleanup finished."
 }
 
-# ── 5. Recycle Bin ───────────────────────────────────────────────────────────
+# --- 3. Recycle Bin ---------------------------------------------------------
 step "Emptying Recycle Bin"
-
-try {
-    Clear-RecycleBin -Force -ErrorAction Stop
-    success "Recycle Bin emptied."
-} catch {
-    warn "Recycle Bin cleanup had issues — continuing anyway."
+if ($DryRun) {
+    info "Would empty the Recycle Bin."
+} else {
+    try {
+        Clear-RecycleBin -Force -ErrorAction Stop
+        success "Recycle Bin emptied."
+    } catch {
+        warn "Recycle Bin cleanup skipped (already empty or in use)."
+    }
 }
 
-# ── 6. DNS cache flush ───────────────────────────────────────────────────────
+# --- 4. DNS cache -----------------------------------------------------------
 step "Flushing DNS cache"
+if ($DryRun) {
+    info "Would run: ipconfig /flushdns"
+} else {
+    ipconfig /flushdns | Out-Host
+    success "DNS cache flushed."
+}
 
-run_or_warn "DNS cache flush had issues" { ipconfig /flushdns | Out-Host }
-success "DNS cache flushed."
-
-# ── 7. Delivery Optimization cache ───────────────────────────────────────────
+# --- 5. Delivery Optimization cache ----------------------------------------
 step "Cleaning Delivery Optimization cache"
-
 $doCache = "$env:ProgramData\Microsoft\Windows\DeliveryOptimization\Cache"
 if (Test-Path -LiteralPath $doCache) {
-    $before = (Get-ChildItem -LiteralPath $doCache -Recurse -Force -ErrorAction SilentlyContinue |
-        Measure-Object -Property Length -Sum).Sum
-    $beforeMB = [math]::Round(($before / 1MB), 1)
-
-    Get-ChildItem -LiteralPath $doCache -Recurse -Force -ErrorAction SilentlyContinue |
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-
-    success "Delivery Optimization cache cleared ($beforeMB MB)."
+    $before = Get-FolderMB $doCache
+    if ($DryRun) {
+        info "Would clear $doCache ($before MB)"
+    } else {
+        Get-ChildItem -LiteralPath $doCache -Recurse -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        success "Delivery Optimization cache cleared ($before MB)."
+    }
 } else {
-    info "Delivery Optimization cache not found — skipping."
+    info "Delivery Optimization cache not found - skipping."
 }
 
-# ── 8. Summary ───────────────────────────────────────────────────────────────
-step "Cleanup complete"
+# --- 6. Review-only space hogs ---------------------------------------------
+step "Review-only: driver installers (not deleted)"
+$review = @(
+    'C:\AMD',
+    'C:\Users\amar\Downloads\drivers-26h2'
+)
+foreach ($path in $review) {
+    if (Test-Path -LiteralPath $path) {
+        info "$path = $(Get-FolderMB $path) MB"
+    }
+}
+info "Delete these manually only after Device Manager is clean and no installer is running."
 
+# --- 7. Summary -------------------------------------------------------------
+step "Cleanup complete"
 Write-Host ""
-Write-Host "${GREEN}All maintenance tasks finished.${RESET}"
-Write-Host "${YELLOW}Tip:${RESET}  Run ${CYAN}winget upgrade --all${RESET} for app updates."
+Write-Host "${GREEN}Maintenance tasks finished.${RESET}"
+Write-Host "${YELLOW}Tip:${RESET} run ${CYAN}winget upgrade --all${RESET} for app updates."
 Write-Host ""
