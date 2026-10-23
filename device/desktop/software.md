@@ -20,6 +20,7 @@
 | **PotPlayer** | 26.10.21.0 | `C:\Program Files\DAUM\PotPlayer` | 64-bit; installed from the signed Kakao build |
 | **HWiNFO** | 8.54 | `C:\Program Files\HWiNFO64` | Hardware monitoring |
 | **Radmin VPN** | 2.1.4951.1 | `C:\Program Files (x86)\Radmin VPN` | LAN emulation for gaming |
+| **PXN SimRacing** | 1.6.8.0 (installer 1.6.9) | `C:\Program Files (x86)\PXNSimRacing` | V10 Pro wheel/pedal config; A7 Gear Shift is a separate HID controller. Unsigned vendor app. |
 | **Focusrite Control 2** | 1.1210.0.0 | `C:\Program Files\Focusrite\Focusrite Control 2` | Includes Focusrite Audio Drivers 4.150.0.432 |
 | **AMD Software: Adrenalin** | 26.10.1 | `C:\Program Files\AMD` | RX 7600 driver 32.0.32015.7029 |
 | **AMD Chipset Software** | 8.09.28.1124 | `C:\AMD\Chipset_Software` | B450 chipset, GPIO, SMBus, PCI, PSP, Ryzen power plan |

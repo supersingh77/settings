@@ -105,6 +105,8 @@
 | Monitor (secondary) | BenQ RL2240H — 1920×1080, 60 Hz |
 | Audio interface | Focusrite Scarlett Solo 4th gen |
 | Headset | Razer Barracuda X 2.4 |
+| Wheel + pedals | PXN V10 Pro (`VID_36E6&PID_400B`) — PXN SimRacing detects the base and reads pedal/keymap settings |
+| Shifter | A7 Gear Shift (`VID_11FF&PID_B772`) — appears as a separate HID game controller; bind it per game |
 | Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
 | Phone (webcam) | DroidCam over LAN — client/plugin not reinstalled yet |
 
