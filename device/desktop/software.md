@@ -53,6 +53,7 @@
 |-----------|---------|-------|
 | AMD Chipset | 8.09.28.1124 | Fixes `ACPI\AMDIF030` (AMD GPIO) |
 | AMD GPU | 32.0.32015.7029 (Adrenalin 26.10.1) | RX 7600; 1920×1080 @ 300 Hz |
+| MSI MAG 255XF monitor | 1.0.0.0 (2024-07-29) | WHQL INF `oem30.inf` + `MSI MAG 255XF.icm`; 300 Hz DP mode |
 | Realtek Audio (ALC897) | 6.0.9231.1 | No analog endpoint currently active (no speakers detected) |
 | Realtek LAN (RTL8168) | 10.50.511.2021 | 1 Gbps, link up |
 | Focusrite Scarlett Solo | 4.150.0.432 | With Control 2 1.1210 |

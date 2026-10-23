@@ -38,6 +38,7 @@
 | **VRAM** | 8 GB GDDR6 |
 | **Driver** | AMD Software: Adrenalin Edition **26.10.1** (driver **32.0.32015.7029**, 2026-10-18) |
 | **Monitor** | MSI MAG 255XF — 1920×1080 @ **300 Hz** (primary); BenQ RL2240H secondary |
+| **Monitor driver** | MSI MAG 255XF INF **1.0.0.0** (WHQL, 2024-07-29) + `MSI MAG 255XF.icm` |
 | **Notes** | RX 7600 supports **AMD AMF** hardware encoding (H.264/H.265) for OBS. WMI `AdapterRAM` reports ~4 GB because it is a 32-bit field; the card's actual VRAM is **8 GB**. |
 
 ---
@@ -109,6 +110,13 @@
 | Shifter | A7 Gear Shift (`VID_11FF&PID_B772`) — appears as a separate HID game controller; bind it per game |
 | Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
 | Phone (webcam) | DroidCam over LAN — client/plugin not reinstalled yet |
+
+### Known quirk — MPRT locks software brightness
+
+When **MPRT** is enabled in the monitor OSD, the backlight is strobed to reduce motion blur. The monitor takes over brightness control, so DDC/CI tools such as **Twinkle Tray** can no longer change brightness (and FreeSync/VRR is usually disabled). This is normal monitor firmware behavior, not a Windows or driver fault.
+
+- For software brightness control: turn **MPRT off** in the OSD.
+- If you want MPRT on: adjust brightness from the monitor's OSD joystick instead.
 
 ### Known quirk — Xbox 360 receiver opens Task View
 
