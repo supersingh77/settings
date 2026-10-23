@@ -47,11 +47,11 @@
 
 | Drive | Label | Type | Capacity | Free | Purpose |
 |-------|-------|------|----------|------|---------|
-| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **52.2 GB** | OS + core apps |
+| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **98.8 GB** | OS + core apps |
 | **E:** | Vacuum Drive | NVMe — XPG GAMMIX S11 Pro | 350 GB | 137.6 GB | Games/streaming |
 | **D:** | Mass Storage | HDD — Seagate ST1000DM010 | 931.5 GB | 488.4 GB | Recordings/archive |
 
-- C: is no longer space-constrained; 52.2 GB free after the clean install.
+- C: is no longer space-constrained; 98.8 GB free after the 23 Oct cleanup.
 - Steam libraries survived on E: (6 game folders) and D: (2 game folders); Steam's config did not, so re-add both on first launch.
 - Both disks report Healthy.
 

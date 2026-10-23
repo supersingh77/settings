@@ -1,13 +1,13 @@
 # C: Drive — Cleanup Reference
 
-> Updated: 23 Oct 2026 | Current map: C: **52.2 GB free** / E: 137.6 GB / D: 488.4 GB
+> Updated: 23 Oct 2026 | Current map: C: **98.8 GB free** / E: 137.6 GB / D: 488.4 GB
 > Evergreen checklist for the Windows desktop. Verify sizes before deleting anything.
 
 ## Drive Map
 
 | Drive | Size | Free | Purpose |
 |-------|------|------|---------|
-| **C:** | 126.1 GB | **52.2 GB** | OS + core apps |
+| **C:** | 126.1 GB | **98.8 GB** | OS + core apps |
 | **E:** | 350 GB | 137.6 GB | Games, streaming software |
 | **D:** | 931.5 GB | 488.4 GB | Recordings, VODs, archives |
 
@@ -33,15 +33,17 @@
 | WSL removal (only if unused) | `dism /online /disable-feature /featurename:Microsoft-Windows-Subsystem-Linux /norestart` |
 | Windows Installer cache | **Do not delete manually** — use Disk Cleanup |
 
-## Measured Opportunities (23 Oct 2026)
+## Last Cleanup (23 Oct 2026)
 
-| Target | Size | Notes |
-|--------|------|-------|
-| `C:\AMD` | **3.0 GB** | Extracted AMD chipset/GPU installers. Safe after Device Manager is clean and no AMD installer is running; keep if you want offline reinstall files. |
-| `C:\Users\amar\Downloads\drivers-26h2` | **1.81 GB** | AMD, Realtek, MSI, PXN installers. Keep the PXN setup until the wheel is fully configured; the rest can go after validation. |
-| `C:\Windows\SoftwareDistribution\Download` | **2.42 GB** | Use Disk Cleanup / DISM, not manual deletion. |
-| `%LOCALAPPDATA%\Temp` | **0.26 GB** | Safe to clear; some files may be in use. |
-| `C:\Windows.old` | **0.03 GB** | Remove via Disk Cleanup if present. |
+| Target | Before | Result |
+|--------|--------|--------|
+| `C:\AMD` | 3.0 GB | Removed |
+| `C:\Users\amar\Downloads\drivers-26h2` | 1.81 GB | Removed |
+| `C:\Windows.old` | **38.0 GB** | Removed — old `puruhn` profile with Scoop reparse points |
+| `C:\Windows\SoftwareDistribution\Download` | 2.42 GB | Cleared |
+| `%LOCALAPPDATA%\Temp` | 0.27 GB | Cleared (2 in-use files remain, 0.7 MB) |
+
+**Result:** C: went from **52.2 GB → 98.8 GB free** (46.6 GB reclaimed). No outstanding measured targets remain.
 
 ## Prevention
 

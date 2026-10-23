@@ -73,4 +73,4 @@ No problem devices in Device Manager after the rebuild.
 - **Steam libraries:** add `E:\Games\SteamLibrary` and `D:\Games\SteamLibrary` on first launch.
 - **PXN:** installer is unsigned (official PXN domain); app reports 1.6.8.0; vJoy not installed.
 - **MPRT:** no DDC/CI VCP on this monitor; Twinkle Tray brightness requires MPRT off.
-- **Disk:** C: 52.2 GB free of 126.1 GB; E: 137.6 GB; D: 488.4 GB.
+- **Disk:** C: 98.8 GB free of 126.1 GB; E: 137.6 GB; D: 488.4 GB.

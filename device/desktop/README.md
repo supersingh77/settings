@@ -11,7 +11,7 @@
 | **CPU** | AMD Ryzen 7 5700X (8C/16T) |
 | **GPU** | AMD Radeon RX 7600 8 GB — Adrenalin 26.10.1 |
 | **RAM** | 16 GB DDR4-3000 (2 × 8 GB) |
-| **Storage** | C: 126 GB system (**52.2 GB free**) · E: 350 GB games · D: 1 TB archive |
+| **Storage** | C: 126 GB system (**98.8 GB free**) · E: 350 GB games · D: 1 TB archive |
 | **Display** | MSI MAG 255XF — 1080p @ **300 Hz** |
 | **Role** | Gaming + streaming |
 
@@ -23,7 +23,7 @@
 | [Software](software.md) | Installed apps, versions, install scope, drivers, exclusions |
 | [Taskbar & Start](startmenu-taskbar.md) | Current pins, verified order |
 | [Desktop Layout](desktop.md) | Actual `C:\Users\amar\Desktop` contents |
-| [Disk Cleanup](disk-cleanup.md) | Drive map, safe cleanup, measured opportunities |
+| [Disk Cleanup](disk-cleanup.md) | Drive map, recurring checklist, last cleanup result |
 | [Audit Playbook](audit-playbook.md) | Commands to verify pins/apps/drivers/Steam live |
 | [Scripts](scripts/README.md) | Maintenance, video join, legacy scroll-fix scripts |
 
