@@ -105,7 +105,19 @@
 | Monitor (secondary) | BenQ RL2240H — 1920×1080, 60 Hz |
 | Audio interface | Focusrite Scarlett Solo 4th gen |
 | Headset | Razer Barracuda X 2.4 |
+| Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
 | Phone (webcam) | DroidCam over LAN — client/plugin not reinstalled yet |
+
+### Known quirk — Xbox 360 receiver opens Task View
+
+When the controller is **powered off**, the third-party receiver can emit phantom `Win+Tab` / Task View input. It shows up as Task View opening when right-clicking the desktop or clicking the taskbar. **Powering the controller on stops it immediately** (verified 2026-10-23) because the receiver switches out of its idle/emulated keyboard-mouse state.
+
+Permanent options:
+- Unplug the receiver when not gaming (cleanest).
+- Leave the controller powered on while the receiver is plugged in (battery drain; it may sleep and bring the issue back).
+- Replace the third-party dongle with a genuine Xbox Wireless Adapter or use a wired controller.
+
+No Windows setting or driver was at fault.
 
 ---
 
