@@ -44,11 +44,15 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## Active Threads
 
-- C: drive critically low (13.0 GB free) — needs cleanup; app-removal candidates sized in `device/desktop/disk-cleanup.md` §6, awaiting go-ahead
+- C: drive has **53.6 GB free** after the 26H2 rebuild — no longer critical; monitor as apps return
 - Net worth / assets & liabilities feature was spec'd but the finance project is now in a separate repo
 
 ## What Changed Recently
 
+- **2026-10-23 — ReviOS 26H2 rebuild**: clean Windows 11 Pro 26H2 (build 26300.9457) replacing the Atlas OS setup. Old `V:` → `E:`, old `Z:` → `D:`.
+- Drivers: AMD chipset 8.09.28.1124 (fixes `ACPI\AMDIF030`), Adrenalin 26.10.1 (32.0.32015.7029), Realtek audio 6.0.9231.1, Realtek LAN 10.50.511.2021, Focusrite 4.150.0.432.
+- Apps restored: 7-Zip, PowerShell 7.6.7, Python 3.14.7, GitHub CLI, FFmpeg (machine-wide), plus Discord, Steam, PotPlayer, HWiNFO, Twinkle Tray, Radmin VPN, LocalSend.
+- Display now 1920×1080 @ 300 Hz; C: 53.6 GB free; Steam libraries on `E:`/`D:` need re-adding on first launch.
 - Full repo cleanup pass (2026-10-09): corrected desktop GPU to **8 GB** (WMI 32-bit cap explained), driver → 26.8.1, free space C: 13.0 / V: 32.4 / Z: 302.9 GB, RAM module detail, BIOS
 - `startmenu-taskbar.md` taskbar list corrected to the real **17** pins; "taskbar and Start disjoint" note fixed (they overlap on Settings/Terminal/Notepad)
 - `audit-playbook.md` §1 now documents the UI Automation method and the registry decode's packaged-app blind spot

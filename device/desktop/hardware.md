@@ -1,7 +1,8 @@
 # PC Hardware Documentation
 
-> Generated: 30 May 2026 | Updated: 09 Oct 2026 — specs, driver and free space re-verified live (CIM/WMI + `Get-Volume`)
-> Purpose: Streaming setup baseline
+> Updated: 23 Oct 2026 — clean ReviOS 26H2 install; specs, drivers and volumes verified live (CIM/WMI + `Get-Volume`)
+> Purpose: Streaming / gaming setup baseline
+> Migration note: this install replaced the previous Atlas OS setup. The old **V:** drive is now **E:**, and the old **Z:** drive is now **D:**. Older notes that still say V:/Z: are pre-rebuild.
 
 ---
 
@@ -9,8 +10,8 @@
 
 | Component | Detail |
 |-----------|--------|
-| **OS** | Microsoft Windows 11 Pro — Version 23H2 (Build 22631) |
-| **Form Factor** | Desktop (Custom build, ASRock B450M-HDV R4.0 motherboard) |
+| **OS** | Microsoft Windows 11 Pro 26H2 — build **26300.9457** (ReviOS) |
+| **Form Factor** | Desktop (custom build, ASRock B450M-HDV R4.0) |
 | **BIOS** | American Megatrends P10.60 (2026-04-17) |
 
 ---
@@ -25,7 +26,7 @@
 | **L2 Cache** | 4 MB |
 | **L3 Cache** | 32 MB |
 | **Cooling** | _(not detected — check if stock or aftermarket)_ |
-| **Notes** | Great for gaming + streaming simultaneously; 8 cores handle encoding well |
+| **Notes** | 8 cores handle gaming + streaming simultaneously; AMF encoding keeps the CPU free. |
 
 ---
 
@@ -35,9 +36,9 @@
 |----------|-------|
 | **Model** | AMD Radeon RX 7600 |
 | **VRAM** | 8 GB GDDR6 |
-| **Driver** | AMD Software: Adrenalin Edition 26.8.1 (driver 32.0.31041.1004) |
-| **Monitor** | MSI MAG 255XF — 1920×1080 |
-| **Notes** | RX 7600 supports **AMD AMF** hardware encoding (H.264/H.265) for OBS. WMI `AdapterRAM` reports ~4 GB because it is a 32-bit field; the card's actual VRAM is **8 GB** (64-bit registry `HardwareInformation.qwMemorySize` = 8,573,157,376 bytes). 8 GB is comfortable for 1080p gaming + streaming. |
+| **Driver** | AMD Software: Adrenalin Edition **26.10.1** (driver **32.0.32015.7029**, 2026-10-18) |
+| **Monitor** | MSI MAG 255XF — 1920×1080 @ **300 Hz** (primary); BenQ RL2240H secondary |
+| **Notes** | RX 7600 supports **AMD AMF** hardware encoding (H.264/H.265) for OBS. WMI `AdapterRAM` reports ~4 GB because it is a 32-bit field; the card's actual VRAM is **8 GB**. |
 
 ---
 
@@ -47,8 +48,8 @@
 |----------|-------|
 | **Total** | 16 GB (15.9 GB usable) |
 | **Configuration** | 2 × 8 GB DDR4 (Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB) |
-| **Speed** | 3000 MT/s (both modules report 3000, below their 3200 rated speed) |
-| **Notes** | 16 GB is the minimum recommended for streaming. Fine for Assetto Corsa + OBS at 1080p, but closing browser tabs before streaming helps. |
+| **Speed** | 3000 MT/s (both modules; below the 3200 rating of the Kingston kit) |
+| **Notes** | 16 GB is the minimum comfortable baseline for 1080p gaming + OBS. Close browser tabs before streaming. |
 
 ---
 
@@ -56,18 +57,19 @@
 
 | Drive | Label | Type | Capacity | Free Space | Notes |
 |-------|-------|------|----------|------------|-------|
-| **C:** | _(System)_ | SSD (NVMe) — XPG GAMMIX S11 Pro | 126 GB partition | **13.0 GB** | ⚠️ Critically low. Windows + core apps only. |
-| **V:** | Vacuum Drive | SSD (NVMe) — XPG GAMMIX S11 Pro | 350 GB | 32.4 GB | ✅ Games & streaming software. Assetto Corsa lives here. |
-| **Z:** | Mass Storage | HDD — Seagate ST1000DM010 (1 TB) | 931 GB | 302.9 GB | ✅ Recordings, VODs, clips, OBS recording output. |
+| **C:** | _(System)_ | SSD (NVMe) — XPG GAMMIX S11 Pro | 126.1 GB | **53.6 GB** | ✅ Healthy. Windows + core apps only. |
+| **E:** | Vacuum Drive | SSD (NVMe) — XPG GAMMIX S11 Pro | 350 GB | 137.6 GB | Games & streaming software. Formerly **V:**. |
+| **D:** | Mass Storage | HDD — Seagate ST1000DM010 (1 TB) | 931.5 GB | 488.4 GB | Recordings, VODs, clips, OBS output. Formerly **Z:**. |
 
 **SSD Details:**
-- XPG GAMMIX S11 Pro — NVMe, 512 GB total (partitioned as C: + V:)
+- XPG GAMMIX S11 Pro — NVMe, 512 GB total (partitioned as C: + E:)
 - Seagate ST1000DM010 — SATA HDD, 1 TB
 - Both healthy
 
-### ⚠️ Storage Action Needed
-- **C: drive is critically low** (13.0 GB free, down from 22.6 GB in May). Free space on C: or move installs to **V:** — sized removal candidates are parked in [`disk-cleanup.md`](disk-cleanup.md) §6.
-- **Z: drive recovered** to 302.9 GB free (was 287.9 GB) — still the overflow/recordings target.
+### Storage Notes
+- C: is no longer critical after the clean install (**53.6 GB free** vs 13 GB before).
+- Existing Steam libraries survived: `E:\Games\SteamLibrary` (6 game folders) and `D:\Games\SteamLibrary` (2 game folders).
+- Steam's own config was on the old C: install, so the two libraries must be re-added on first Steam launch.
 
 ---
 
@@ -75,47 +77,45 @@
 
 | Adapter | Type | Status | Speed | Notes |
 |---------|------|--------|-------|-------|
-| Realtek PCIe GbE Ethernet | Wired | ✅ Up | 1 Gbps | Primary internet. Good for streaming (stable low latency). |
-| Radmin VPN | Virtual adapter | ✅ Up | — | For LAN-emulation gaming with friends. |
-| **Wi-Fi** | ❌ **Not detected** | — | — | Your PC has no built-in Wi-Fi. DroidCam will connect over **LAN (same network)** via Ethernet ←→ Phone Wi-Fi. |
+| Realtek PCIe GbE (RTL8168) | Wired | ✅ Up | 1 Gbps | Driver **10.50.511.2021** (2021-05-11). Primary internet. |
+| **Wi-Fi** | ❌ **Not detected** | — | — | No built-in Wi-Fi; DroidCam/phone must use the LAN. |
 
-**Streaming bandwidth check:** 1 Gbps Ethernet is more than enough for 1080p60 streaming (needs ~6-10 Mbps upload).
+**IP:** 192.168.1.11 / 192.168.1.1
 
 ---
 
-## Audio Devices
+## Audio
 
 | Device | Type | Status |
 |--------|------|--------|
-| AMD High Definition Audio | GPU audio (HDMI/DP) | OK |
-| AMD Streaming Audio Device | GPU audio (for stream capture) | OK |
-| High Definition Audio Device | Motherboard onboard audio | OK |
-| USB Audio 2.0 | _(likely your headset/mic)_ | OK |
-| USB Audio Device | _(likely another USB audio device)_ | OK |
+| **Realtek ALC897** (onboard) | Motherboard audio | Driver **6.0.9231.1** + Realtek Audio Control installed. No analog endpoint currently active (no speakers detected). |
+| **Focusrite Scarlett Solo** (4th gen) | USB audio interface | Driver **4.150.0.432** + Focusrite Control 2 **1.1210**. Working. |
+| **Razer Barracuda X 2.4** | USB wireless headset | Working; mic + headphones endpoints present. |
+| **AMD HDMI Audio** | GPU audio to monitors | Working; endpoints for MAG 255XF and BenQ RL2240H. |
 
-**Notes:** You have 5 audio devices. For streaming, you'll want to identify:
-- Which one is your **headset / microphone**
-- Set up OBS to capture game audio + mic separately
+**Notes:** For streaming, capture game audio from the Focusrite/Razer endpoint and mic separately in OBS. The onboard Realtek analog jacks are currently unused.
 
 ---
 
-## Peripherals (noted)
+## Peripherals
 
 | Device | Notes |
 |--------|-------|
-| Monitor | MSI MAG 255XF — 1920×1080, likely high refresh rate |
-| Phone (webcam) | Will use **DroidCam** over Wi-Fi/LAN for facecam |
+| Monitor (primary) | MSI MAG 255XF — 1920×1080, 300 Hz |
+| Monitor (secondary) | BenQ RL2240H — 1920×1080, 60 Hz |
+| Audio interface | Focusrite Scarlett Solo 4th gen |
+| Headset | Razer Barracuda X 2.4 |
+| Phone (webcam) | DroidCam over LAN — client/plugin not reinstalled yet |
 
 ---
 
-## Summary & Bottleneck Check for Streaming
+## Summary & Bottleneck Check
 
 | Area | Verdict |
 |------|---------|
 | **CPU** | ✅ Ryzen 7 5700X (8C/16T) — excellent for gaming + streaming |
-| **GPU** | ✅ RX 7600 8GB — comfortable for 1080p gaming + streaming. Use AMD AMF encoder in OBS. |
+| **GPU** | ✅ RX 7600 8 GB — comfortable for 1080p gaming + AMF streaming |
 | **RAM** | ✅ 16 GB — adequate for 1080p streaming |
-| **Storage** | ⚠️ C: drive critically low (13.0 GB). Move installs to V: drive. Z: has 302.9 GB free. |
+| **Storage** | ✅ C: 53.6 GB free; E: 137.6 GB; D: 488.4 GB |
 | **Network** | ✅ 1 Gbps Ethernet — plenty of headroom |
-| **Webcam** | ⏳ DroidCam via Wi-Fi/LAN (phone connects to same network) |
-| **Audio** | ✅ Multiple audio devices available — will need OBS routing setup |
+| **Audio** | ✅ Focusrite + Razer + Realtek all healthy |

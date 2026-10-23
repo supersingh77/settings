@@ -1,136 +1,87 @@
 # Software Documentation — Installed Apps
 
-> Updated: 09 Oct 2026 — checked against live `winget list` and on-disk paths
-> Managers: **winget** (primary) · **scoop** (CLI helpers only)
-> System/driver components (VC++ runtimes, .NET, chipset, Realtek, Xbox services) are not itemised.
+> Updated: 23 Oct 2026 — clean ReviOS 26H2 install; checked against live `winget list`, ARP, Appx and on-disk paths
+> Managers: **winget** (primary) · **scoop** (not installed yet) · Chocolatey 2.7.4 present but unused
+> System/runtime components (VC++ runtimes, .NET, Xbox services) are listed only where they affect the setup.
 
 ---
 
-## Scoop
-
-| Software | Version | Notes |
-|----------|---------|-------|
-| **dark** | 3.14.1 | WiX decompiler (no winget equivalent) |
-| **innounp** | 2.71.1 | Inno Setup unpacker |
-
-## Winget (user-installed)
-
-| Software | Version | Notes |
-|----------|---------|-------|
-| **7-Zip** | 26.04 | Archive utility |
-| **Antigravity** | 2.21.1 | Google agentic IDE |
-| **AutoClaw** | 2.0.2 | ZhipuAI agent |
-| **AutoHotkey** | 2.0.30 | Mouse scroll fix + automation |
-| **ChatGPT / Codex** | 26.1002.7124.0 | OpenAI assistant (MSIX package `OpenAI.Codex`; taskbar pin reads "Codex") |
-| **Claude** | 2.31226.0.0 | AI assistant |
-| **Clockify** | 2.3.3 + 2.3.4 | ⚠ installed twice |
-| **CPUID CPU-Z** | 3.01 | Hardware monitoring |
-| **Cursor** | 3.23.12 | AI code editor |
-| **Discord** | 1.0.9239 | Chat — 1.0.9261 available |
-| **DroidCam Client** | 7.2.1 | Phone webcam |
-| **DroidCam OBS Plugin** | 2.5.1 | OBS plugin |
-| **FFmpeg** | 9.0.2 | Video processing |
-| **Foxit PDF Reader** | 2026.2.1.39815 | PDF reader |
-| **Git** | 2.55.0.5 | Dev tool |
-| **GitHub CLI** | 2.102.0 | GitHub from terminal |
-| **Google Chrome** | 155.0.8059.40 | Primary browser |
-| **Guitar Pro 8** | 8.1.5-26 | Tablature editor |
-| **HandBrake** | 1.11.2 | Transcoder |
-| **HWiNFO** | 8.54 | System monitoring |
-| **input-overlay** | 5.0.6 | Streaming input display |
-| **Kimi** | 3.2.15 | AI assistant |
-| **LibreOffice** | 26.8.1.1 | Office suite — redundant w/ Office 2021 |
-| **LocalSend** | 1.18.2 | File transfer |
-| **MediaInfo** | 26.10 | ⚠ installed twice (MSIX + winget) |
-| **MiniMax Code** | 3.1.1 | AI coding agent |
-| **OBS Studio** | 32.2.2 | Streaming/recording |
-| **OpenWork Cloud** | 0.18.57 | AI agent platform |
-| **PicoTorrent** | 0.25.0 | Torrent client |
-| **PotPlayer** | 26.08.19.0 | Media player — the pinned one |
-| **PowerShell 7** | 7.6.6.0 | Shell |
-| **Python 3.14** | 3.14.7 | Dev tool |
-| **Radmin VPN** | 2.1.4951.1 | LAN emulation for gaming |
-| **ShareX** | 21.0.0 | Screenshot/clip capture |
-| **Steam** | 2.10.91.91 | Game launcher |
-| **Twinkle Tray** | 1.17.2 | Monitor brightness |
-| **VLC** | 3.0.24 | Media player — redundant w/ PotPlayer |
-| **Windows Terminal** | 1.25.2733.0 | Terminal |
-| **ZCode** | 3.14.4 | ZhipuAI coding agent |
-
-## Manually Installed
+## Machine-wide (Program Files)
 
 | Software | Version | Location | Notes |
 |----------|---------|----------|-------|
-| **Windows 11 Pro 23H2** | Build 22631 | C:\ | OS |
-| **AMD Software: Adrenalin** | 26.8.1 | C:\Program Files\AMD\ | GPU drivers + encoder |
-| **AMD Ryzen Master** | 2.13.0.2908 | C:\Program Files\AMD\RyzenMaster\ | CPU tuning |
-| **A-Tuning** | 3.0.504 | — | ASRock motherboard utility |
-| **Mozilla Firefox** | 157.0.1 | C:\Program Files\Mozilla Firefox\ | Backup browser |
-| **Assetto Corsa** | — | V:\Games\SteamLibrary\steamapps\common\assettocorsa | Main sim |
-| **Content Manager** | — | — | AC mod launcher |
-| **PXN SimRacing** | 1.2.0.0 | C:\Program Files (x86)\PXNSimRacing\ | Wheel config |
-| **vJoy Driver** | 2.1.9.1 | — | Needed by PXN |
-| **DaVinci Resolve** | 21.1.00017 | C:\Program Files\Blackmagic Design\ | Video editor |
-| **Microsoft Office Pro Plus 2021** | 16.0.20326.20158 | C:\Program Files\Microsoft Office\ | Office suite |
-| **Java SE Development Kit** | 25.0.1 | C:\Program Files\Java\ | Dev tool |
-| **ExitLag** | 5.23.3 | — | Network optimizer |
-| **FxSound** | 1.1.16.0 | — | Audio enhancer |
-| **GT Auto Clicker** | 1.0.10.0 | MSIX | ⚠ one of two auto-clickers |
-| **OP Auto Clicker** | 4.1.0.0 | MSIX | ⚠ one of two auto-clickers |
+| **Git** | 2.55.0.5 | `C:\Program Files\Git` | Git for Windows; `C:\Program Files\Git\cmd` on machine PATH |
+| **7-Zip** | 26.05 | `C:\Program Files\7-Zip` | Archive utility |
+| **PowerShell 7** | 7.6.7 | `C:\Program Files\PowerShell\7` | Official Microsoft MSI, all users |
+| **Python 3.14** | 3.14.7 | `C:\Program Files\Python314` | Official python.org installer, all users, PATH set |
+| **GitHub CLI** | 2.103.0 | `C:\Program Files\GitHub CLI` | `gh` on machine PATH |
+| **FFmpeg** | 9.0.2 | `C:\Program Files\FFmpeg\bin` | Moved out of winget's per-user cache; machine PATH set |
+| **Steam** | 2.10.91.91 | `C:\Program Files (x86)\Steam` | First launch will update the client |
+| **PotPlayer** | 26.10.21.0 | `C:\Program Files\DAUM\PotPlayer` | 64-bit; installed from the signed Kakao build |
+| **HWiNFO** | 8.54 | `C:\Program Files\HWiNFO64` | Hardware monitoring |
+| **Radmin VPN** | 2.1.4951.1 | `C:\Program Files (x86)\Radmin VPN` | LAN emulation for gaming |
+| **Focusrite Control 2** | 1.1210.0.0 | `C:\Program Files\Focusrite\Focusrite Control 2` | Includes Focusrite Audio Drivers 4.150.0.432 |
+| **AMD Software: Adrenalin** | 26.10.1 | `C:\Program Files\AMD` | RX 7600 driver 32.0.32015.7029 |
+| **AMD Chipset Software** | 8.09.28.1124 | `C:\AMD\Chipset_Software` | B450 chipset, GPIO, SMBus, PCI, PSP, Ryzen power plan |
+| **Realtek Audio Driver** | 6.0.9231.1 | DriverStore | Includes Realtek Audio Control |
+| **Realtek Ethernet Driver** | 10.50.511.2021 | DriverStore | RTL8168 1 Gbps |
+| **Revision Tool** | 2.14.4 | `C:\Program Files\Revision Tool` | ReviOS control panel |
+| **Google Chrome** | 156.0.8078.48 | `C:\Program Files\Google\Chrome` | Primary browser |
+| **Mozilla Firefox** | 158.0.1 | `C:\Program Files\Mozilla Firefox` | Backup browser |
+| **Microsoft Visual C++ 2015–2022** | 14.51.36247.0 | x64 + x86 | Runtime dependency |
 
-## Games (verified on disk, 09 Oct 2026)
+---
 
-Steam libraries: `V:\Games\SteamLibrary` (main) and `Z:\Games\SteamLibrary`.
+## Per-user / MSIX
 
-| Game | Where | Notes |
-|------|-------|-------|
-| **Assetto Corsa** + Dedicated Server | V: | Main sim |
-| **Hollow Knight** | Z: | 4.9 GB |
-| **It Takes Two** | V: | Co-op |
-| **KovaaK's** | V: | Aim trainer |
-| **Left 4 Dead 2** | V: | Co-op shooter |
-| **Overwatch** | Battle.net | Needs Riot Vanguard |
-| **PEAK** | V: | Co-op climbing |
-| **Schedule I** | V: | |
-| **Warhammer 40,000: Space Marine 2** | V: | |
-| **Wallpaper Engine** | V: | Desktop wallpapers |
+| Software | Version | Location | Notes |
+|----------|---------|----------|-------|
+| **Discord** | 1.0.9265 | `%LOCALAPPDATA%\Discord` | Squirrel installer; per-user only |
+| **Twinkle Tray** | 1.17.2 | `%LOCALAPPDATA%\Programs\twinkle-tray` | Electron app; per-user only |
+| **LocalSend** | 1.18.2 | `%LOCALAPPDATA%\Programs\LocalSend` | LAN file transfer |
+| **DeepSeek Harness** | 0.2.1-rc.2 | `%LOCALAPPDATA%\Programs\DeepSeek Harness` | Current AI coding harness |
+| **Windows Terminal** | 1.24.11911.0 | MSIX | Store package |
+| **Realtek Audio Control** | 1.1.137.0 | MSIX | Installed with the Realtek audio driver |
+| **Store apps** | — | MSIX | Paint, Notepad, Calculator, Photos, Snipping Tool, Xbox/Game Bar, Phone Link |
 
-**Stale remnants (not playable):** `Z:\...\common\Keep Talking and Nobody Explodes` (log file only) · `Z:\Games\Crack\Liftoff - Micro Drones [FitGirl Repack]` (10.4 GB installer, never installed).
+---
 
-## Previously Installed (Removed)
+## Drivers
 
-| Software | Reason removed |
-|----------|---------------|
-| ~~Audacity~~ | Uninstalled (empty folder left behind) |
-| ~~Streamlabs OBS~~ | Uninstalled (empty folder left behind) |
-| ~~Chrome Remote Desktop~~ | Uninstalled |
-| ~~Quick Share~~ | Uninstalled |
-| ~~osu!~~ | Uninstalled |
-| ~~Zed~~ | Replaced by Cursor (leftover folder remains) |
-| ~~Forza Horizon 6~~ | Not found on disk 09 Oct 2026 |
-| ~~Lethal Company~~ | Not found on disk 09 Oct 2026 |
-| ~~Mixtape~~ | Not found on disk 09 Oct 2026 |
-| ~~MECCHA CHAMELEON~~ | Not found on disk 09 Oct 2026 |
-| ~~Quake III Arena~~ | Not found on disk 09 Oct 2026 |
-| ~~Keep Talking and Nobody Explodes~~ | Not installed (log folder only) |
-| ~~Voicemeeter Banana~~ | Clogged audio devices; OBS routes natively |
-| ~~CCleaner~~ | Redundant w/ Disk Cleanup; adware-adjacent |
-| ~~Speedtest~~ | No longer wanted |
-| ~~Tesseract + tesseract-languages~~ | No longer wanted |
+| Component | Version | Notes |
+|-----------|---------|-------|
+| AMD Chipset | 8.09.28.1124 | Fixes `ACPI\AMDIF030` (AMD GPIO) |
+| AMD GPU | 32.0.32015.7029 (Adrenalin 26.10.1) | RX 7600; 1920×1080 @ 300 Hz |
+| Realtek Audio (ALC897) | 6.0.9231.1 | No analog endpoint currently active (no speakers detected) |
+| Realtek LAN (RTL8168) | 10.50.511.2021 | 1 Gbps, link up |
+| Focusrite Scarlett Solo | 4.150.0.432 | With Control 2 1.1210 |
 
-## Custom AHK Scripts (`scripts/`)
+No problem devices in Device Manager after the rebuild.
 
-| Script | Action | How to run |
-|--------|--------|-----------|
-| `scripts/disable-scroll.ahk` | Blocks mouse wheel (faulty Logitech wheel workaround) | double-click, or **Ctrl+Alt+Q** to exit |
-| `scripts/enable-scroll.ahk` | Kills the above, restores scrolling | double-click |
-| `scripts/enable-autostart.ahk` | Adds startup shortcut for disable-scroll | double-click once |
-| `scripts/disable-autostart.ahk` | Removes that startup shortcut | double-click once |
+---
+
+## Not reinstalled yet (from the previous 23H2 install)
+
+These were documented before the clean install but are **not currently installed**:
+
+| Category | Apps |
+|----------|------|
+| Streaming | OBS Studio, ShareX, DroidCam Client, DroidCam OBS Plugin, input-overlay |
+| Media | VLC, MediaInfo, HandBrake, Foxit PDF Reader |
+| Utilities | AutoHotkey, CPU-Z, LibreOffice, PicoTorrent, ExitLag, FxSound |
+| Productivity | Microsoft Office 2021, DaVinci Resolve, Guitar Pro 8, Clockify |
+| AI tools | Cursor, Claude, ChatGPT/Codex, Kimi, Antigravity, AutoClaw, ZCode, MiniMax Code, OpenWork Cloud |
+| Input/gaming | vJoy, PXN SimRacing, Steam games (still on E:/D:) |
+
+The old app list is preserved in Git history if any of these need to come back.
+
+---
 
 ## Notes
 
-- **Scoop → winget (Aug/Sep 2026):** GUI and CLI apps moved to winget; scoop kept only for `dark` + `innounp`.
-- **AI tools (Oct 2026):** 9 installed — Claude, ChatGPT/Codex, Kimi, Cursor, OpenWork Cloud, AutoClaw, ZCode, MiniMax Code, Antigravity. Roughly 5 GB on C:.
-- **Maintenance:** `scripts/cleanup-system.ps1` (exposes `update` and `cleanup` profile functions).
-- **Disks:** C: 126 GB — **13.0 GB free (critical)** · V: 350 GB — 32.4 GB free · Z: 1 TB — 302.9 GB free.
-- **GPU driver** 32.0.31041.1004 (Adrenalin 26.8.1) · **RAM** 2×8 GB DDR4 (Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB) running at 3000 MT/s (below the modules' 3200 rating).
+- **winget machine scope is broken on this build:** `winget install --scope machine` returns `0x80070005` (“Failed to open the predefined source”). Default-scope installs were used instead; PowerShell and Python were then normalized with their official all-users MSIs, and FFmpeg was moved to `Program Files`.
+- **`winget source update`** is the fix if winget starts returning “Failed to open the predefined source” even for `search`.
+- **Discord, Twinkle Tray and LocalSend are per-user by design** — their installers do not offer a machine-wide mode.
+- **Steam libraries:** `E:\Games\SteamLibrary` (6 game folders) and `D:\Games\SteamLibrary` (2 game folders) survived. Steam's config did not; add both libraries on first launch.
+- **Disk:** C: 53.6 GB free of 126.1 GB; E: 137.6 GB free; D: 488.4 GB free.
+- **Scoop** is intentionally not installed yet. Old scoop-only tools were `dark` and `innounp`; install scoop only if those are needed again.
