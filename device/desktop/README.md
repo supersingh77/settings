@@ -34,7 +34,7 @@
 3. **Display:** keep 300 Hz for desktop/gaming. MPRT must be **off** for Twinkle Tray brightness; MPRT has no DDC/CI control.
 4. **Controllers:** the third-party Xbox 360 receiver opens Task View when the controller is off — unplug it or keep the controller on. PXN A7 shifter enumerates separately from the V10 Pro wheel.
 5. **Before editing:** run the checks in [audit-playbook.md](audit-playbook.md). Bump the `Updated` date and record only verified values.
-6. **Maintenance:** in PowerShell 7, `update` and `cleanup` run the scripts in [`scripts/`](scripts/README.md). Both accept `-DryRun`.
+6. **Maintenance:** in PowerShell 7, `update` and `cleanup` run the scripts in [`scripts/`](scripts/README.md). Both accept `-DryRun`. `update` deliberately skips PowerShell itself — its MSI kills the session it replaces (MSI 1603), so that one upgrade runs from Command Prompt.
 
 ## Current Gaps
 

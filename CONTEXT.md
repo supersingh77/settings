@@ -49,6 +49,8 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## What Changed Recently
 
+- **2026-11-04 — `update` fixed for real; PowerShell now 7.6.9**: `winget upgrade` in 1.29.380 has **no `--exclude`** — the first fix attempt died on `0x8A150002` (invalid argument) before upgrading anything. `update-system.ps1` now parses the `winget upgrade` table and drives `winget upgrade --id <id> --exact` one package at a time, filtering `Microsoft.PowerShell`; a failing package is reported at the end instead of aborting the run. 7.6.9 itself was installed from **Command Prompt** — the MSI kills the pwsh-hosted install and rolls back 1603 (24 Oct 7.6.8, 1 Nov ×3 + 3 Nov 7.6.9). Documented in `device/desktop/scripts/README.md`.
+- **2026-11-03 — diagnosed `update` dying at package 1 (PowerShell 1603)**: PowerShell MSI replaces the running engine's binaries, Windows Installer closes `pwsh` mid-install, transaction rolls back; transcript ends at `The pipeline has been stopped.`
 - **2026-10-23 — ReviOS 26H2 rebuild**: clean Windows 11 Pro 26H2 (build 26300.9457) replacing the Atlas OS setup. Old `V:` → `E:`, old `Z:` → `D:`.
 - Drivers: AMD chipset 8.09.28.1124 (fixes `ACPI\AMDIF030`), Adrenalin 26.10.1 (32.0.32015.7029), Realtek audio 6.0.9231.1, Realtek LAN 10.50.511.2021, Focusrite 4.150.0.432.
 - Apps restored: 7-Zip, PowerShell 7.6.7, Python 3.14.7, GitHub CLI, FFmpeg (machine-wide), plus Discord, Steam, PotPlayer, HWiNFO, Twinkle Tray, Radmin VPN, LocalSend.

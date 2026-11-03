@@ -1,6 +1,6 @@
 # Software Documentation — Installed Apps
 
-> Updated: 23 Oct 2026 — checked live against `winget list`, ARP, Appx and on-disk paths
+> Updated: 4 Nov 2026 — PowerShell bumped to 7.6.9; otherwise checked live 23 Oct against `winget list`, ARP, Appx and on-disk paths
 > Managers: **winget** (primary) · **scoop** not installed · Chocolatey 2.7.4 present but unused
 > System runtimes (VC++, .NET) are listed only where they affect the setup.
 
@@ -16,7 +16,7 @@
 |----------|---------|----------|-------|
 | **Git** | 2.55.0.5 | `C:\Program Files\Git` | `cmd` on machine PATH |
 | **7-Zip** | 26.05 | `C:\Program Files\7-Zip` | Archive utility |
-| **PowerShell 7** | 7.6.7 | `C:\Program Files\PowerShell\7` | Official all-users MSI |
+| **PowerShell 7** | 7.6.9 | `C:\Program Files\PowerShell\7` | Official all-users MSI |
 | **Python 3.14** | 3.14.7 | `C:\Program Files\Python314` | Official all-users installer; PATH set |
 | **GitHub CLI** | 2.103.0 | `C:\Program Files\GitHub CLI` | `gh` on machine PATH |
 | **FFmpeg** | 9.0.2 | `C:\Program Files\FFmpeg\bin` | Moved out of winget's per-user cache; PATH set |
