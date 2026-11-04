@@ -49,6 +49,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## What Changed Recently
 
+- **2026-11-04 — `update` froze on the GitHub CLI download**: winget used **Delivery Optimization** (`DeliveryOptimization downloading from url:` then silence for 4 min). Fixed by `network.downloader: wininet` in `%LOCALAPPDATA%\Microsoft\WinGet\Settings\settings.json`, and by no longer piping winget per-package output — piping disabled winget's progress bar, which is what made the stall look like a dead terminal.
 - **2026-11-04 — `update` fixed for real; PowerShell now 7.6.9**: `winget upgrade` in 1.29.380 has **no `--exclude`** — the first fix attempt died on `0x8A150002` (invalid argument) before upgrading anything. `update-system.ps1` now parses the `winget upgrade` table and drives `winget upgrade --id <id> --exact` one package at a time, filtering `Microsoft.PowerShell`; a failing package is reported at the end instead of aborting the run. 7.6.9 itself was installed from **Command Prompt** — the MSI kills the pwsh-hosted install and rolls back 1603 (24 Oct 7.6.8, 1 Nov ×3 + 3 Nov 7.6.9). Documented in `device/desktop/scripts/README.md`.
 - **2026-11-03 — diagnosed `update` dying at package 1 (PowerShell 1603)**: PowerShell MSI replaces the running engine's binaries, Windows Installer closes `pwsh` mid-install, transaction rolls back; transcript ends at `The pipeline has been stopped.`
 - **2026-10-23 — ReviOS 26H2 rebuild**: clean Windows 11 Pro 26H2 (build 26300.9457) replacing the Atlas OS setup. Old `V:` → `E:`, old `Z:` → `D:`.

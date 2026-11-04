@@ -35,6 +35,8 @@ Windows PowerShell 5.1 is left alone: its execution policy is `Restricted`, so a
 
   Every open PowerShell window closes during the install — that is the installer, not a crash. Re-run `update` afterwards to confirm the rest is current. (This is how 7.6.9 went in on 4 Nov 2026.)
 - **One package at a time.** winget 1.29.380 has no `--exclude` option for `upgrade`, so the script parses the `winget upgrade` table itself, drops the guarded ids, and runs `winget upgrade --id <id> --exact` per package. A failure is listed at the end instead of aborting the rest of the run.
+- **Downloads go through WinINET, not Delivery Optimization.** On 4 Nov 2026 `update` sat on `Downloading …gh_2.103.3_windows_amd64.msi` for 4 minutes: winget's diag log shows `DeliveryOptimization downloading from url:` and then nothing at all. `%LOCALAPPDATA%\Microsoft\WinGet\Settings\settings.json` now sets `network.downloader` to `wininet` (schema: [aka.ms/winget-settings.schema.json](https://aka.ms/winget-settings.schema.json)). If a download ever looks frozen again, check that file first.
+- **Winget output is not piped, so it is not in the transcript.** winget only draws its progress bar when stdout is a console; piping hid a stalled download. Per-package winget text therefore goes straight to the terminal — for diagnostics use `%LOCALAPPDATA%\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir`.
 - **AutoHotkey v2 is not installed.** The `.ahk` scripts are dormant unless you install it; they are kept for the old mouse workaround.
 - `cleanup-system.ps1 -DryRun` is the safe first run.
 - `join-videos.ps1` expects clips with the same codec/resolution/fps/audio; otherwise use the re-encode fallback in `notes/ffmpeg-video-workflow.md`.

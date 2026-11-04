@@ -146,9 +146,12 @@ try {
         foreach ($t in $targets) {
             $n++
             Write-Host "`n${BOLD}($n/$($targets.Count))${RESET} $($t.Name) [$($t.Id)] $($t.Version) -> $($t.Available)"
+            # Deliberately NOT piped: winget only draws its download progress bar
+            # when stdout is a real console. Piping turned a stalled download into
+            # a silent 4-minute hang on 4 Nov 2026. This text therefore misses the
+            # transcript; winget's own logs in DiagOutputDir have it.
             & $winget upgrade --id $t.Id --exact --silent `
-                --accept-package-agreements --accept-source-agreements `
-                --disable-interactivity 2>&1 | Out-Host
+                --accept-package-agreements --accept-source-agreements
             $code = $LASTEXITCODE
 
             if ($code -eq 0 -or $code -eq $wingetNothingToDo) {
