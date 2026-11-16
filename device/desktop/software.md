@@ -41,7 +41,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **Revision Tool** | 2.15.1 | `C:\Program Files\Revision Tool` | ReviOS control panel |
 | **Google Chrome** | 157.0.8103.51 | `C:\Program Files\Google\Chrome` | Primary browser |
 | **Mozilla Firefox** | 160.0 | `C:\Program Files\Mozilla Firefox` | Backup browser |
-| **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Installed 24 Oct; **never launched** (no `%APPDATA%\obs-studio` profile yet) |
+| **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. 1080p base → **720p30**, simple mode, 6000 kbps. No stream destination set yet |
 | **ExitLag** | 5.23.3 | `C:\Program Files\ExitLag` | Route optimizer |
 | **GenOffice** | 0.13.18 | `C:\Program Files\GenOffice` | Office-suite shell; self-updater in `%LOCALAPPDATA%` |
 | **ActivityWatch** | 0.14.3 | `C:\Program Files (x86)\ActivityWatch` | Time tracker; auto-starts from the user Startup folder |
@@ -82,7 +82,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 
 - **Old 23H2 app set:** not reinstalled. The previous inventory remains in Git history.
 - **Excluded by request:** Razer Synapse, MCHOSE Hub, vJoy.
-- **Not reinstalled since the rebuild:** ShareX, input-overlay. **DroidCam is retired** — the phone-webcam route was replaced by a Kreo Owl Lite webcam (16 Nov 2026); `C:\Program Files\DroidCam` is an empty leftover folder, not an install.
+- **Not reinstalled since the rebuild:** ShareX, input-overlay. **DroidCam is retired** — the phone-webcam route was replaced by a Kreo Owl Lite webcam (16 Nov 2026); `C:\Program Files\DroidCam` is an empty leftover folder, not an install. OBS still carries a stale `droidcam-obs` entry in `plugin_manager\modules.json` although no module file exists.
 - **Steam games** stay on `V:\Games\SteamLibrary` and `Z:\Games\SteamLibrary`.
 
 ## Removed

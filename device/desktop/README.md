@@ -38,8 +38,8 @@
 
 ## Current Gaps
 
-- **Streaming stack is being rebuilt around the Kreo Owl Lite webcam** (bought 16 Nov 2026). The phone-DroidCam route is retired — `C:\Program Files\DroidCam` is an empty leftover folder, not an install, and should not be reinstalled for webcam duty.
-- OBS Studio 33.0.1 **is** installed but has never been launched — no profile or scene exists yet. The old OBS/DroidCam guides were deleted rather than carried forward stale.
+- **OBS is configured with the Owl Lite** (Display Capture + webcam, 1080p → 720p30) but is **not ready to broadcast**: no Twitch destination, no mic/audio source in the scene, and recordings still write to `C:\Users\amar\Videos` instead of `Z:`.
+- The phone-DroidCam route is retired (Kreo Owl Lite instead). `C:\Program Files\DroidCam` is an empty leftover folder, not an install; a stale `droidcam-obs` module entry remains in OBS's plugin manager.
 - **ShareX** and **input-overlay** are still missing.
 - `Z:\Games\SteamLibrary` (Celeste, Hollow Knight) is not registered in Steam; `V:` is.
 - `.mp4` / `.m4a` have no working default app — the shell app-picker is broken on this image ([windows-shell-repair.md](../../notes/windows-shell-repair.md)).

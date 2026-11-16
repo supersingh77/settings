@@ -92,7 +92,8 @@ For streaming, capture game audio from the Focusrite/Razer endpoint and mic sepa
 | Wheel + pedals | PXN V10 Pro (`VID_36E6&PID_400B`) — PXN SimRacing reads base/pedal/keymap data |
 | Shifter | A7 Gear Shift (`VID_11FF&PID_B772`) — separate HID game controller; bind per game |
 | Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
-| Phone (webcam) | DroidCam over LAN — client/plugin not reinstalled |
+| Phone (webcam) | Retired — the phone/DroidCam route was replaced by the Kreo Owl Lite |
+| Webcam | Kreo Owl Lite (`USB\VID_0C45&PID_6300&MI_00`) — USB Video Class on inbox `usbvideo.inf`, status Started. Resolution/FPS capabilities not yet measured |
 
 ## Known Quirks
 

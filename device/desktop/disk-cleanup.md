@@ -23,13 +23,13 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 | `C:\Program Files` | 5.9 GB | |
 | `C:\Program Files (x86)` | 5.9 GB | |
 | `%LOCALAPPDATA%\Google` | 3.1 GB | Chrome profile + cache |
-| `C:\Users\amar\Videos` | 1.9 GB | **Out of policy** — recordings belong on `Z:` |
+| `C:\Users\amar\Videos` | 1.9 GB | **Out of policy** — these are OBS recordings. The cause is OBS's own setting: Output → Recording Path is `C:\Users\amar\Videos` |
 
 ## Safe Recurring Cleanup
 
 | What | Where / How |
 |------|-------------|
-| Recordings parked on C: | `C:\Users\amar\Videos` — move finished clips to `Z:`, keep C: for OS/apps |
+| Recordings parked on C: | `C:\Users\amar\Videos` — move finished clips to `Z:` **and** change OBS Output → Recording Path to `Z:\…`, otherwise every session refills C: |
 | User + Windows temp | `%TEMP%`, `C:\Windows\Temp` |
 | Recycle Bin | `Clear-RecycleBin` or Disk Cleanup |
 | Windows Update staging | Disk Cleanup → "Windows Update Cleanup"; don't delete `SoftwareDistribution` manually while updates are pending |

@@ -346,6 +346,16 @@ if (Test-Path $videos) {
     }
 }
 
+# OBS writes wherever its profile says, which is how C: keeps refilling.
+foreach ($ini in (Get-ChildItem "$env:APPDATA\obs-studio\basic\profiles\*\basic.ini" -ErrorAction SilentlyContinue)) {
+    $text = Get-Content $ini.FullName -Raw -ErrorAction SilentlyContinue
+    if ($text -match 'FilePath=([A-Za-z]:\\\\[^\r\n]+)') {
+        $rec = ($Matches[1] -replace '\\\\', '\')
+        $flag = if ($rec -match '^C:') { 'ON C: - move it to Z:' } else { 'ok' }
+        Out-Line "| OBS profile '$($ini.Directory.Name)' | records to $rec | $flag |"
+    }
+}
+
 Section 'Done'
 Out-Line 'Read-only: nothing was changed.'
 
