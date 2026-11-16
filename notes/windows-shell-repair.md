@@ -96,40 +96,37 @@ Identical structure, identical commands, identical hives — different outcomes.
 1. Use **right-click → Open with ▸ \<app\>** — verified working for every type in the table above.
 2. Try setting the default explicitly in **Settings → Apps → Default apps → choose PotPlayer → `.m4a`** (and GenOffice for `.md`). *Viewing* the page is not the same as clicking **Set default** — the click writes a real `UserChoice` with its valid hash, which takes priority over the broken fallback path. This is the one thing that could restore double-click without reinstalling.
 
-## What the 26100-vs-26300 mismatch actually is
+## The build number is NOT the problem (corrected 16 Nov 2026)
 
-Windows identifies itself with a build number, and every system binary carries a matching file version. On a healthy machine they agree:
+An earlier revision of this note blamed a "26100 shell on a 26300 OS". **That was wrong**, and the install media proves it. The original ISO is still on disk (`Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso`), and mounting its `install.wim` shows the media ships *exactly* what is installed:
 
-| | Should be | On this machine |
+| File | In the ISO's install.wim | Installed |
 |---|---|---|
-| OS build | 26300.9457 | 26300.9457 |
-| `explorer.exe` | 10.0.26300.x | **10.0.26100.8117** |
-| `OpenWith.exe` | 10.0.26300.x | **10.0.26100.8117** |
-| `ShellHost.exe` | 10.0.26300.x | **10.0.26100.9278** |
-| `twinui.pcshell.dll` | 10.0.26300.x | **10.0.26100.9278** |
+| `explorer.exe` | 10.0.26100.8117 | 10.0.26100.8117 ✅ |
+| `ShellHost.exe` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
+| `twinui.pcshell.dll` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
+| `shell32.dll` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
+| `ntoskrnl.exe` | 10.0.26100.9457 | 10.0.26100.9457 ✅ |
 
-26100 and 26300 are different servicing branches. ReviOS built this image by taking a 26100 base and replacing/patching enough of it to report 26300 — but the **shell stack stayed on 26100**. The result is a build that claims features its binaries don't implement:
+DISM reports the image itself as `Version: 10.0.26300, ServicePack Build: 9457`. So this is an **enablement-style release**: the OS reports 26300 while its binaries stay on the 26100 servicing line, at UBR 9457. Version numbers like `26100.8117` are therefore normal here — ReviOS replaced nothing, and there is no malicious or accidental file mix.
 
-- **Explorer shows the old UI, no tabs** — tab support lives in the 26300 shell, which isn't present.
-- **`OpenWith.exe` / `ShellHost.exe` die at startup** (`0xC0000142`, DLL init failed) — they are compiled against components the newer OS now provides differently.
-- **Default-verb resolution is inconsistent** — an extension with valid handler data still may not launch, because the resolver that walks that data is the mismatched piece.
+What that also means: **a repair install from this same ISO would restore exactly the binaries you already have.** It is not a magic fix for the shell behaviour, and it would not add tabs if this media doesn't provide them.
 
-This cannot be fixed from the registry, and with Windows Update disabled there is no self-healing path. The binary mismatch is the fault; the associations are only its most visible symptom.
+### So what is actually broken
 
-### The fix
+With the media ruled out, the remaining fault is runtime state, not files:
 
-1. **In-place repair install (keeps apps and files).** Get Windows 11 **26H2 (26300)** media, mount the ISO, and run `setup.exe` from it inside Windows — choose **"Keep personal files and apps"**. This replaces the system binaries with matching 26300 versions. Expect the ReviOS tweaks/branding to be partly reverted (a repair install re-adds components ReviOS strips); Windows will behave closer to stock, with tabs and a working picker.
-2. **Clean install** with correct 26300 media if the repair fails — the same fallback as before.
-3. **Do not** hand-copy `explorer.exe` from another build. It is protected, and it depends on DLLs that would still be mismatched.
+- `ShellHost.exe` (the dialog host behind "Choose another app") exits with **`0xC0000142`** at DLL init, despite being the shipped binary.
+- `OpenWith.exe` starts and exits without creating a window.
+- Every shell package it depends on **is present**: `MicrosoftWindows.Client.CBS 1000.26100.360.0`, `Microsoft.Windows.Client.Core 1000.26100.133.0`, `Microsoft.UI.Xaml.CBS 9.2603.18001.0`, `ShellExperienceHost 10.0.26100.8115`, `StartMenuExperienceHost 10.0.26100.4768`. No packages are missing; none are provisioned offline, so they cannot be reinstalled from an image.
 
-Low-probability things worth trying first, because they are free:
+**Repair attempted 16 Nov 2026:** all five shell packages were re-registered (`Add-AppxPackage -DisableDevelopmentMode -Register …AppXManifest.xml`) — all reported OK. That is the standard fix for a shell whose registrations have gone stale, and it costs nothing to try.
 
-```cmd
-sfc /scannow
-DISM /Online /Cleanup-Image /RestoreHealth
-```
+If the picker still fails after a reboot, the honest options are:
 
-If the component store itself holds 26100 pieces, DISM will report success and change nothing — which is exactly what the earlier attempt saw.
+1. `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` — free, low odds.
+2. **Repair install from the ISO on `Z:`** — keeps files and apps, but as shown above expect the *same* shell versions afterwards. Worth doing only if you also want the ReviOS tweaks reverted.
+3. **Clean install from that same ISO**, then check whether the picker works *before* applying the ReviOS playbook. That is the only way to tell whether the media or the playbook is responsible. ReviOS Playbook 26.10 (`Revi-PB-26.10.apbx`) was applied to this machine; the archive is password-protected, so its changes could not be inspected.
 
 ## What does not fix it
 
