@@ -5,7 +5,7 @@
 
 | Script | Purpose | Status |
 |--------|---------|--------|
-| `audit-state.ps1` | **Read-only** snapshot of every fact the desktop docs claim: OS/build, board/BIOS/CPU, GPU + monitor driver, volumes, ARP inventory, taskbar pin order, Steam libraries, "looks installed but isn't" traps, recordings parked on C:. Supports `-OutFile`, `-Since <date>`. | Active — run this before editing any desktop doc |
+| `audit-state.ps1` | **Read-only** snapshot of every fact the desktop docs claim: OS/build, board/BIOS/CPU, RAM (SMBIOS SPD: size, type, rated **and** configured speed, part numbers), GPU + VRAM + monitor driver, live display modes, problem devices, volumes, ARP inventory, taskbar pin order, Steam libraries, "looks installed but isn't" traps, recordings parked on C:. Supports `-OutFile`, `-Since <date>`. | Active — run this before editing any desktop doc |
 | `update-system.ps1` | Refreshes winget sources, lists upgrades, then upgrades them **one package at a time** (a failure no longer aborts the run), with `Microsoft.PowerShell` filtered out (see Notes). Supports `-DryRun`; logs to `%LOCALAPPDATA%\DesktopMaintenance\logs`. | Active |
 | `cleanup-system.ps1` | Temp files, DISM component cleanup, Recycle Bin, DNS, Delivery Optimization. Supports `-DryRun`; reports staged-installer size without deleting it. | Active |
 | `join-videos.ps1` | Lossless FFmpeg concat of clips in a folder, ordered by filename. Resolves `ffmpeg` from PATH or `C:\Program Files\FFmpeg\bin`. | Active |

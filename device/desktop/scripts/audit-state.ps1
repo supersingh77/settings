@@ -39,6 +39,64 @@ function Try-Get([scriptblock]$sb) {
     try { & $sb } catch { $null } finally { $ErrorActionPreference = $prev }
 }
 
+# SMBIOS gives RAM SPD and core counts when WMI/CIM is blocked. The registry
+# blob starts with an 8-byte RawSMBIOSData header (version + length), then the
+# table: [type][length][handle] + formatted area + string set, ended by a double NUL.
+function Get-SmbiosTable {
+    $raw = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\mssmbios\Data' -Name SMBiosData -ErrorAction Stop).SMBiosData
+    if (-not $raw) { return $null }
+    $i = 8
+    $dimms = @()
+    $cores = 0; $threads = 0
+    while ($i -lt $raw.Length - 4) {
+        $type = $raw[$i]; $len = $raw[$i + 1]
+        if ($type -eq 127 -or $len -lt 4) { break }
+
+        $strs = @()
+        $k = $i + $len
+        while ($k -lt $raw.Length -and $raw[$k] -ne 0) {
+            $s = ''
+            while ($k -lt $raw.Length -and $raw[$k] -ne 0) { $s += [char]$raw[$k]; $k++ }
+            $strs += $s; $k++
+        }
+        $str = { param($ix) if ($ix -ge 1 -and $ix -le $strs.Count) { $strs[$ix - 1] } else { '' } }
+
+        if ($type -eq 4 -and $len -gt 0x26) {
+            $cores = $raw[$i + 0x23]
+            # Thread Count is a WORD at 0x25, but some AMI tables carry the
+            # characteristics word right after it - fall back to the low byte.
+            $threads = [int]$raw[$i + 0x25] -bor ([int]$raw[$i + 0x26] -shl 8)
+            if ($threads -gt 256) { $threads = $raw[$i + 0x25] }
+        }
+
+        if ($type -eq 17 -and $len -gt 0x1A) {
+            $sizeMb = [int]$raw[$i + 0x0C] -bor ([int]$raw[$i + 0x0D] -shl 8)
+            if ($sizeMb -eq 0x7FFF -and $len -ge 0x20) {
+                $sizeMb = [int]$raw[$i + 0x1C] -bor ([int]$raw[$i + 0x1D] -shl 8) -bor
+                          ([int]$raw[$i + 0x1E] -shl 16) -bor ([int]$raw[$i + 0x1F] -shl 24)
+            }
+            if ($sizeMb -gt 0) {
+                $tc = $raw[$i + 0x12]
+                $tn = switch ($tc) { 0x1A { 'DDR4' } 0x22 { 'DDR5' } 0x18 { 'DDR3' } default { "type-$tc" } }
+                $dimms += [pscustomobject]@{
+                    Locator      = & $str $raw[$i + 0x10]
+                    SizeMB       = $sizeMb
+                    Type         = $tn
+                    Rated        = [int]$raw[$i + 0x15] -bor ([int]$raw[$i + 0x16] -shl 8)
+                    Configured   = if ($len -gt 0x21) { [int]$raw[$i + 0x20] -bor ([int]$raw[$i + 0x21] -shl 8) } else { 0 }
+                    Manufacturer = & $str $raw[$i + 0x17]
+                    PartNumber   = & $str $raw[$i + 0x1A]
+                }
+            }
+        }
+
+        $j = $i + $len
+        while ($j -lt $raw.Length - 1 -and -not ($raw[$j] -eq 0 -and $raw[$j + 1] -eq 0)) { $j++ }
+        $i = $j + 2
+    }
+    [pscustomobject]@{ Cores = $cores; Threads = $threads; Dimms = $dimms }
+}
+
 # ---------------------------------------------------------------- OS --------
 Section 'OS'
 
@@ -62,7 +120,17 @@ if ($bios) {
 }
 $cpu = Try-Get { Get-ItemProperty 'HKLM:\HARDWARE\DESCRIPTION\System\CentralProcessor\0' }
 if ($cpu) { Out-Line "| CPU | $($cpu.ProcessorNameString.Trim()) @ $($cpu.'~MHz') MHz |" }
-Out-Line '| Cores / RAM / refresh | needs a non-sandboxed session (WMI blocked) |'
+
+$smb = Try-Get { Get-SmbiosTable }
+if ($smb) {
+    if ($smb.Cores) { Out-Line "| Cores / threads | $($smb.Cores)C / $($smb.Threads)T |" }
+    $totalMb = 0
+    foreach ($d in $smb.Dimms) {
+        $totalMb += $d.SizeMB
+        Out-Line "| DIMM | $($d.SizeMB) MB $($d.Type) | rated $($d.Rated) / configured $($d.Configured) MT/s | $($d.Manufacturer) | $($d.PartNumber.Trim()) |"
+    }
+    if ($totalMb) { Out-Line "| RAM total | $([math]::Round($totalMb / 1024, 1)) GB |" }
+}
 
 Section 'GPU / monitor'
 
@@ -72,6 +140,9 @@ $gpus = Try-Get {
         Where-Object DriverDesc
 }
 foreach ($g in $gpus) { Out-Line "| GPU | $($g.DriverDesc) - $($g.DriverVersion) ($($g.DriverDate)) |" }
+
+$vram = Try-Get { (Get-ItemProperty (Join-Path $cls '0000')).'HardwareInformation.qwMemorySize' }
+if ($vram) { Out-Line "| VRAM | $([math]::Round($vram / 1GB, 2)) GB (qwMemorySize; the 32-bit MemorySize field under-reports) |" }
 
 $monInf = Try-Get {
     Select-String -Path 'C:\Windows\INF\oem*.inf' -Pattern 'MSI MAG 255XF' -List -ErrorAction SilentlyContinue |
@@ -89,6 +160,49 @@ $displays = Try-Get {
     } | Where-Object { $_ } | Sort-Object -Unique
 }
 foreach ($d in $displays) { Out-Line "| Display | $d |" }
+
+Section 'Display modes'
+
+# EnumDisplaySettings reaches the live mode without WMI or admin rights.
+try {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public class Disp {
+  [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+  public struct DEVMODE {
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string dmDeviceName;
+    public short dmSpecVersion, dmDriverVersion, dmSize, dmDriverExtra;
+    public int dmFields;
+    public int dmPositionX, dmPositionY, dmDisplayOrientation, dmDisplayFixedOutput;
+    public short dmColor, dmDuplex, dmYResolution, dmTTOption, dmCollate;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string dmFormName;
+    public short dmLogPixels;
+    public int dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmDisplayFlags, dmDisplayFrequency;
+    public int dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
+  }
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)]
+  public static extern bool EnumDisplaySettings(string device, int modeNum, ref DEVMODE devMode);
+}
+'@ -ErrorAction Stop
+
+    foreach ($dev in @($null, '\\.\DISPLAY1', '\\.\DISPLAY2', '\\.\DISPLAY3')) {
+        $dm = New-Object Disp+DEVMODE
+        $dm.dmSize = [Runtime.InteropServices.Marshal]::SizeOf([type]'Disp+DEVMODE')
+        if ([Disp]::EnumDisplaySettings($dev, -1, [ref]$dm)) {
+            $lbl = if ($dev) { $dev } else { 'current' }
+            Out-Line "| $lbl | $($dm.dmPelsWidth)x$($dm.dmPelsHeight) @ $($dm.dmDisplayFrequency) Hz, $($dm.dmBitsPerPel) bpp |"
+        }
+    }
+}
+catch { Out-Line '| display modes | needs-review - EnumDisplaySettings unavailable |' }
+
+Section 'Problem devices'
+
+$pnp = Try-Get { & pnputil.exe /enum-devices /problem 2>&1 | Out-String }
+if ($pnp -match 'No devices were found') { Out-Line 'None.' }
+elseif ($pnp) { Out-Line $pnp.Trim() }
+else { Out-Line 'needs-review - pnputil unavailable' }
 
 # -------------------------------------------------------------- volumes -----
 Section 'Volumes'
