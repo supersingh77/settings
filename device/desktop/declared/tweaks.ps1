@@ -1,94 +1,91 @@
-# =============================================================================
-# tweaks.ps1 - converge the deliberate registry choices for this desktop.
-#
-# Only things that were changed on purpose, and only things that CAN be scripted.
-# File-association defaults (UserChoice) are hash-protected by Windows and are
-# deliberately not touched here - set those through Settings > Default apps.
-#
-# Idempotent: running twice changes nothing the second time.
-# Requires an elevated shell to actually write; -DryRun is read-only.
-#
-# Usage:
-#   pwsh device/desktop/declared/tweaks.ps1 -DryRun    # show what would change
-#   pwsh device/desktop/declared/tweaks.ps1            # apply (elevated)
-# =============================================================================
-
 [CmdletBinding()]
-param([switch]$DryRun)
+param(
+    [string]$Manifest = (Join-Path $PSScriptRoot 'associations.json'),
+    [switch]$DryRun
+)
 
 $ErrorActionPreference = 'Continue'
 $script:changes = 0
-$script:skipped = 0
 
 function Test-Admin {
     ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
         [Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-function Get-DefaultProgId([string]$ext) {
-    (Get-ItemProperty "Registry::HKEY_CLASSES_ROOT\$ext" -ErrorAction SilentlyContinue).'(default)'
+function Get-DefaultProgId {
+    param([string]$Extension)
+    (Get-ItemProperty "Registry::HKEY_CLASSES_ROOT\$Extension" -ErrorAction SilentlyContinue).'(default)'
 }
 
-function Get-ProgIdCommand([string]$progId) {
-    if (-not $progId) { return $null }
-    (Get-ItemProperty "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+function Get-ProgIdCommand {
+    param([string]$ProgId)
+    if (-not $ProgId) { return $null }
+    (Get-ItemProperty "Registry::HKEY_CLASSES_ROOT\$ProgId\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
 }
 
-function Set-ExtensionDefault([string]$ext, [string]$progId) {
-    $current = Get-DefaultProgId $ext
-    if ($current -eq $progId) { Write-Host "  ok    $ext already -> $progId"; $script:skipped++; return }
-
-    if (-not (Get-ProgIdCommand $progId)) {
-        Write-Host "  skip  $ext : target ProgId '$progId' has no open command" -ForegroundColor Yellow
-        $script:skipped++
+function Set-ExtensionDefault {
+    param([string]$Extension, [string]$ProgId)
+    $current = Get-DefaultProgId $Extension
+    if ($current -eq $ProgId) {
+        Write-Host "  ok    $Extension already -> $ProgId"
         return
     }
-    if ($DryRun) { Write-Host "  would $ext : '$current' -> '$progId'"; $script:changes++; return }
-
-    Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$ext" -Name '(default)' -Value $progId -Force
-    Write-Host "  set   $ext -> $progId" -ForegroundColor Green
+    if (-not (Get-ProgIdCommand $ProgId)) {
+        Write-Host "  skip  $Extension : target ProgId '$ProgId' has no open command" -ForegroundColor Yellow
+        return
+    }
+    if ($DryRun) {
+        Write-Host "  would $Extension : '$current' -> '$ProgId'"
+        $script:changes++
+        return
+    }
+    Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$Extension" -Name '(default)' -Value $ProgId -Force
+    Write-Host "  set   $Extension -> $ProgId" -ForegroundColor Green
     $script:changes++
 }
 
-# Expose the existing default handler in the "Open with" submenu. This is the
-# working bypass while the app picker is broken (ShellHost.exe 0xC0000142).
-function Add-OpenWithProgId([string]$ext) {
-    $progId = Get-DefaultProgId $ext
+function Add-OpenWithProgId {
+    param([string]$Extension)
+    $progId = Get-DefaultProgId $Extension
     if (-not $progId -or -not (Get-ProgIdCommand $progId)) { return }
-    $key = "Registry::HKEY_CLASSES_ROOT\$ext\OpenWithProgids"
+
+    $key = "Registry::HKEY_CLASSES_ROOT\$Extension\OpenWithProgids"
     $existing = @()
     if (Test-Path $key) { $existing = (Get-Item $key).GetValueNames() }
     if ($existing -contains $progId) { return }
 
-    if ($DryRun) { Write-Host "  would add '$progId' to $ext\OpenWithProgids"; $script:changes++; return }
+    if ($DryRun) {
+        Write-Host "  would add '$progId' to $Extension\OpenWithProgids"
+        $script:changes++
+        return
+    }
     if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
     New-ItemProperty -Path $key -Name $progId -Value '' -PropertyType String -Force | Out-Null
-    Write-Host "  add   $progId -> $ext\OpenWithProgids" -ForegroundColor Green
+    Write-Host "  add   $progId -> $Extension\OpenWithProgids" -ForegroundColor Green
     $script:changes++
 }
 
 $isAdmin = Test-Admin
-Write-Host "tweaks.ps1  mode=$(if($DryRun){'DRY RUN'}else{'APPLY'})  admin=$isAdmin`n" -ForegroundColor Cyan
+$plan = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 
-# --- 1. markdown: point at the ProgId that actually has a command ------------
-Write-Host '1. .md handler'
-$mdTarget = 'Markdown Document'
-if (Get-ProgIdCommand $mdTarget) { Set-ExtensionDefault '.md' $mdTarget }
-else { Write-Host "  skip  no command on '$mdTarget' (install a markdown app first)" -ForegroundColor Yellow }
+Write-Host "tweaks.ps1  mode=$(if ($DryRun) { 'DRY RUN' } else { 'APPLY' })  admin=$isAdmin  manifest=$Manifest`n" -ForegroundColor Cyan
 
-# --- 2. media types: surface the real default in "Open with" ----------------
-Write-Host "`n2. 'Open with' entries for media types"
-$mediaExts = @(
-    '.mp4', '.mkv', '.avi', '.mov', '.m4v', '.wmv', '.mpg', '.mpeg', '.ts', '.m2ts',
-    '.mp3', '.m4a', '.flac', '.wav', '.aac', '.ogg', '.opus', '.wma', '.ac3'
-)
-foreach ($ext in $mediaExts) { Add-OpenWithProgId $ext }
-Write-Host "  ($($mediaExts.Count) media types checked; $script:changes change(s) so far)" -ForegroundColor DarkGray
+Write-Host "1. $($plan.markdown.extension) handler"
+if (Get-ProgIdCommand $plan.markdown.targetProgId) {
+    Set-ExtensionDefault -Extension $plan.markdown.extension -ProgId $plan.markdown.targetProgId
+} else {
+    Write-Host "  skip  no command on '$($plan.markdown.targetProgId)'" -ForegroundColor Yellow
+}
 
-# --- 3. things that must be done by hand ------------------------------------
+Write-Host "`n2. 'Open with' entries"
+foreach ($extension in $plan.mediaExtensions) { Add-OpenWithProgId -Extension $extension }
+Write-Host "  ($($plan.mediaExtensions.Count) media types checked; $script:changes change(s) so far)" -ForegroundColor DarkGray
+
 Write-Host "`n3. not scriptable by design" -ForegroundColor DarkGray
 Write-Host '  - default apps (UserChoice): hash-protected; use Settings > Default apps' -ForegroundColor DarkGray
 Write-Host '  - OBS settings: see declared/obs.json' -ForegroundColor DarkGray
 
 Write-Host "`nsummary: $script:changes change(s)" + $(if ($DryRun) { ' (dry run - nothing written)' } else { '' })
-if (-not $DryRun -and -not $isAdmin) { Write-Host 'WARNING: not elevated - writes to HKCR will fail' -ForegroundColor Red }
+if (-not $DryRun -and -not $isAdmin) { Write-Host 'WARNING: not elevated - HKCR writes will fail' -ForegroundColor Red }
+if ($script:changes -gt 0 -and -not $DryRun) { exit 0 }
+exit 0

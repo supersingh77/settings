@@ -10,7 +10,8 @@ It is deliberately not a backup. Snapshots live in `device/desktop/backup/` (gen
 |---|---|---|
 | `winget-export.json` | 40 installed packages with pinned versions | `winget import -i winget-export.json` |
 | `obs.json` | OBS recording/audio settings that were deliberately chosen | manual, or `obs-websocket` (scripted in this repo's history) |
-| `tweaks.ps1` | registry changes made on purpose (file-association fixes) | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
+| `associations.json` | which handler each extension should fall back to, and which media types expose one in "Open with" | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
+| `tweaks.ps1` | the algorithm that walks `associations.json` — contains no lists of its own | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
 
 ## Verify against reality
 

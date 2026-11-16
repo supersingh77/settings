@@ -1,0 +1,34 @@
+{
+  "_note": "Registry intent for file associations, applied by tweaks.ps1. Data only - the script holds the algorithm.",
+  "_scope": "What CAN be scripted. Default-app choices (UserChoice) are hash-protected by Windows and must be set through Settings > Default apps.",
+
+  "markdown": {
+    "extension": ".md",
+    "targetProgId": "Markdown Document",
+    "_why": "HKCR\\.md originally pointed at a 'Markdown' ProgId whose shell\\open\\command was empty, so double-click did nothing. 'Markdown Document' resolves to GenOffice, which has a command."
+  },
+
+  "mediaExtensions": [
+    ".mp4",
+    ".mkv",
+    ".avi",
+    ".mov",
+    ".m4v",
+    ".wmv",
+    ".mpg",
+    ".mpeg",
+    ".ts",
+    ".m2ts",
+    ".mp3",
+    ".m4a",
+    ".flac",
+    ".wav",
+    ".aac",
+    ".ogg",
+    ".opus",
+    ".wma",
+    ".ac3"
+  ],
+
+  "_mediaWhy": "These types kept a UserChoiceLatest with a hash but no ProgId, which made Windows treat them as having no default and hand them to the dead app picker. With those entries removed, the shell falls back to the HKCR default handler; re-exposing that same handler in OpenWithProgids gives a working 'Open with' submenu while the picker stays broken."
+}
