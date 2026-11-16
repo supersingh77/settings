@@ -122,6 +122,8 @@ With the media ruled out, the remaining fault is runtime state, not files:
 
 **Repair attempted 16 Nov 2026:** all five shell packages were re-registered (`Add-AppxPackage -DisableDevelopmentMode -Register …AppXManifest.xml`) — all reported OK. That is the standard fix for a shell whose registrations have gone stale, and it costs nothing to try.
 
+**Result 17 Nov 2026, after a reboot: it did not help.** `.m4a` double-click still does nothing. Also confirmed afterwards that `.m4a` and `.md` still have **no `UserChoice` key at all** (`ProgId` empty, no hash) — so the Settings → Default apps route has *not* actually been exercised yet. Viewing that page is not the same as clicking **Set default**.
+
 If the picker still fails after a reboot, the honest options are:
 
 1. `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` — free, low odds.

@@ -44,6 +44,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. **1080p60, AMD AMF H.264 (CQP 23), records to `Z:\Recordings`**. No stream destination yet — see [obs-recording-setup.md](../../notes/obs-recording-setup.md) |
 | **ExitLag** | 5.23.3 | `C:\Program Files\ExitLag` | Route optimizer |
 | **GenOffice** | 0.13.18 | `C:\Program Files\GenOffice` | Office-suite shell; self-updater in `%LOCALAPPDATA%` |
+| **GameSir Connect** | 1.17.4 | `C:\Program Files (x86)\GameSir Connect` | Controller firmware + remapping; installed 17 Nov to update the pad, which fixed the phantom Task View input |
 | **ActivityWatch** | 0.14.3 | `C:\Program Files (x86)\ActivityWatch` | Time tracker; auto-starts from the user Startup folder |
 | **Riot Vanguard** | 1.19.2-23 | `C:\Program Files\Riot Vanguard` | VALORANT anti-cheat; kernel driver, auto-starts |
 | **Microsoft Visual C++ 2015–2022** | 14.52.37029 | x64 + x86 | Runtime dependency; older 2010/2012/2013 runtimes also present |

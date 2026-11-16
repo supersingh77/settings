@@ -43,6 +43,17 @@ Result of the test recording: `cqp: 23, preset: quality, 1920x1080`, written to 
 
 With the gain applied the same take would land near **−17.5 LUFS with peaks around −5.5 dBFS**, which is the target range for voice on YouTube. If speech now sounds loud or breathy, drop Gain to +10 dB; if it still feels quiet, +16 dB.
 
+### Second take, after the gain (17 Nov 2026, 89.9 s)
+
+| Measure | Before gain | After gain |
+|---|---|---|
+| Integrated loudness | −31.5 LUFS | **−19.8 LUFS** |
+| True peak | −19.5 dBFS | **−4.0 dBFS** |
+| Mean / max (volumedetect) | −34.4 / −19.5 dB | −20.7 / −4.0 dB |
+| Video | 1080p60, ~2.3 Mbps | 1080p60, 1080p60 intact, 23 MB for 90 s |
+
+The gain did what the arithmetic predicted, slightly conservatively — −19.8 LUFS sits at the quiet end of the −16 to −20 target, so YouTube will normalise it up ~6 dB. That is fine. If you want it hotter, +2 dB more on the Gain filter lands near −17.8; no other change needed.
+
 ## Streaming (not yet configured)
 
 No service is set, so nothing streams until you add a key. Bitrate guidance with a 40 Mbps upload:

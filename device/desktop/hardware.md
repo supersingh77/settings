@@ -95,7 +95,7 @@ For streaming, capture game audio from the Focusrite/Razer endpoint and mic sepa
 | Headset | Razer Barracuda X 2.4 |
 | Wheel + pedals | PXN V10 Pro (`VID_36E6&PID_400B`) — PXN SimRacing reads base/pedal/keymap data |
 | Shifter | A7 Gear Shift (`VID_11FF&PID_B772`) — separate HID game controller; bind per game |
-| Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
+| Controller | **GameSir** pad on a third-party wireless receiver (`VID_3537&PID_1093`). Enumerates as an Xbox 360 controller through the inbox `xusb22.inf` (XInput) — no vendor driver involved. GameSir Connect 1.17.4 is installed for firmware/remapping. Receiver firmware updated 2026-11-17 |
 | Phone (webcam) | Retired — the phone/DroidCam route was replaced by the Kreo Owl Lite |
 | Webcam | Kreo Owl Lite (`USB\VID_0C45&PID_6300&MI_00`) — USB Video Class on inbox `usbvideo.inf`, status Started. Video works; its mic is the default voice input |
 
@@ -109,11 +109,11 @@ When **MPRT** is enabled in the monitor OSD, the backlight is strobed and the mo
 - If you want MPRT on, use the monitor's OSD joystick.
 - **No DDC/CI toggle:** the MAG 255XF capability string exposes no MPRT VCP code, so Twinkle Tray and generic DDC/CI tools cannot switch it. No documented MSI software control exists for this model.
 
-### Xbox 360 receiver opens Task View
+### Xbox 360 receiver opens Task View — **resolved 2026-11-17**
 
-When the controller is **powered off**, its third-party receiver can emit phantom `Win+Tab` / Task View input. It appears as Task View opening when right-clicking the desktop or clicking the taskbar. **Powering the controller on stops it immediately** (verified 2026-10-23).
+Historical: with the controller **powered off**, the third-party wireless receiver emitted phantom `Win+Tab` / Task View input, which looked like Task View opening when right-clicking the desktop, the taskbar or an icon. Powering the controller on stopped it immediately (verified 2026-10-23).
 
-- Unplug the receiver when not gaming (cleanest), or keep the controller powered on.
-- Replace the third-party dongle with a genuine receiver or use a wired controller.
+**Fixed 17 Nov 2026** by updating the controller/receiver firmware and installing **GameSir Connect 1.17.4**. The dongle is still the same one — this was a firmware defect, not a Windows setting. If the behaviour ever returns, suspect the firmware before the OS:
 
-No Windows setting or driver was at fault.
+- Re-check the pad's firmware in GameSir Connect
+- Unplug the receiver when not gaming, or keep the controller powered on

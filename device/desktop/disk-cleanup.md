@@ -23,7 +23,7 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 | `C:\Program Files` | 5.9 GB | |
 | `C:\Program Files (x86)` | 5.9 GB | |
 | `%LOCALAPPDATA%\Google` | 3.1 GB | Chrome profile + cache |
-| `C:\Users\amar\Videos` | 1.9 GB | **Historical** — these are OBS recordings made before 16 Nov 2026. OBS's Recording Path now points at `Z:\Recordings`, so the folder will not refill |
+| `C:\Users\amar\Videos` | 0 GB | **Cleaned 17 Nov 2026** — the 1.87 GB of OBS recordings moved to `Z:\Recordings`. OBS has written there directly since 16 Nov. |
 
 ## Safe Recurring Cleanup
 
