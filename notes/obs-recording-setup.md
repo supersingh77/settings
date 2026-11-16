@@ -28,9 +28,20 @@ Result of the test recording: `cqp: 23, preset: quality, 1920x1080`, written to 
 
 **Applied automatically on 16 Nov 2026** (OBS was closed, changes written into its config):
 
-- `Mic/Aux` pinned to the **Owl Lite** (`{0.0.1…7a0ffdb4…}`) with a **Noise Suppression / RNNoise** filter, `suppress_level: -30`.
+- `Mic/Aux` pinned to the **Owl Lite** (`{0.0.1…7a0ffdb4…}`) with a filter chain, in this order: **Noise Suppression (RNNoise, −30)** → **Gain (+14 dB)** → **Limiter (−2 dB)**. Noise first so the gain amplifies clean voice, limiter last so a shout cannot clip.
 - `Desktop Audio` pinned to **Speakers (Razer Barracuda X 2.4)** (`{0.0.0…143661e3…}`) instead of "follow the Windows default", so it cannot drift onto the Bluetooth speaker (44.1 kHz, 100–300 ms latency) when that connects.
 - The duplicate Owl Lite source was deleted; the Razer and Digitek capture sources remain in the scene, **muted**, for A/B testing.
+
+### First real recording, measured (16 Nov 2026, 21.6 s)
+
+| Aspect | Measured | Verdict |
+|---|---|---|
+| Video | 1920×1080 @ 60 fps, H.264 High, yuv420p, ~2.3 Mbps, 6.3 MB | exactly as configured |
+| Audio format | AAC 48 kHz stereo, 192 kbps | correct |
+| Loudness | **−31.5 LUFS integrated**, true peak **−19.5 dBFS** | **far too quiet** — that's what the +14 dB gain fixes |
+| Defects | no black frames, no clipped samples | clean |
+
+With the gain applied the same take would land near **−17.5 LUFS with peaks around −5.5 dBFS**, which is the target range for voice on YouTube. If speech now sounds loud or breathy, drop Gain to +10 dB; if it still feels quiet, +16 dB.
 
 ## Streaming (not yet configured)
 
@@ -112,7 +123,8 @@ For recording, pin Desktop Audio to whatever you actually monitor on — the Raz
 ### Two traps worth remembering
 
 1. **Global audio devices are stored in the scene collection, not the profile.** `AuxAudioDevice1` / `DesktopAudioDevice1` live in `%APPDATA%\obs-studio\basic\scenes\Untitled.json`. Keys in `basic.ini` (`AuxDevice1`, `Mic/Auxiliary Device 1`, …) are ignored — all four were tested and dropped.
-2. **Hand-written filter entries are rejected; the API works.** Adding a `filters` array to `AuxAudioDevice1` is discarded when OBS loads — the same object created through `obs-websocket`'s `CreateSourceFilter` sticks fine. The catch: **OBS only writes the scene collection on a clean exit.** Every automated session that ended in `Stop-Process` lost the change; the one that closed via `taskkill /IM obs64.exe` (WM_CLOSE, with `ConfirmOnExit=false` and a real window, not `--minimize-to-tray`) saved it. If a config change "doesn't stick", suspect the shutdown, not the write.
+2. **Hand-written filter entries are rejected; a copied template works.** An invented `filters` object is discarded when OBS loads — but **copying a filter that OBS itself wrote** (same shape: `prev_ver`, `mixers: 255`, `monitoring_enabled`, `versioned_id` mapping to the newer kind) and only changing `name`/`uuid`/`id`/`settings` is accepted. Verify with `GetSourceFilterList` over `obs-websocket` rather than assuming.
+3. **OBS only writes the scene collection on a clean exit.** Every automated session that ended in `Stop-Process` lost the change; the ones closed with `taskkill /IM obs64.exe` (WM_CLOSE, `ConfirmOnExit=false`, a real window rather than `--minimize-to-tray`) saved it. If a config change "doesn't stick", suspect the shutdown, not the write.
 
 Target peaks around **−12 to −6 dB**, mean voice around −18 dB. Watch the meter once, then trust it.
 
@@ -134,7 +146,7 @@ OBS's config is **not** in this repo (`%APPDATA%\obs-studio`), so these are the 
 | Settings → Video | Base **1920×1080**, Output **1920×1080**, **60 fps**, NV12 / Rec.709 / Partial |
 | Settings → Output | **Simple** mode, `VBitrate 6000`, **Recording Quality = High Quality**, encoder **AMD HW H.264** for both |
 | Settings → Output → Recording | Path **`Z:\Recordings`**, format **hybrid MP4** |
-| Settings → Audio | Mic/Aux = **Owl Lite** (+ Noise Suppression / RNNoise), Desktop Audio = **Razer Barracuda X** |
+| Settings → Audio | Mic/Aux = **Owl Lite**, filters: Noise Suppression (RNNoise) → Gain **+14 dB** → Limiter **−2 dB**; Desktop Audio = **Razer Barracuda X** |
 | Scene | Display Capture (MAG 255XF) + Video Capture Device (Owl Lite) |
 
 ## Re-verifying later
