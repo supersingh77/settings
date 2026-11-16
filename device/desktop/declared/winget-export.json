@@ -1,0 +1,180 @@
+{
+	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
+	"CreationDate" : "2026-11-17T01:31:17.323-00:00",
+	"Sources" : 
+	[
+		{
+			"Packages" : 
+			[
+				{
+					"PackageIdentifier" : "7zip.7zip",
+					"Version" : "26.06"
+				},
+				{
+					"PackageIdentifier" : "FocusriteAudioEngineeringLtd.FocusriteControl2",
+					"Version" : "1.1210.0.0"
+				},
+				{
+					"PackageIdentifier" : "Git.Git",
+					"Version" : "2.56.0.4"
+				},
+				{
+					"PackageIdentifier" : "REALiX.HWiNFO",
+					"Version" : "8.54"
+				},
+				{
+					"PackageIdentifier" : "Daum.PotPlayer",
+					"Version" : "26.10.21.0"
+				},
+				{
+					"PackageIdentifier" : "VideoLAN.VLC",
+					"Version" : "3.0.24"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2010.x64",
+					"Version" : "10.0.40219"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.PowerShell",
+					"Version" : "7.6.10.0"
+				},
+				{
+					"PackageIdentifier" : "GitHub.cli",
+					"Version" : "2.104.0"
+				},
+				{
+					"PackageIdentifier" : "OBSProject.OBSStudio",
+					"Version" : "33.0.1"
+				},
+				{
+					"PackageIdentifier" : "Valve.Steam",
+					"Version" : "2.10.91.91"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2013.x64",
+					"Version" : "12.0.40664.0"
+				},
+				{
+					"PackageIdentifier" : "Python.Launcher",
+					"Version" : "3.15.2"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2012.x86",
+					"Version" : "11.0.61030.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2013.x86",
+					"Version" : "12.0.40664.0"
+				},
+				{
+					"PackageIdentifier" : "Famatech.RadminVPN",
+					"Version" : "2.1.4952.2"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2010.x86",
+					"Version" : "10.0.40219"
+				},
+				{
+					"PackageIdentifier" : "ActivityWatch.ActivityWatch",
+					"Version" : "0.14.3"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2015+.x86",
+					"Version" : "14.52.37029.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2015+.x64",
+					"Version" : "14.52.37029.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2012.x64",
+					"Version" : "11.0.61030.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.DotNet.DesktopRuntime.8",
+					"Version" : "8.0.34"
+				},
+				{
+					"PackageIdentifier" : "DeepSeek.DeepSeekHarnessDesktop",
+					"Version" : "0.2.2-rc.3"
+				},
+				{
+					"PackageIdentifier" : "xanderfrangos.twinkletray",
+					"Version" : "1.17.2"
+				},
+				{
+					"PackageIdentifier" : "Discord.Discord",
+					"Version" : "1.0.9265"
+				},
+				{
+					"PackageIdentifier" : "T3Tools.T3Code",
+					"Version" : "0.1.9"
+				},
+				{
+					"PackageIdentifier" : "Roblox.Roblox",
+					"Version" : "Unknown"
+				},
+				{
+					"PackageIdentifier" : "LocalSend.LocalSend",
+					"Version" : "1.18.2"
+				},
+				{
+					"PackageIdentifier" : "Python.Python.3.14",
+					"Version" : "3.14.10"
+				},
+				{
+					"PackageIdentifier" : "FilesCommunity.Files",
+					"Version" : "4.3.0.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.AppInstaller",
+					"Version" : "1.29.380.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.DotNet.Native.Runtime",
+					"Version" : "2.2.28604.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.UI.Xaml.2.8",
+					"Version" : "8.2511.26001.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCLibs.Desktop.14",
+					"Version" : "14.0.33728.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCLibs.14",
+					"Version" : "14.0.33519.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.WindowsAppRuntime.1.8",
+					"Version" : "> 1.8.10"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.WindowsAppRuntime.2",
+					"Version" : "2.6.5.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.WindowsTerminal",
+					"Version" : "1.25.3131.0"
+				},
+				{
+					"PackageIdentifier" : "OpenAI.ChatGPT",
+					"Version" : "26.1111.2228.0"
+				},
+				{
+					"PackageIdentifier" : "Notion.Notion",
+					"Version" : "7.44.0.0"
+				}
+			],
+			"SourceDetails" : 
+			{
+				"Argument" : "https://cdn.winget.microsoft.com/cache",
+				"Identifier" : "Microsoft.Winget.Source_8wekyb3d8bbwe",
+				"Name" : "winget",
+				"Type" : "Microsoft.PreIndexed.Package"
+			}
+		}
+	],
+	"WinGetVersion" : "1.29.380"
+}
