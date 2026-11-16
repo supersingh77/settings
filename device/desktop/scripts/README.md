@@ -12,7 +12,7 @@
 | `mic-check.ps1` | Records a few seconds from each microphone and reports mean/peak dB with a verdict. Catches the two failures that silently ruin recordings: a muted/sleeping device (digital silence) and one that is alive but far too quiet. Read-only, no admin. | Active — run before trusting any mic |
 | `voice-compare.ps1` | Objective A/B of voice recordings: noise floor, voice level, SNR, integrated loudness, headroom and 3-band spectral balance, with a verdict per file. Needs a 5 s silent lead-in per recording. Read-only. | Active — use to pick a microphone |
 | `join-videos.ps1` | Lossless FFmpeg concat of clips in one folder, ordered by filename (chronological for OBS/phone timestamps). `-Folder` required; `-Output` defaults to `joined.mp4`; `-Extensions` overridable. All clips must share codec/resolution/fps/audio — otherwise it fails and you want the re-encode fallback in [`notes/ffmpeg-video-workflow.md`](../../../notes/ffmpeg-video-workflow.md). Supports `-DryRun`. | Active |
-| `remux-audio-back.ps1` | Puts a cleaned/noise-reduced audio file back into the original video with `-c:v copy`, then proves the video packets are bit-identical via MD5. Transcodes audio to AAC only when the codec is not MP4-compatible. | Active |
+| `remux-audio-back.ps1` | Puts a cleaned/noise-reduced audio file back into the original video with `-c:v copy`, then proves the video packets are bit-identical via MD5. `-Video` and `-Audio` required; `-Out` defaults to `"<name> (cleaned).mp4"` next to the source; `-Bitrate` defaults to `192k`. Audio is copied when the codec is MP4-friendly (`aac`, `mp3`, `ac3`, `eac3`, `alac`) and transcoded to AAC otherwise (`wav`, `flac`). Supports `-DryRun`. | Active |
 
 ## Reading `mic-check.ps1`
 
