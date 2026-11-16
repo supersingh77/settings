@@ -1,13 +1,15 @@
 # PC Hardware Documentation
 
-> Updated: 23 Oct 2026 — ReviOS 26H2 clean install; specs, drivers and volumes verified live (CIM/WMI + `Get-Volume`).
-> Drive letters changed after the rebuild: old **V:** is now **E:**; old **Z:** is now **D:**.
+> Updated: 16 Nov 2026 — volumes, drives and driver versions re-verified live (registry `Enum`/`Class` + `DriveInfo`).
+> CPU/RAM/refresh/SMART figures are from the 23 Oct 2026 pass: WMI/CIM is blocked inside agent sessions, so they were **not** re-checked.
+> Drive letters did **not** change in the rebuild: the volumes are still **V:** (games) and **Z:** (archive). There is no `D:` or `E:` on this machine — earlier revisions of these docs claimed otherwise and were wrong.
 
 ## System Overview
 
 | Component | Detail |
 |-----------|--------|
 | **OS** | Microsoft Windows 11 Pro 26H2 — build **26300.9457** (ReviOS) |
+| **OS (registry caveat)** | `HKLM\…\CurrentVersion` → **ProductName = "Windows 10 Pro"**, DisplayVersion 26H2, UBR 9457. ReviOS left `ProductName` stale; trust `DisplayVersion` + `CurrentBuild.UBR`, never `ProductName` |
 | **Form Factor** | Desktop — custom build, ASRock B450M-HDV R4.0 |
 | **BIOS** | American Megatrends P10.60 (2026-04-17) |
 
@@ -45,15 +47,18 @@
 
 ## Storage
 
+Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
+
 | Drive | Label | Type | Capacity | Free | Purpose |
 |-------|-------|------|----------|------|---------|
-| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **98.8 GB** | OS + core apps |
-| **E:** | Vacuum Drive | NVMe — XPG GAMMIX S11 Pro | 350 GB | 137.6 GB | Games/streaming |
-| **D:** | Mass Storage | HDD — Seagate ST1000DM010 | 931.5 GB | 488.4 GB | Recordings/archive |
+| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **66.5 GB** | OS + core apps |
+| **V:** | Vacuum Drive | NVMe — XPG GAMMIX S11 Pro | 350.0 GB | 76.4 GB | Games/streaming |
+| **Z:** | Mass Storage | HDD — Seagate ST1000DM010 | 931.5 GB | 481.1 GB | Recordings/archive |
 
-- C: is no longer space-constrained; 98.8 GB free after the 23 Oct cleanup.
-- Steam libraries survived on E: (6 game folders) and D: (2 game folders); Steam's config did not, so re-add both on first launch.
-- Both disks report Healthy.
+- C: is at **66.5 GB free**, not the 98.8 GB quoted on 23 Oct. The 98.8 figure never reconciled against used space (an 11 GB pagefile alone plus the app set put it far lower) — treat this table as the reference.
+- Growth is ordinary app install (Chrome/Discord/Python/.NET/obs) plus **1.87 GB of Nov 12–14 recordings sitting in `C:\Users\amar\Videos`**, which breaks the "recordings → Z:" rule.
+- Steam: **`V:` is registered** in `libraryfolders.vdf` with 6 apps. **`Z:` is not registered** despite holding Celeste + Hollow Knight — add it in Steam → Settings → Storage.
+- "Both disks report Healthy" is from the 23 Oct SMART check; not re-verifiable from an agent session.
 
 ## Network
 
