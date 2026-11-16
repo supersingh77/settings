@@ -166,6 +166,22 @@ Same defect exists in places nobody uses — `SystemFileAssociations\.3ds|.3mf|.
 
 **Still true:** `.md` resolves correctly on paper (`HKCR\.md` → `Markdown Document` → shell default `open` → GenOffice command present) yet does not open. There is nothing left to fix in its data.
 
+### The handler Windows reset to cannot exist here
+
+`AppXqj98qxeaynz6dv4459ayz6bnqxbyaqcs` — the ProgId the reset wrote for every media type — is a **third-party package-family hash**, not a Microsoft Store one (Store packages end in `8wekyb3d8bbwe`). It is:
+
+- **not installed** for any user
+- **not provisioned** offline (only `Microsoft.WebMediaExtensions` is)
+- not obtainable from the Store, because it isn't a Store identity
+
+So installing Media Player or Windows Media Player would not help — the hash would still not match. The reset pointed every media type at a handler that has never existed on this image.
+
+### What the repair attempt cost, and the honest position
+
+Deleting `FileExts\<ext>` to clear the dead `UserChoice` also deleted `OpenWithList` — the MRU the "Open with ▸" submenu is built from. That made "Open with" empty too, so the workaround regressed along with the bug. `OpenWithList` was restored (`a=PotPlayerMini64.exe` / `a=GenOffice.exe`, `MRUList=a`; backup: `%LOCALAPPDATA%\DesktopMaintenance\FileExts-before-openwith-restore-2026-11-17.reg`).
+
+**Position after all of this:** the association subsystem on this image cannot be repaired from the registry. Every path has been tried and each one returns the same outcome — valid data, no launch. The remaining options are a clean install from `Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso` **without** ReviOS Playbook 26.10 (to establish whether the media or the playbook is at fault), or accepting `File → Open` inside each application.
+
 ## What does not fix it
 
 - Re-registering the CBS packages as the current user — tried, no change to the picker.
