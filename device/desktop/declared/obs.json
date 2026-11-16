@@ -1,0 +1,68 @@
+{
+  "_note": "Desired OBS state. Settings only - no stream key, no tokens. Secrets stay out of this repo.",
+  "_applied": "2026-11-16, via obs-websocket + direct scene-collection edits; re-apply by hand or with a websocket script",
+  "_why": "Recording for YouTube is quality-bound; streaming is bandwidth-bound. They were collapsed into one 6000 kbps software-encoded 720p30 recording before this.",
+
+  "video": {
+    "baseWidth": 1920,
+    "baseHeight": 1080,
+    "outputWidth": 1920,
+    "outputHeight": 1080,
+    "fps": 60,
+    "scaleType": "lanczos",
+    "colorFormat": "NV12",
+    "colorSpace": "709",
+    "colorRange": "Partial"
+  },
+
+  "output": {
+    "mode": "Simple",
+    "streamEncoder": "amd",
+    "recEncoder": "amd",
+    "recQuality": "HighQuality",
+    "videoBitrateKbps": 6000,
+    "audioBitrateKbps": 160,
+    "recordFormat": "hybrid_mp4",
+    "recordPath": "Z:\\Recordings",
+    "_encoders": "amd = AMD HW H.264. The accepted tokens are 'amd' and 'HighQuality'; 'h264_texture_amf' and 'HQ' are silently ignored and fall back to x264."
+  },
+
+  "audio": {
+    "sampleRate": 48000,
+    "channels": "Stereo",
+    "mic": {
+      "name": "Microphone (Owl Lite Audio)",
+      "deviceId": "{0.0.1.00000000}.{7a0ffdb4-5777-46e0-9363-5818b6bb99e7}",
+      "why": "Wired and always on. The Barracuda X mic auto-sleeps when idle and silently records -85 dB of nothing.",
+      "filters": [
+        { "name": "Noise Suppression", "kind": "noise_suppress_filter_v2", "settings": { "method": "rnnoise", "suppress_level": -30 } },
+        { "name": "Gain", "kind": "gain_filter", "settings": { "db": 14.0 } },
+        { "name": "Limiter", "kind": "limiter_filter", "settings": { "limit": -2.0, "release": 60 } }
+      ],
+      "_filterOrder": "Noise first so gain amplifies clean voice; limiter last so a shout cannot clip. Measured -31.5 LUFS before gain, ~-17.5 after."
+    },
+    "desktopAudio": {
+      "name": "Speakers (Razer Barracuda X 2.4)",
+      "deviceId": "{0.0.0.00000000}.{143661e3-fe0b-45dd-af34-e1b086cba4de}",
+      "why": "Pinned instead of 'default', which followed Windows onto the Bluetooth speaker at 44.1 kHz with 100-300 ms latency."
+    }
+  },
+
+  "scene": {
+    "sources": [
+      { "name": "Display Capture", "kind": "monitor_capture", "target": "MAG 255XF" },
+      { "name": "Video Capture Device", "kind": "dshow_input", "target": "Owl Lite Camera" }
+    ],
+    "_oneVoiceSourceOnly": "There must be exactly one live microphone. The Owl Lite was once captured twice (own source + global Mic/Aux), which comb-filters it. Razer and Digitek capture sources stay muted for A/B."
+  },
+
+  "streaming": {
+    "configured": false,
+    "bitrateGuidance": {
+      "twitch": { "max": 6000, "note": "hard ceiling for non-partners; 720p60 looks sharper than 1080p60 at this rate" },
+      "youtube": { "max": 9000, "note": "8000-9000 for 1080p60" },
+      "kick": { "max": 8000, "note": "1080p60 at ~8000" }
+    },
+    "_uplink": "40 Mbps Airtel FTTH. 6000 kbps uses ~15% of it."
+  }
+}

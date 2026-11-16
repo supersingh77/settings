@@ -26,6 +26,7 @@
 | [Disk Cleanup](disk-cleanup.md) | Drive map, measured consumers, recurring checklist |
 | [Audit Playbook](audit-playbook.md) | Commands to verify pins/apps/drivers/Steam live |
 | [Scripts](scripts/README.md) | Maintenance, video tools, `audit-state.ps1` |
+| [Declared state](declared/README.md) | Rebuildable intent: package manifest, OBS settings, registry tweaks |
 
 ## Setup Rules
 
