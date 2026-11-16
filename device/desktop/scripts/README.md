@@ -28,6 +28,18 @@ Target for voice: mean around **−18 dB**, peaks **−12 to −6 dB**. Digital 
 
 **Known false negative:** a device can read −91 dB on one pass and −40 dB on the next (still opening, or held by another app). Two passes, or one while speaking, before writing a mic off.
 
+## Reading `voice-compare.ps1`
+
+| Column | Meaning |
+|---|---|
+| `SnrDb` | voice minus noise floor: **30+ clean**, 20–30 usable, <20 hissy |
+| `NoiseDb` | room tone during the quiet opening: −60 good, −45 is a noisy room |
+| `Lufs` | integrated loudness; aim −16 to −20. Much lower means input gain is too low |
+| `BodyDb` / `MidDb` / `HighDb` | mean level per band. Body ≫ Mid = boomy, Mid ≫ Body = thin, High near Mid = bright and clear (harsh once it exceeds Mid) |
+| `Verdict` | flags hiss, clipping, boomy, thin, too quiet, and a missing silent lead-in |
+
+It needs the **test pattern** — 5 s of silence, then speech at normal volume — otherwise SNR is meaningless, and the verdict says `no silent lead-in - pattern not followed` rather than pretending.
+
 ## User Aliases (PowerShell 7)
 
 Defined in `C:\Users\amar\Documents\PowerShell\profile.ps1` — **current user only**, no machine-wide PATH changes:

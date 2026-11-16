@@ -1,135 +1,155 @@
-# =============================================================================
-# voice-compare.ps1 - objective A/B of voice recordings, for picking a mic.
-#
-# Feed it one or more audio files recorded with the SAME script and the SAME
-# speaking distance. It reports the numbers that actually separate one mic from
-# another: noise floor, voice level, signal-to-noise, loudness, headroom and
-# where the energy sits in the spectrum.
-#
-# Expected test pattern per file (speak normally, don't whisper):
-#     0-5 s   silence, sit still          -> noise floor
-#     5-20 s  talk at normal volume       -> voice level, spectrum
-# A few seconds of silence at the start is the whole trick: it turns "sounds
-# noisy" into a number.
-#
-# Read-only. Usage:
-#   pwsh device/desktop/scripts/voice-compare.ps1 -Path 'Z:\Recordings'
-#   pwsh device/desktop/scripts/voice-compare.ps1 -Path 'Z:\Recordings\mic-test.m4a'
-# =============================================================================
-
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$Path,
     [double]$NoiseSeconds = 5,
     [double]$VoiceStart = 5,
-    [double]$VoiceSeconds = 12
+    [double]$VoiceSeconds = 12,
+    [string[]]$AudioExtensions = @('.wav', '.m4a', '.mp3', '.flac', '.mp4', '.mkv', '.opus')
 )
 
 $ErrorActionPreference = 'Continue'
 
-$ffmpeg = (Get-Command ffmpeg.exe -ErrorAction SilentlyContinue).Source
-if (-not $ffmpeg) { $ffmpeg = 'C:\Program Files\FFmpeg\bin\ffmpeg.exe' }
-if (-not (Test-Path $ffmpeg)) { Write-Error "ffmpeg not found"; exit 1 }
-
-$files = if (Test-Path $Path -PathType Container) {
-    Get-ChildItem $Path -File | Where-Object { $_.Extension -in '.wav', '.m4a', '.mp3', '.flac', '.mp4', '.mkv', '.opus' }
-} else {
-    Get-Item $Path
+function Get-ToolPath {
+    param([string]$Executable)
+    $onPath = (Get-Command $Executable -ErrorAction SilentlyContinue).Source
+    if ($onPath) { return $onPath }
+    $machineWide = Join-Path 'C:\Program Files\FFmpeg\bin' $Executable
+    if (Test-Path -LiteralPath $machineWide) { return $machineWide }
+    return $null
 }
-if (-not $files) { Write-Error "No audio files found at $Path"; exit 1 }
 
-# $inputArgs are ffmpeg options (-ss/-t); $filter is the audio filter chain.
-function Measure-Levels {
-    param([string]$File, [string[]]$InputArgs = @(), [string]$Filter = 'anull')
-    $r = & $ffmpeg -hide_banner -v info -i $File @InputArgs -af "$Filter,volumedetect" -f null NUL 2>&1
-    $mean = $r | Select-String 'mean_volume:\s*(-?[\d.]+|-inf) dB' | Select-Object -First 1
-    $peak = $r | Select-String 'max_volume:\s*(-?[\d.]+|-inf) dB' | Select-Object -First 1
+function Get-AudioFiles {
+    param([string]$Target, [string[]]$Extensions)
+    if (Test-Path -LiteralPath $Target -PathType Container) {
+        return @(Get-ChildItem -LiteralPath $Target -File | Where-Object { $_.Extension -in $Extensions })
+    }
+    return @(Get-Item -LiteralPath $Target)
+}
+
+function Get-AudioStreamInfo {
+    param([string]$FFprobe, [string]$File)
+    $json = & $FFprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate,channels -show_entries format=duration -of json $File 2>$null | Out-String | ConvertFrom-Json
+    if (-not $json.streams) { return $null }
     [pscustomobject]@{
-        Mean = if ($mean) { $v = $mean.Matches[0].Groups[1].Value; if ($v -eq '-inf') { -100 } else { [double]$v } } else { $null }
-        Peak = if ($peak) { $v = $peak.Matches[0].Groups[1].Value; if ($v -eq '-inf') { -100 } else { [double]$v } } else { $null }
+        Codec = $json.streams[0].codec_name
+        SampleRate = $json.streams[0].sample_rate
+        Channels = $json.streams[0].channels
+        Duration = [double]$json.format.duration
+    }
+}
+
+function ConvertTo-Decibel {
+    param($Match, [double]$Floor = -100)
+    if (-not $Match) { return $null }
+    $value = $Match.Matches[0].Groups[1].Value
+    if ($value -eq '-inf') { return $Floor }
+    [double]$value
+}
+
+function Measure-Levels {
+    param([string]$FFmpeg, [string]$File, [string[]]$InputArgs = @(), [string]$Filter = 'anull')
+    $output = & $FFmpeg -hide_banner -v info -i $File @InputArgs -af "$Filter,volumedetect" -f null NUL 2>&1
+    [pscustomobject]@{
+        Mean = ConvertTo-Decibel ($output | Select-String 'mean_volume:\s*(-?[\d.]+|-inf) dB' | Select-Object -First 1)
+        Peak = ConvertTo-Decibel ($output | Select-String 'max_volume:\s*(-?[\d.]+|-inf) dB' | Select-Object -First 1)
     }
 }
 
 function Measure-Loudness {
-    param([string]$File)
-    $r = & $ffmpeg -hide_banner -v info -i $File -af 'ebur128=peak=true' -f null NUL 2>&1
-    $i = $r | Select-String 'I:\s*(-?[\d.]+|-inf) LUFS' | Select-Object -Last 1
-    $l = $r | Select-String 'LRA:\s*(-?[\d.]+) LU' | Select-Object -Last 1
+    param([string]$FFmpeg, [string]$File)
+    $output = & $FFmpeg -hide_banner -v info -i $File -af 'ebur128=peak=true' -f null NUL 2>&1
+    $integrated = $output | Select-String 'I:\s*(-?[\d.]+|-inf) LUFS' | Select-Object -Last 1
+    $range = $output | Select-String 'LRA:\s*(-?[\d.]+) LU' | Select-Object -Last 1
+    $lufs = $null
+    if ($integrated -and $integrated.Matches[0].Groups[1].Value -ne '-inf') {
+        $lufs = [double]$integrated.Matches[0].Groups[1].Value
+    }
     [pscustomobject]@{
-        Lufs = if ($i -and $i.Matches[0].Groups[1].Value -ne '-inf') { [double]$i.Matches[0].Groups[1].Value } else { $null }
-        Lra = if ($l) { [double]$l.Matches[0].Groups[1].Value } else { $null }
+        Lufs = $lufs
+        Lra = if ($range) { [double]$range.Matches[0].Groups[1].Value } else { $null }
     }
 }
 
-Write-Host "Analysing $($files.Count) file(s)`n" -ForegroundColor Cyan
-$rows = foreach ($f in $files) {
-    Write-Host "--- $($f.Name)" -ForegroundColor DarkGray
+function Measure-Bands {
+    param([string]$FFmpeg, [string]$File, [string[]]$Segment)
+    [pscustomobject]@{
+        Body = (Measure-Levels -FFmpeg $FFmpeg -File $File -InputArgs $Segment -Filter 'lowpass=f=300').Mean
+        Mid = (Measure-Levels -FFmpeg $FFmpeg -File $File -InputArgs $Segment -Filter 'highpass=f=300,lowpass=f=3000').Mean
+        High = (Measure-Levels -FFmpeg $FFmpeg -File $File -InputArgs $Segment -Filter 'highpass=f=3000').Mean
+    }
+}
 
-    # -select_streams belongs to ffprobe, not ffmpeg
-    $ffprobe = if ($ffmpeg -match 'ffmpeg\.exe$') { $ffmpeg -replace 'ffmpeg\.exe$', 'ffprobe.exe' } else { 'ffprobe.exe' }
-    $probe = & $ffprobe -v error -select_streams a:0 `
-        -show_entries stream=codec_name,sample_rate,channels `
-        -show_entries format=duration -of json $f.FullName 2>$null | Out-String | ConvertFrom-Json
+function New-AnalysisRow {
+    param([string]$FFmpeg, [string]$FFprobe, [System.IO.FileInfo]$File, [string[]]$NoiseSegment, [string[]]$VoiceSegment)
+    $info = Get-AudioStreamInfo -FFprobe $FFprobe -File $File.FullName
+    if (-not $info) { return $null }
 
-    if (-not $probe.streams) { Write-Warning "$($f.Name) has no audio stream"; continue }
-
-    $dur = [double]$probe.format.duration
-    $sr = $probe.streams[0].sample_rate
-    $ch = $probe.streams[0].channels
-
-    $noiseSeg = @('-t', "$NoiseSeconds")
-    $voiceSeg = @('-ss', "$VoiceStart", '-t', "$VoiceSeconds")
-
-    $noise = (Measure-Levels -File $f.FullName -InputArgs $noiseSeg).Mean
-    $voice = (Measure-Levels -File $f.FullName -InputArgs $voiceSeg)
-    $loud = Measure-Loudness -File $f.FullName
-
-    $body = (Measure-Levels -File $f.FullName -InputArgs $voiceSeg -Filter 'lowpass=f=300').Mean
-    $mid = (Measure-Levels -File $f.FullName -InputArgs $voiceSeg -Filter 'highpass=f=300,lowpass=f=3000').Mean
-    $high = (Measure-Levels -File $f.FullName -InputArgs $voiceSeg -Filter 'highpass=f=3000').Mean
+    $noise = (Measure-Levels -FFmpeg $FFmpeg -File $File.FullName -InputArgs $NoiseSegment).Mean
+    $voice = Measure-Levels -FFmpeg $FFmpeg -File $File.FullName -InputArgs $VoiceSegment
+    $loudness = Measure-Loudness -FFmpeg $FFmpeg -File $File.FullName
+    $bands = Measure-Bands -FFmpeg $FFmpeg -File $File.FullName -Segment $VoiceSegment
 
     [pscustomobject]@{
-        File = $f.Name
-        Secs = [math]::Round($dur, 1)
-        Fmt = "$($probe.streams[0].codec_name) ${sr}Hz x$ch"
+        File = $File.Name
+        Secs = [math]::Round($info.Duration, 1)
+        Fmt = "$($info.Codec) $($info.SampleRate)Hz x$($info.Channels)"
         SnrDb = if ($null -ne $voice.Mean -and $null -ne $noise) { [math]::Round($voice.Mean - $noise, 1) } else { $null }
         NoiseDb = $noise
         VoiceDb = $voice.Mean
         PeakDb = $voice.Peak
-        Lufs = $loud.Lufs
-        Lra = $loud.Lra
-        BodyDb = $body
-        MidDb = $mid
-        HighDb = $high
+        Lufs = $loudness.Lufs
+        Lra = $loudness.Lra
+        BodyDb = $bands.Body
+        MidDb = $bands.Mid
+        HighDb = $bands.High
     }
 }
 
-function Get-Verdict($r) {
+function Get-Verdict {
+    param($Row)
     $notes = @()
-    if ($null -ne $r.SnrDb) {
-        if ($r.SnrDb -lt 3) { $notes += 'no silent lead-in - pattern not followed' }
-        elseif ($r.SnrDb -ge 30) { $notes += 'clean' }
-        elseif ($r.SnrDb -ge 20) { $notes += 'usable' }
+    if ($null -ne $Row.SnrDb) {
+        if ($Row.SnrDb -lt 3) { $notes += 'no silent lead-in - pattern not followed' }
+        elseif ($Row.SnrDb -ge 30) { $notes += 'clean' }
+        elseif ($Row.SnrDb -ge 20) { $notes += 'usable' }
         else { $notes += 'NOISY' }
     }
-    if ($null -ne $r.PeakDb -and $r.PeakDb -gt -3) { $notes += 'near clipping' }
-    if ($null -ne $r.Lufs -and $r.Lufs -lt -30) { $notes += 'too quiet' }
-    if ($null -ne $r.HighDb -and $null -ne $r.MidDb -and ($r.HighDb - $r.MidDb) -gt 6) { $notes += 'harsh/sibilant' }
-    if ($null -ne $r.BodyDb -and $null -ne $r.MidDb -and ($r.BodyDb - $r.MidDb) -gt 12) { $notes += 'boomy' }
+    if ($null -ne $Row.PeakDb -and $Row.PeakDb -gt -3) { $notes += 'near clipping' }
+    if ($null -ne $Row.Lufs -and $Row.Lufs -lt -30) { $notes += 'too quiet' }
+    if ($null -ne $Row.HighDb -and $null -ne $Row.MidDb -and ($Row.HighDb - $Row.MidDb) -gt 6) { $notes += 'harsh/sibilant' }
+    if ($null -ne $Row.BodyDb -and $null -ne $Row.MidDb -and ($Row.BodyDb - $Row.MidDb) -gt 12) { $notes += 'boomy' }
     if (-not $notes) { $notes += 'balanced' }
     ($notes -join ', ')
 }
 
-$report = $rows | ForEach-Object {
-    $_ | Add-Member -PassThru -NotePropertyName Verdict -NotePropertyValue (Get-Verdict $_)
+$ffmpeg = Get-ToolPath 'ffmpeg.exe'
+$ffprobe = Get-ToolPath 'ffprobe.exe'
+if (-not $ffmpeg -or -not $ffprobe) {
+    Write-Host 'ffmpeg/ffprobe not found' -ForegroundColor Red
+    exit 1
 }
-$report | Format-Table SnrDb, NoiseDb, VoiceDb, PeakDb, Lufs, Lra, BodyDb, MidDb, HighDb, Verdict -AutoSize
 
-Write-Host ''
-Write-Host 'How to read this:'
-Write-Host '  SnrDb   voice minus noise floor. 30+ dB clean, 20-30 dB usable, <20 dB hissy.'
-Write-Host '  NoiseDb room tone during the quiet opening. -60 dB is good, -45 dB is a noisy room.'
-Write-Host '  Lufs    integrated loudness. Aim -16 to -20 LUFS; much lower = input gain too low.'
-Write-Host '  Body/Mid/High  mean level per band. Body >> Mid = boomy, Mid >> Body = thin,'
-Write-Host '                 High near Mid = bright and clear (harsh if it exceeds Mid).'
-Write-Host 'Pick the best SNR with a Mid-dominant balance, then confirm by ear.'
+$files = Get-AudioFiles -Target $Path -Extensions $AudioExtensions
+if ($files.Count -eq 0) {
+    Write-Host "No audio files found at $Path" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "Analysing $($files.Count) file(s)`n" -ForegroundColor Cyan
+
+$noiseSegment = @('-t', "$NoiseSeconds")
+$voiceSegment = @('-ss', "$VoiceStart", '-t', "$VoiceSeconds")
+$rows = foreach ($file in $files) {
+    Write-Host "--- $($file.Name)" -ForegroundColor DarkGray
+    $row = New-AnalysisRow -FFmpeg $ffmpeg -FFprobe $ffprobe -File $file -NoiseSegment $noiseSegment -VoiceSegment $voiceSegment
+    if (-not $row) {
+        Write-Warning "$($file.Name) has no audio stream"
+        continue
+    }
+    $row | Add-Member -PassThru -NotePropertyName Verdict -NotePropertyValue (Get-Verdict $row)
+}
+
+$rows | Format-Table SnrDb, NoiseDb, VoiceDb, PeakDb, Lufs, Lra, BodyDb, MidDb, HighDb, Verdict -AutoSize
+Write-Host 'How to read this: scripts/README.md'
+
+exit 0
