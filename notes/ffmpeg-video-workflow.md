@@ -81,5 +81,5 @@ ffmpeg -ss 00:06:26 -i "input.mp4" -to 00:02:50 -c copy -avoid_negative_ts make_
 
 ## Related
 
-- [`streaming-workflow.md`](streaming-workflow.md) — full stream → save → trim → post loop
-- [`vod-posting-guide.md`](vod-posting-guide.md) — VOD quality settings and posting
+- [`join-videos.ps1`](../device/desktop/scripts/join-videos.ps1) — lossless concat of clips in a folder
+- [`remux-audio-back.ps1`](../device/desktop/scripts/remux-audio-back.ps1) — put cleaned audio back into the original video without re-encoding it

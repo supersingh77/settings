@@ -82,7 +82,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 
 - **Old 23H2 app set:** not reinstalled. The previous inventory remains in Git history.
 - **Excluded by request:** Razer Synapse, MCHOSE Hub, vJoy.
-- **Not reinstalled since the rebuild:** ShareX, DroidCam client + OBS plugin, input-overlay. (`C:\Program Files\DroidCam` exists but is empty — that is not an install.)
+- **Not reinstalled since the rebuild:** ShareX, input-overlay. **DroidCam is retired** — the phone-webcam route was replaced by a Kreo Owl Lite webcam (16 Nov 2026); `C:\Program Files\DroidCam` is an empty leftover folder, not an install.
 - **Steam games** stay on `V:\Games\SteamLibrary` and `Z:\Games\SteamLibrary`.
 
 ## Removed

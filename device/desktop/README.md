@@ -25,7 +25,7 @@
 | [Desktop Layout](desktop.md) | Actual `C:\Users\amar\Desktop` contents |
 | [Disk Cleanup](disk-cleanup.md) | Drive map, measured consumers, recurring checklist |
 | [Audit Playbook](audit-playbook.md) | Commands to verify pins/apps/drivers/Steam live |
-| [Scripts](scripts/README.md) | Maintenance, video tools, `audit-state.ps1`, legacy scroll-fix scripts |
+| [Scripts](scripts/README.md) | Maintenance, video tools, `audit-state.ps1` |
 
 ## Setup Rules
 
@@ -38,8 +38,9 @@
 
 ## Current Gaps
 
-- **ShareX, DroidCam (client + OBS plugin), input-overlay** are still not reinstalled. `C:\Program Files\DroidCam` is an empty folder, not an install.
-- OBS Studio 33.0.1 **is** installed but has never been launched — no profile exists yet.
+- **Streaming stack is being rebuilt around the Kreo Owl Lite webcam** (bought 16 Nov 2026). The phone-DroidCam route is retired — `C:\Program Files\DroidCam` is an empty leftover folder, not an install, and should not be reinstalled for webcam duty.
+- OBS Studio 33.0.1 **is** installed but has never been launched — no profile or scene exists yet. The old OBS/DroidCam guides were deleted rather than carried forward stale.
+- **ShareX** and **input-overlay** are still missing.
 - `Z:\Games\SteamLibrary` (Celeste, Hollow Knight) is not registered in Steam; `V:` is.
 - `.mp4` / `.m4a` have no working default app — the shell app-picker is broken on this image ([windows-shell-repair.md](../../notes/windows-shell-repair.md)).
 - In-game shifter binding still needs a sim.

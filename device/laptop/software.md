@@ -87,7 +87,6 @@ Nothing was brought over from the desktop beyond what's already installed. The f
 | **PXN SimRacing & vJoy** | Desktop steering wheel setup | Desktop-only peripheral |
 | **AMD Ryzen Master** | Desktop CPU overclocking | Laptop handled by Armoury Crate / G-Helper |
 | **Twinkle Tray** | External DDC/CI monitor brightness | Laptop uses native Fn key brightness |
-| **`disable-scroll.ahk`** | Fix for broken Logitech mouse wheel | Desktop-specific hardware fix |
 | **autohotkey** | Desktop automation | No automation needs on laptop |
 | **Streamlabs OBS** | Alternative streaming app | Redundant — OBS Studio already installed |
 | **Assetto Corsa + Content Manager** | Desktop sim-racing setup | Tied to desktop wheel setup |
