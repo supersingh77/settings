@@ -9,6 +9,7 @@
 | `update-system.ps1` | Refreshes winget sources, lists upgrades, then upgrades them **one package at a time** (a failure no longer aborts the run), with `Microsoft.PowerShell` filtered out (see Notes). Supports `-DryRun`; logs to `%LOCALAPPDATA%\DesktopMaintenance\logs`. | Active |
 | `cleanup-system.ps1` | Temp files, DISM component cleanup, Recycle Bin, DNS, Delivery Optimization. Supports `-DryRun`; reports staged-installer size without deleting it. | Active |
 | `mic-check.ps1` | Records a few seconds from each microphone and reports mean/peak dB with a verdict. Catches the two failures that silently ruin recordings: a muted/sleeping device (digital silence) and one that is alive but far too quiet. Read-only, no admin. | Active — run before trusting any mic |
+| `voice-compare.ps1` | Objective A/B of voice recordings: noise floor, voice level, SNR, integrated loudness, headroom and 3-band spectral balance, with a verdict per file. Needs a 5 s silent lead-in per recording. Read-only. | Active — use to pick a microphone |
 | `join-videos.ps1` | Lossless FFmpeg concat of clips in a folder, ordered by filename. Resolves `ffmpeg` from PATH or `C:\Program Files\FFmpeg\bin`. | Active |
 | `remux-audio-back.ps1` | Puts a cleaned/noise-reduced audio file back into the original video with `-c:v copy`, then proves the video packets are bit-identical via MD5. Transcodes audio to AAC only when the codec is not MP4-compatible. | Active |
 
