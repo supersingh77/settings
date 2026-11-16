@@ -11,13 +11,18 @@ Inside a sandboxed agent session (DeepSeek Harness, etc.) the following are **bl
 
 | Blocked | Symptom | Use instead |
 |---|---|---|
-| `Get-CimInstance` / `Get-WmiObject` / WMI | `Access denied` | Registry `Enum`/`Class` keys, `[System.IO.DriveInfo]`, `systeminfo` |
+| `Get-CimInstance` / `Get-WmiObject` / WMI | `Access denied` | SMBIOS registry blob (RAM + cores), `EnumDisplaySettings` (refresh), driver-key `qwMemorySize` (VRAM), `[System.IO.DriveInfo]` |
 | `Get-Volume`, `Get-PhysicalDisk` | `Access denied` | `[System.IO.DriveInfo]::GetDrives()` |
+| `Get-PnpDevice` | `Access denied` | `pnputil /enum-devices /problem` — **this one works** |
 | `Get-AppxPackage` | `Access is denied` | ARP keys; `Taskband` blob for packaged pin IDs |
 | UI Automation on the taskbar | returns nothing | `User Pinned\TaskBar` folder + `Taskband\Favorites` blob |
 | `Export-StartLayout` | `0x80070490 Element not found` | visual check |
 | `winget` (any verb) | `0x8A150001` even for `--info` | run winget from an **elevated, unsandboxed** shell |
 | Machine-wide uninstall | MSI 1603 / access denied | elevated shell (`winget uninstall --id <id> --exact`) |
+
+**Still works inside the sandbox, and covers more than you'd expect:** registry reads of every kind, the `SMBiosData` blob, `pnputil.exe`, Win32 P/Invoke via `Add-Type` (`EnumDisplaySettings`), ARP keys, and on-disk state. `audit-state.ps1` uses exactly these.
+
+**HWiNFO cannot help here.** Its report/logging CLI (`-r`, `-l`) is **Pro-only** — the free build accepts the flag and silently writes nothing. Don't plan an audit around it unless HWiNFO Pro is licensed.
 
 So: **never record "0 problem devices" or a refresh rate you measured with WMI inside an agent session** — you cannot measure it there.
 
@@ -81,10 +86,19 @@ Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
 ## 4. Device & Driver Health
 
 ```powershell
+pnputil /enum-devices /problem     # works even in a sandbox; "No devices were found" == healthy
 Get-PnpDevice -PresentOnly | Where-Object Status -ne 'OK' |   # needs a non-sandboxed session
   Select-Object Status, Class, FriendlyName, InstanceId
-pnputil /enum-devices /problem
 ```
+
+Live display mode without WMI (this is how "300 Hz" is actually verified):
+
+```powershell
+Add-Type -TypeDefinition '<DEVMODE + EnumDisplaySettings signature>'
+# then EnumDisplaySettings('\\.\DISPLAY1', -1, [ref]$dm) -> dmDisplayFrequency
+```
+
+`audit-state.ps1` already does this and prints every attached display's current mode. Use `ENUM_CURRENT_SETTINGS` (`-1`) — passing mode indexes enumerates the capability list instead.
 
 Registry fallback when WMI is blocked:
 

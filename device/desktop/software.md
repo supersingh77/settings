@@ -76,7 +76,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | Realtek LAN (RTL8168) | 10.50.511.2021 | 1 Gbps, link up |
 | Focusrite Scarlett Solo | 4.150.0.432 | With Control 2 1.1210 |
 
-Device Manager had no problem devices at the 23 Oct check; not re-verified 16 Nov (WMI/CIM is blocked inside agent sessions — see `audit-playbook.md`).
+**No problem devices** — re-verified 16 Nov 2026 with `pnputil /enum-devices /problem` (returns "No devices were found"), which works when `Get-PnpDevice`'s WMI path is blocked.
 
 ## Deliberately Not Installed
 

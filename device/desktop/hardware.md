@@ -1,7 +1,8 @@
 # PC Hardware Documentation
 
 > Updated: 16 Nov 2026 — volumes, drives and driver versions re-verified live (registry `Enum`/`Class` + `DriveInfo`).
-> CPU/RAM/refresh/SMART figures are from the 23 Oct 2026 pass: WMI/CIM is blocked inside agent sessions, so they were **not** re-checked.
+> CPU/RAM/VRAM/refresh/problem-devices re-verified 16 Nov 2026 **without WMI** — via SMBIOS types 4+17, `EnumDisplaySettings`, the driver key's `qwMemorySize`, and `pnputil`.
+> Still unverified: **S.M.A.R.T. health** and the **CPU cooler** (both need WMI/admin sensor access). Those two remain from the 23 Oct 2026 pass.
 > Drive letters did **not** change in the rebuild: the volumes are still **V:** (games) and **Z:** (archive). There is no `D:` or `E:` on this machine — earlier revisions of these docs claimed otherwise and were wrong.
 
 ## System Overview
@@ -18,7 +19,7 @@
 | Property | Value |
 |----------|-------|
 | **Model** | AMD Ryzen 7 5700X |
-| **Cores / Threads** | 8 / 16 |
+| **Cores / Threads** | 8 / 16 — re-verified 16 Nov 2026 from SMBIOS type 4 |
 | **Base Clock** | 3.4 GHz (3401 MHz) |
 | **L2 / L3** | 4 MB / 32 MB |
 | **Cooling** | _needs-review — not detected_ |
@@ -29,20 +30,20 @@
 | Property | Value |
 |----------|-------|
 | **Model** | AMD Radeon RX 7600 |
-| **VRAM** | 8 GB GDDR6 |
+| **VRAM** | 8 GB GDDR6 — **7.98 GB** confirmed via `HardwareInformation.qwMemorySize` (8573157376 B) |
 | **Driver** | Adrenalin **26.10.1** — driver **32.0.32015.7029** (2026-10-18) |
-| **Primary monitor** | MSI MAG 255XF — 1920×1080 @ **300 Hz** |
-| **Secondary monitor** | BenQ RL2240H — 1920×1080 |
+| **Primary monitor** | MSI MAG 255XF — 1920×1080 @ **300 Hz**, active mode re-verified 16 Nov (`EnumDisplaySettings`) |
+| **Secondary monitor** | BenQ RL2240H — 1920×1080 @ 60 Hz (measured 16 Nov) |
 | **Monitor driver** | MSI MAG 255XF INF **1.0.0.0** (WHQL, 2024-07-29) + `MSI MAG 255XF.icm` |
-| **Notes** | AMF hardware encoding for OBS. WMI `AdapterRAM` reports ~4 GB due to the 32-bit field; the card is 8 GB. |
+| **Notes** | AMF hardware encoding for OBS. WMI `AdapterRAM` reports ~4 GB due to the 32-bit field; the `MemorySize` value in the driver key is also 4 GB for the same reason. The QWORD field is the truthful one. |
 
 ## Memory (RAM)
 
 | Property | Value |
 |----------|-------|
 | **Total** | 16 GB (15.9 GB usable) |
-| **Configuration** | 2 × 8 GB DDR4 — Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB |
-| **Speed** | 3000 MT/s |
+| **Configuration** | 2 × 8 GB DDR4 — Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB (both verified from SMBIOS type 17, 16 Nov 2026) |
+| **Speed** | **3000 MT/s configured** on both sticks. The Kingston part is rated 3200 but runs 3000 — the pair settles on the slower SPD profile; don't chase "missing" 200 MT/s |
 | **Notes** | Adequate for 1080p gaming + OBS; close browser tabs before streaming. |
 
 ## Storage
