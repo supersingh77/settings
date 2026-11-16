@@ -1,13 +1,3 @@
-# =============================================================================
-# cleanup-system.ps1 - Safe maintenance for the Windows desktop
-#
-# Reclaims space on C: without touching personal files or the driver stash.
-# Run occasionally (weekly/monthly), ideally from an elevated PowerShell 7.
-#
-# Usage:
-#   pwsh device/desktop/scripts/cleanup-system.ps1
-#   pwsh device/desktop/scripts/cleanup-system.ps1 -DryRun
-# =============================================================================
 
 param(
     [switch]$DryRun
@@ -56,12 +46,10 @@ if ($DryRun) {
     Write-Host "${YELLOW}[info] Slow maintenance task - this can take several minutes.${RESET}"
 }
 
-# --- 1. Temp files ----------------------------------------------------------
 step "Cleaning temp files"
 Clear-FolderContents $env:TEMP
 Clear-FolderContents "$env:SystemRoot\Temp"
 
-# --- 2. Windows Update component cleanup -----------------------------------
 step "Cleaning Windows Update components (DISM)"
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
     [Security.Principal.WindowsBuiltInRole]::Administrator
@@ -75,7 +63,6 @@ if (-not $isAdmin) {
     success "DISM component cleanup finished."
 }
 
-# --- 3. Recycle Bin ---------------------------------------------------------
 step "Emptying Recycle Bin"
 if ($DryRun) {
     info "Would empty the Recycle Bin."
@@ -88,7 +75,6 @@ if ($DryRun) {
     }
 }
 
-# --- 4. DNS cache -----------------------------------------------------------
 step "Flushing DNS cache"
 if ($DryRun) {
     info "Would run: ipconfig /flushdns"
@@ -97,7 +83,6 @@ if ($DryRun) {
     success "DNS cache flushed."
 }
 
-# --- 5. Delivery Optimization cache ----------------------------------------
 step "Cleaning Delivery Optimization cache"
 $doCache = "$env:ProgramData\Microsoft\Windows\DeliveryOptimization\Cache"
 if (Test-Path -LiteralPath $doCache) {
@@ -113,7 +98,6 @@ if (Test-Path -LiteralPath $doCache) {
     info "Delivery Optimization cache not found - skipping."
 }
 
-# --- 6. Review-only space hogs ---------------------------------------------
 step "Review-only: driver installers (not deleted)"
 $review = @(
     'C:\AMD',
@@ -126,7 +110,6 @@ foreach ($path in $review) {
 }
 info "Delete these manually only after Device Manager is clean and no installer is running."
 
-# --- 7. Summary -------------------------------------------------------------
 step "Cleanup complete"
 Write-Host ""
 Write-Host "${GREEN}Maintenance tasks finished.${RESET}"
