@@ -13,8 +13,7 @@ It is intentionally designed to grow organically: start with raw thoughts, proce
 | [`inbox/`](inbox/) | Raw, unsorted notes, quick thoughts, and incoming ideas to be processed later |
 | [`outbox/`](outbox/) | Agent's outgoing work — ready to dispatch to another chat/app/agent |
 | [`device/`](device/) | Per-device setup notes, hardware specs, installed software, maintenance logs, and per-device scripts |
-| [`notes/`](notes/) | Long-term reference guides, workflows, and technical decisions |
-| [`games/`](games/) | Game settings and controller configuration backups |
+| [`notes/`](notes/) | Long-term reference guides, workflows, and technical decisions (index: [`notes/README.md`](notes/README.md)) |
 
 > Scripts live inside their owning device folder (e.g. [`device/desktop/scripts/`](device/desktop/scripts/)), not in a shared top-level `scripts/`.
 
@@ -38,7 +37,7 @@ To keep logging frictionless, raw information enters through **intake points** a
                ▼
 ┌──────────────────────────────┐
 │ Feature Specs & Guides       │
-│ (device/, notes/, games/)    │
+│ (device/, notes/)            │
 └──────────────────────────────┘
 ```
 
@@ -46,7 +45,7 @@ To keep logging frictionless, raw information enters through **intake points** a
 - Create a quick Markdown file in [`inbox/`](inbox/). Include title, device metadata, date, and core thoughts.
 
 ### 2. Process Later
-- Move or distill inbox ideas into dedicated folders ([`device/`](device/), [`notes/`](notes/), [`games/`](games/)).
+- Move or distill inbox ideas into dedicated folders ([`device/`](device/), [`notes/`](notes/)).
 - Use [`outbox/`](outbox/) for work that needs to be dispatched elsewhere.
 
 ---

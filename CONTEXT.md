@@ -15,7 +15,6 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 | `outbox/` | Agent's outgoing work — ready to dispatch to another chat/app/agent |
 | `device/` | Per-device setup notes, hardware, software, scripts |
 | `notes/` | Long-term reference guides and workflows |
-| `games/` | Game settings and controller configs |
 
 > The `finance/` project has been moved to a separate repo. Do not reference it here.
 
@@ -47,11 +46,12 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 ## Active Threads
 
 - **Desktop shell is broken on this image** — `OpenWith.exe` / `ShellHost.exe` die at startup, so "Open with" does nothing and `.mp4`/`.m4a` have no default app. Root cause and repair path: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
-- **Desktop streaming stack is incomplete** — ShareX, DroidCam (client + OBS plugin) and input-overlay are still missing. See the gaps section in [`device/desktop/README.md`](device/desktop/README.md).
+- **Desktop streaming stack is being rebuilt** — OBS 33.0.1 is installed but has never been launched, and the old phone-DroidCam webcam path is retired now that a **Kreo Owl Lite** webcam exists (16 Nov 2026). ShareX and input-overlay are still missing. See the gaps section in [`device/desktop/README.md`](device/desktop/README.md).
 - Net worth / assets & liabilities feature lives in the separate finance repo now.
 
 ## Recent Changes
 
+- **2026-11-16** — `repo:` pruned content that no longer describes the machine: the three Assetto Corsa notes, the OBS/DroidCam/streaming guides (new **Kreo Owl Lite** webcam replaces the phone setup), `music-starter` and `vod-posting-guide`, the whole `games/` config-backup folder, the four dormant AutoHotkey scripts, and the unused root `opencode.jsonc`. Added [`notes/README.md`](notes/README.md) so the remaining notes are reachable. All of it remains in Git history.
 - **2026-11-16** — `desktop:` full live re-audit. Corrected drive letters (`V:`/`Z:`, not `E:`/`D:`), free space, app inventory, taskbar pins and desktop layout; recorded the `ProductName` "Windows 10 Pro" quirk. Removed Notepad++ and Obsidian. Added `scripts/audit-state.ps1` and moved `remux-audio-back.ps1` out of the repo root. `CONTEXT.md` itself cut down to an index.
 - **2026-11-16** — `notes:` documented the ReviOS shell / "Open with" failure and its repair path.
 - **2026-11-04** — `desktop:` fixed `update` (WinINET downloader, per-package upgrades, PowerShell excluded) — details in [`device/desktop/scripts/README.md`](device/desktop/scripts/README.md).
