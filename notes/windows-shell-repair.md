@@ -33,23 +33,37 @@ OS reports **26H2, build 26300.9457**, but the shell files are from the 26100 li
 
 - A synthetic `.zzz` → `cmd /c echo` association launched successfully through `ShellExecuteEx` (process created, marker file written). So the launch path is intact; the fault is specific to the shell/app-picker components.
 
-**Association state:**
+**Association state (re-checked 16 Nov 2026, 19:45):**
 
 | Extension | State | Resolves to |
 |---|---|---|
-| `.md` | no `UserChoice`; `HKCR\.md` → `Markdown`, whose `shell\open\command` is **empty** | nothing — dead ProgId. GenOffice is the only registered handler (`Markdown Document` → `C:\Program Files\GenOffice\GenOffice.exe "%1"`) |
+| `.md` | no `UserChoice`; `HKCR\.md` → **`Markdown Document`** (repointed 16 Nov) | `GenOffice.exe "%1"` — works |
 | `.txt` | `UserChoice` → `AppX4ztfk…` (AppX Notepad), hash present | `Notepad.exe` (packaged) |
-| `.mp4` / `.m4a` | `UserChoiceLatest` with a `Hash` but **no `ProgId`** | `OpenWith.exe` — i.e. "no default" → the broken picker |
+| `.mp4` / `.m4a` / `.mkv` and 31 other media types | `UserChoiceLatest` held a **hash but no `ProgId`** → resolved to the dead picker. **Those 34 keys were deleted 16 Nov** | falls back to `HKCR` default, e.g. `PotPlayerMini64.MP4` → `PotPlayerMini64.exe "%1"` |
 
 - `UserChoice` keys are ACL-protected; deleting them fails without elevation.
+- **101 extensions still carry a hash-only `UserChoiceLatest`**, but most of those also have a valid `UserChoice` that wins — they are not the cause of the double-click failure.
 - `HKCR\txtfile` (the standard Text File class) is missing.
-- `HKLM\…\Policies\Explorer\NoInternetOpenWith = 1`; a stray `NoOpenWith` value sits on `HKCR\Applications\OpenWith.exe`.
-- UCPD (User Choice Protection Driver) is disabled.
+- UCPD (User Choice Protection Driver) is **stopped**; the old `NoInternetOpenWith` policy and the stray `NoOpenWith` value on `OpenWith.exe` are **gone** as of 16 Nov, so they are no longer contributing.
 - No shell-hooking tools installed (no StartAllBack / ExplorerPatcher / Open-Shell).
 
 ## Root cause
 
 The image mixes **26100-era shell binaries and packages with a 26300 OS build**. The modern Explorer UI (tabs) and the app picker both come from that shell stack, so they fail or fall back to the cut-down behaviour. The association store is a second, smaller problem: hash-only `UserChoiceLatest` entries make Windows treat video types as having no default and hand them to the broken picker.
+
+## Applied 16 Nov 2026
+
+What was actually changed, with the backup that undoes it:
+
+| Change | Effect | Undo |
+|---|---|---|
+| Deleted the 34 hash-only `UserChoiceLatest` keys (all media types) | Windows falls back to the `HKCR` default handler instead of "no default → picker" | `reg import %LOCALAPPDATA%\DesktopMaintenance\FileExts-backup-2026-11-16.reg` |
+| Repointed `HKCR\.md` → `Markdown Document` | `.md` now has a command (GenOffice) instead of a dead ProgId | `reg add "HKCR\.md" /ve /d Markdown /f` (restores the broken state) |
+| Added `PotPlayerMini64.*` to `OpenWithProgids` for media types | PotPlayer appears in the "Open with ▸" submenu | delete the value |
+
+**Correction to an earlier claim in this note:** `OpenWithProgids` was reported as empty. That was a **measurement error** — `Get-ChildItem` lists subkeys, not values, so a populated `OpenWithProgids` looked empty. The values were there all along (`WMP11.AssocFile.MP4`, etc.). Read them with `.GetValueNames()`.
+
+**Test-method warning:** launching a file from inside an agent sandbox reports `Server execution failed` / `Access is denied` for **every** type, including ones that work fine by hand. Those errors are the sandbox refusing the shell launch, not the OS. Association behaviour has to be verified by double-clicking as the logged-in user.
 
 ## What does not fix it
 
