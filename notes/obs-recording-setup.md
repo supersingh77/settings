@@ -26,6 +26,12 @@ Recording for YouTube therefore does **not** need to match the stream. OBS's def
 
 Result of the test recording: `cqp: 23, preset: quality, 1920x1080`, written to `Z:\Recordings`.
 
+**Applied automatically on 16 Nov 2026** (OBS was closed, changes written into its config):
+
+- `Mic/Aux` pinned to the **Owl Lite** (`{0.0.1…7a0ffdb4…}`) with a **Noise Suppression / RNNoise** filter, `suppress_level: -30`.
+- `Desktop Audio` pinned to **Speakers (Razer Barracuda X 2.4)** (`{0.0.0…143661e3…}`) instead of "follow the Windows default", so it cannot drift onto the Bluetooth speaker (44.1 kHz, 100–300 ms latency) when that connects.
+- The duplicate Owl Lite source was deleted; the Razer and Digitek capture sources remain in the scene, **muted**, for A/B testing.
+
 ## Streaming (not yet configured)
 
 No service is set, so nothing streams until you add a key. Bitrate guidance with a 40 Mbps upload:
@@ -67,7 +73,7 @@ Asked to rank three live mics with each isolated, the answer was:
 
 That ranking is the useful result: **quality vs noise is the real trade-off**, not "which mic is better". Two ways to settle it, in order of effort:
 
-1. **Stick with the Owl Lite (current)** and add **Noise Suppression** — Audio Mixer → gear on `Mic/Aux` → Filters → `+` → Noise Suppression (RNNoise). That is exactly the filter that fixes "best quality but noisy", and it is why the webcam mic is still the pinned default.
+1. **Stick with the Owl Lite (current)** — it is pinned, and **Noise Suppression (RNNoise) is applied** on `Mic/Aux`. That is exactly the filter for "best quality but noisy": it keeps the fidelity and strips fan/keyboard. Adjust it under Audio Mixer → gear on `Mic/Aux` → Filters (lower `suppress_level` = more aggressive; RNNoise ignores that value, so switch to Speex only if you need manual strength).
 2. **Switch to the Digitek** — swap `Mic/Auxiliary Device 1` in OBS → Audio to `Microphone (USBAudio1.0)`. Lower ceiling, less work, and the collar position does the noise rejection for free.
 
 Keep only **one** voice source live. On 16 Nov the scene had the Owl Lite captured twice (its own source plus the global `Mic/Aux`) — the duplicate was deleted, and the Razer/Digitek sources were left muted. Both are still there, muted, for A/B testing.
@@ -106,7 +112,7 @@ For recording, pin Desktop Audio to whatever you actually monitor on — the Raz
 ### Two traps worth remembering
 
 1. **Global audio devices are stored in the scene collection, not the profile.** `AuxAudioDevice1` / `DesktopAudioDevice1` live in `%APPDATA%\obs-studio\basic\scenes\Untitled.json`. Keys in `basic.ini` (`AuxDevice1`, `Mic/Auxiliary Device 1`, …) are ignored — all four were tested and dropped.
-2. **Hand-written filter entries get discarded.** Adding a `filters` array to `AuxAudioDevice1` survived OBS's parse but was stripped on the next save, so filters have to be added through the UI: **Audio Mixer → gear icon on Mic/Aux → Filters → + → Noise Suppression** (RNNoise, no tuning needed). That is the single best remaining audio improvement — it kills fan and keyboard noise on any mic.
+2. **Hand-written filter entries are rejected; the API works.** Adding a `filters` array to `AuxAudioDevice1` is discarded when OBS loads — the same object created through `obs-websocket`'s `CreateSourceFilter` sticks fine. The catch: **OBS only writes the scene collection on a clean exit.** Every automated session that ended in `Stop-Process` lost the change; the one that closed via `taskkill /IM obs64.exe` (WM_CLOSE, with `ConfirmOnExit=false` and a real window, not `--minimize-to-tray`) saved it. If a config change "doesn't stick", suspect the shutdown, not the write.
 
 Target peaks around **−12 to −6 dB**, mean voice around −18 dB. Watch the meter once, then trust it.
 
@@ -118,6 +124,18 @@ Keeping the "delete before optimising" rule — none of these are needed yet:
 - **Game Capture in place of Display Capture.** It captures one window, skips desktop composition and avoids the OBS window bleeding in. Worth adding when you next record a game, but it is a scene change, not a settings change.
 - **Multi-track audio** (game and mic on separate tracks). Real editing value once you're cutting videos; needs per-source track assignment in Advanced Audio Properties.
 - **Replay buffer, extra scene collections, plugin installs.** Zero benefit until the basics above are actually exercised. (Noise suppression is the one filter worth having — see the audio section.)
+
+## If OBS resets
+
+OBS's config is **not** in this repo (`%APPDATA%\obs-studio`), so these are the values to recreate. Snapshots sit next to the originals as `Untitled.json.bak-*`.
+
+| Where | Setting |
+|---|---|
+| Settings → Video | Base **1920×1080**, Output **1920×1080**, **60 fps**, NV12 / Rec.709 / Partial |
+| Settings → Output | **Simple** mode, `VBitrate 6000`, **Recording Quality = High Quality**, encoder **AMD HW H.264** for both |
+| Settings → Output → Recording | Path **`Z:\Recordings`**, format **hybrid MP4** |
+| Settings → Audio | Mic/Aux = **Owl Lite** (+ Noise Suppression / RNNoise), Desktop Audio = **Razer Barracuda X** |
+| Scene | Display Capture (MAG 255XF) + Video Capture Device (Owl Lite) |
 
 ## Re-verifying later
 
