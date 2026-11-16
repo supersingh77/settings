@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path,
-    [switch]$Strict
+    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 )
 
 $ErrorActionPreference = 'Stop'
@@ -64,7 +63,6 @@ function New-Result([string]$Rule, [string]$Target, [string]$Problem, [string]$S
 $results = [System.Collections.Generic.List[object]]::new()
 $scripts = Get-ScriptFiles $RepoRoot
 $json = Get-DeclaredJson $RepoRoot
-$softSeverity = if ($Strict) { 'FAIL' } else { 'WARN' }
 
 foreach ($file in $scripts) {
     $relative = $file.FullName.Substring($RepoRoot.Length).TrimStart('\')
@@ -74,14 +72,14 @@ foreach ($file in $scripts) {
 
     $commentLines = @(Get-CommentViolations $file)
     if ($commentLines.Count -gt 0) {
-        $results.Add((New-Result 'no-comments' $relative ("lines " + ($commentLines -join ', ')) $softSeverity))
+        $results.Add((New-Result 'no-comments' $relative ("lines " + ($commentLines -join ', ')) 'FAIL'))
     }
 
     $dryRunProblem = Test-DryRunContract $file
-    if ($dryRunProblem) { $results.Add((New-Result 'dry-run' $relative $dryRunProblem $softSeverity)) }
+    if ($dryRunProblem) { $results.Add((New-Result 'dry-run' $relative $dryRunProblem 'FAIL')) }
 
     $readmeProblem = Test-ReadmeIndex $file
-    if ($readmeProblem) { $results.Add((New-Result 'indexed' $relative $readmeProblem $softSeverity)) }
+    if ($readmeProblem) { $results.Add((New-Result 'indexed' $relative $readmeProblem 'FAIL')) }
 }
 
 foreach ($file in $json) {
@@ -93,7 +91,7 @@ foreach ($file in $json) {
 $failed = @($results | Where-Object Severity -eq 'FAIL')
 $warned = @($results | Where-Object Severity -eq 'WARN')
 
-Write-Host "verify  root=$RepoRoot  scripts=$($scripts.Count)  json=$($json.Count)  strict=$Strict`n" -ForegroundColor Cyan
+Write-Host "verify  root=$RepoRoot  scripts=$($scripts.Count)  json=$($json.Count)`n" -ForegroundColor Cyan
 
 if ($results.Count -eq 0) {
     Write-Host 'all checks passed' -ForegroundColor Green
@@ -104,3 +102,4 @@ if ($results.Count -eq 0) {
 Write-Host ("{0} failure(s), {1} warning(s)" -f $failed.Count, $warned.Count) -ForegroundColor $(if ($failed.Count) { 'Red' } else { 'Green' })
 if ($failed.Count -gt 0) { exit 1 }
 exit 0
+

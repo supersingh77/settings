@@ -49,7 +49,15 @@ For scripts this size, the valuable checks are properties:
 | a converged machine reports 0 changes | proves Rule 7 — this is the check that would have caught the `Get-ChildItem` vs `GetValueNames` mistake |
 | every script is listed in its folder's README | keeps the index honest as code is added |
 
-A verifier script is planned, not present. Until it exists these rules are enforced by review, which is exactly the situation that produced three weeks of stale docs.
+`device/desktop/scripts/verify.ps1` enforces all six. Every rule is hard: any failure exits 1, so a change that breaks one does not get committed. Its own rule list lives in code — the single exception to Rule 5, because the rules *are* the verifier's identity rather than data about the machine.
+
+Run it before committing:
+
+```powershell
+pwsh device/desktop/scripts/verify.ps1
+```
+
+As of 2026-11-17 it reports `0 failure(s), 0 warning(s)` across 10 scripts and 3 declared JSON files.
 
 ## Tooling reality on this machine
 
