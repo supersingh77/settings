@@ -84,6 +84,31 @@ function Repair-QuotedCommand {
     $script:changes++
 }
 
+function Register-Application {
+    param([string]$ExePath, [string]$FriendlyName)
+    if (-not (Test-Path -LiteralPath $ExePath)) {
+        Write-Host "  skip  $ExePath not installed" -ForegroundColor Yellow
+        return
+    }
+    $exeName = Split-Path -Leaf $ExePath
+    $root = "Registry::HKEY_CLASSES_ROOT\Applications\$exeName"
+    $command = '"' + $ExePath + '" "%1"'
+    $current = (Get-ItemProperty "$root\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+    if ($current -eq $command) { return }
+
+    if ($DryRun) {
+        Write-Host "  would register $exeName as '$FriendlyName'"
+        $script:changes++
+        return
+    }
+    New-Item -Path "$root\shell\open\command" -Force | Out-Null
+    Set-ItemProperty -Path $root -Name '(default)' -Value $FriendlyName -Force
+    Set-ItemProperty -Path $root -Name 'FriendlyAppName' -Value $FriendlyName -Force
+    Set-ItemProperty -Path "$root\shell\open\command" -Name '(default)' -Value $command -Force
+    Write-Host "  registered $exeName" -ForegroundColor Green
+    $script:changes++
+}
+
 $isAdmin = Test-Admin
 $plan = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 
@@ -103,7 +128,12 @@ Write-Host "  ($($plan.mediaExtensions.Count) media types checked; $script:chang
 Write-Host "`n3. quoted command paths"
 foreach ($progId in $plan.quoteCommandsForProgIds) { Repair-QuotedCommand -ProgId $progId }
 
-Write-Host "`n4. not scriptable by design" -ForegroundColor DarkGray
+Write-Host "`n4. application registrations"
+foreach ($app in $plan.applicationRegistrations) {
+    Register-Application -ExePath $app.exePath -FriendlyName $app.friendlyName
+}
+
+Write-Host "`n5. not scriptable by design" -ForegroundColor DarkGray
 Write-Host '  - default apps (UserChoice): hash-protected; use Settings > Default apps' -ForegroundColor DarkGray
 Write-Host '  - OBS settings: see declared/obs.json' -ForegroundColor DarkGray
 

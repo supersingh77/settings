@@ -30,6 +30,15 @@
     ".ac3"
   ],
 
+  "applicationRegistrations": [
+    {
+      "exePath": "C:\\Program Files\\GenOffice\\GenOffice.exe",
+      "friendlyName": "GenOffice"
+    }
+  ],
+
+  "_appRegistrationWhy": "Windows resolves an OpenWithList entry by executable name, which only works for applications registered under HKCR\\Applications\\<exe>. PotPlayer had that registration; GenOffice never created one, so .md had a ProgId with a valid command and still would not launch. Registering it makes GenOffice a first-class application for Open-with purposes.",
+
   "quoteCommandsForProgIds": [
     "Markdown Document"
   ],
