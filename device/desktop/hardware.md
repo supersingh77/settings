@@ -67,7 +67,7 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 |---------|------|--------|-------|--------|
 | Realtek PCIe GbE (RTL8168) | Wired | Up | 1 Gbps | **10.50.511.2021** (2021-05-11) |
 | Wi-Fi | — | Not present | — | No built-in Wi-Fi; phone/webcam uses the LAN |
-| Bluetooth | USB dongle (TP-Link) | Up | — | `USB\VID_2357&PID_0604` → "Generic Bluetooth Adapter", inbox `bth.inf`, status Started. No paired devices as of 16 Nov — pairing (Zebronics speaker) is a Settings step, not a driver problem |
+| Bluetooth | USB dongle — TP-Link UB500 (BT 5.3) | Up | — | `USB\VID_2357&PID_0604` → "Generic Bluetooth Adapter" on **inbox `bth.inf` 10.0.26100.9444** (Microsoft, "Best Ranked / Installed"). No vendor driver is staged and none is needed on Win11 — TP-Link's installer targets Win7–10. **0 paired devices** as of 16 Nov: pairing the Zebronics speaker is a Settings step, not a driver problem |
 
 **IP:** 192.168.1.11 / 192.168.1.1
 
