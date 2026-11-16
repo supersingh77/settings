@@ -40,20 +40,52 @@ Keep OBS at 6000 while you might stream anywhere; raise it only if you commit to
 
 > Simple output mode shares **one** output resolution between stream and recording. Streaming 720p60 while recording 1080p60 requires switching Output mode to **Advanced** (separate encoders, separate rescale). Don't bother until a platform actually forces the issue.
 
-## Audio — the part most likely to bite
+## Audio — measured, not assumed
 
-OBS currently captures:
+Device inventory on this machine (16 Nov 2026):
 
-- **Mic/Aux** → `Microphone (Owl Lite Audio)` — the webcam's built-in mic
-- **Desktop Audio** → `4 - MAG 255XF (AMD High Definition Audio Device)` — the monitor's HDMI output, **not** your headphones or interface
+| Device | Role | State |
+|---|---|---|
+| **Kreo Owl Lite** | webcam + its mic | camera and **mic both work** — −31.8 dB mean / −6.1 dB peak, then −48.1 / −12.4 on a second pass. **Pinned as OBS's `Mic/Aux`**: wired, always on, no battery |
+| **Razer Barracuda X 2.4** | headset mic **+** playback | works while awake (−45.1 dB mean, −27.7 dB peak) but **auto-mutes or sleeps when idle** — later passes read −74 dB, and one test recording captured −85 dB of nothing |
+| **Focusrite Scarlett Solo** | `Analogue 1 + 2` input | connected, unused (guitar, not played this year), nothing plugged in → −91 dB |
+| **Digitek USB wireless mic** | receiver `USBAudio1.0` | not plugged in (device state = not present) |
+| **Zebronics BT speaker** | playback | not used for capture |
+| Realtek ALC897 onboard | mic/line jacks | present as hardware, nothing plugged |
 
-Measured on the two existing recordings: 12 Nov averaged **−37.8 dB** (too quiet), 14 Nov **−18.4 dB** (healthy). Quiet voice is the classic "sounds bad on YouTube" cause — viewers turn it up and hear hiss.
+**The monitor has no microphone.** HDMI audio is output-only; the "extra mic" you noticed is the motherboard's Realtek mic jack, which Windows lists even with nothing connected.
 
-Worth doing:
+### Mic choice
 
-1. **Check Desktop Audio matches what you hear.** If you game on the Focusrite or Razer headset while Windows' default output is the monitor, OBS records the wrong (or silent) device. Set OBS → Audio → Desktop Audio to the device you actually listen on.
-2. **Use the Focusrite for voice if a mic is plugged into it.** `Analogue 1 + 2` is a live input; a Scarlett + XLR mic beats any webcam mic by a wide margin. Otherwise keep the webcam mic and add **Noise Suppression** + a small **Gain** filter.
-3. Target peaks around **−12 to −6 dB**, mean voice around −18 dB.
+`Mic/Aux` is pinned to the **Owl Lite** webcam mic:
+
+```
+WASAPI: Device 'Microphone (Owl Lite Audio)' [48000 Hz] initialized (source: Mic/Aux)
+```
+
+Wired and always available beats a headset mic that silently sleeps. For better voice, wear the headset and switch `Mic/Aux` to it — but only after confirming with `mic-check.ps1` that it is awake and unmuted, because a sleeping Barracuda looks exactly like a dead mic:
+
+```powershell
+pwsh device/desktop/scripts/mic-check.ps1 -Seconds 6   # speak while it runs
+```
+
+**Beware the false negative.** The same device measured −91 dB on one pass and −31 dB on the next (device still opening, or held by another app). Two passes, or one while speaking, before writing a mic off.
+
+### Desktop Audio is still on "default"
+
+It currently resolves to `4 - MAG 255XF` (the monitor's HDMI). OBS's `device_id: "default"` means **it follows whatever Windows has as default output**, so:
+
+- If you wear the headset while gaming → set the headset as the Windows default output, and OBS follows automatically.
+- If you want them independent, pin Desktop Audio to the headset in OBS → Audio (or edit `DesktopAudioDevice1.settings.device_id` in the scene collection).
+
+Using the headset for both playback and mic also removes the echo risk of monitor speakers leaking into the mic.
+
+### Two traps worth remembering
+
+1. **Global audio devices are stored in the scene collection, not the profile.** `AuxAudioDevice1` / `DesktopAudioDevice1` live in `%APPDATA%\obs-studio\basic\scenes\Untitled.json`. Keys in `basic.ini` (`AuxDevice1`, `Mic/Auxiliary Device 1`, …) are ignored — all four were tested and dropped.
+2. **Hand-written filter entries get discarded.** Adding a `filters` array to `AuxAudioDevice1` survived OBS's parse but was stripped on the next save, so filters have to be added through the UI: **Audio Mixer → gear icon on Mic/Aux → Filters → + → Noise Suppression** (RNNoise, no tuning needed). That is the single best remaining audio improvement — it kills fan and keyboard noise on any mic.
+
+Target peaks around **−12 to −6 dB**, mean voice around −18 dB. Watch the meter once, then trust it.
 
 ## Deliberately not done
 
@@ -62,7 +94,7 @@ Keeping the "delete before optimising" rule — none of these are needed yet:
 - **AV1 or HEVC recording.** The RX 7600 can encode both, and AV1 would roughly halve file size at equal quality. Rejected for now because editing/upload paths add friction; H.264 opens everywhere.
 - **Game Capture in place of Display Capture.** It captures one window, skips desktop composition and avoids the OBS window bleeding in. Worth adding when you next record a game, but it is a scene change, not a settings change.
 - **Multi-track audio** (game and mic on separate tracks). Real editing value once you're cutting videos; needs per-source track assignment in Advanced Audio Properties.
-- **Replay buffer, scene collections, filters, plugins.** Zero benefit until the basics above are actually exercised.
+- **Replay buffer, extra scene collections, plugin installs.** Zero benefit until the basics above are actually exercised. (Noise suppression is the one filter worth having — see the audio section.)
 
 ## Re-verifying later
 

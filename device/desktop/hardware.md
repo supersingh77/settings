@@ -76,8 +76,10 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 |--------|------|--------|
 | **Realtek ALC897** (onboard) | Motherboard audio | Driver **6.0.9231.1** + Realtek Audio Control; no analog endpoint currently active |
 | **Focusrite Scarlett Solo** (4th gen) | USB interface | Driver **4.150.0.432** + Control 2 **1.1210**; working |
-| **Razer Barracuda X 2.4** | USB wireless headset | Headphones + mic endpoints working |
-| **AMD HDMI Audio** | GPU → monitors | Endpoints for MAG 255XF and BenQ RL2240H |
+| **Razer Barracuda X 2.4** | USB wireless headset | Headphones + mic work while awake (−45 dB mean, −27.7 dB peak), but the mic **auto-mutes/sleeps when idle** (down to −74 dB). Not safe as the default recording mic |
+| **Kreo Owl Lite (webcam) mic** | USB (UVC) | Works — −31.8 dB mean / −6.1 dB peak measured. **OBS's pinned `Mic/Aux`**: wired, always on |
+| **Digitek USB wireless mic** | USB receiver `USBAudio1.0` | Not connected (device state: not present) |
+| **AMD HDMI Audio** | GPU → monitors | Endpoints for MAG 255XF and BenQ RL2240H. Output only — **no monitor microphone exists** |
 
 For streaming, capture game audio from the Focusrite/Razer endpoint and mic separately in OBS. The onboard Realtek jacks are currently unused.
 
@@ -93,7 +95,7 @@ For streaming, capture game audio from the Focusrite/Razer endpoint and mic sepa
 | Shifter | A7 Gear Shift (`VID_11FF&PID_B772`) — separate HID game controller; bind per game |
 | Controller | Xbox 360 controller on a third-party wireless receiver (`VID_3537&PID_1093`) |
 | Phone (webcam) | Retired — the phone/DroidCam route was replaced by the Kreo Owl Lite |
-| Webcam | Kreo Owl Lite (`USB\VID_0C45&PID_6300&MI_00`) — USB Video Class on inbox `usbvideo.inf`, status Started. Resolution/FPS capabilities not yet measured |
+| Webcam | Kreo Owl Lite (`USB\VID_0C45&PID_6300&MI_00`) — USB Video Class on inbox `usbvideo.inf`, status Started. Video works; its mic is the default voice input |
 
 ## Known Quirks
 
