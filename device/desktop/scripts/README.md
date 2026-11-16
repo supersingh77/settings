@@ -10,10 +10,6 @@
 | `cleanup-system.ps1` | Temp files, DISM component cleanup, Recycle Bin, DNS, Delivery Optimization. Supports `-DryRun`; reports staged-installer size without deleting it. | Active |
 | `join-videos.ps1` | Lossless FFmpeg concat of clips in a folder, ordered by filename. Resolves `ffmpeg` from PATH or `C:\Program Files\FFmpeg\bin`. | Active |
 | `remux-audio-back.ps1` | Puts a cleaned/noise-reduced audio file back into the original video with `-c:v copy`, then proves the video packets are bit-identical via MD5. Transcodes audio to AAC only when the codec is not MP4-compatible. | Active |
-| `disable-scroll.ahk` | Blocks mouse-wheel events; exit with `Ctrl+Alt+Q`. | Legacy — workaround for the old faulty Logitech wheel. Not needed with the MCHOSE L7 Pro. |
-| `enable-scroll.ahk` | Closes the `disable-scroll.ahk` instance. | Legacy |
-| `enable-autostart.ahk` | Adds `disable-scroll.ahk` to the Startup folder. | Legacy |
-| `disable-autostart.ahk` | Removes that Startup shortcut. | Legacy |
 
 ## User Aliases (PowerShell 7)
 
@@ -43,6 +39,5 @@ Windows PowerShell 5.1 is left alone: its execution policy is `Restricted`, so a
 - **One package at a time.** winget 1.29.380 has no `--exclude` option for `upgrade`, so the script parses the `winget upgrade` table itself, drops the guarded ids, and runs `winget upgrade --id <id> --exact` per package. A failure is listed at the end instead of aborting the rest of the run.
 - **Downloads go through WinINET, not Delivery Optimization.** On 4 Nov 2026 `update` sat on `Downloading …gh_2.103.3_windows_amd64.msi` for 4 minutes: winget's diag log shows `DeliveryOptimization downloading from url:` and then nothing at all. `%LOCALAPPDATA%\Microsoft\WinGet\Settings\settings.json` now sets `network.downloader` to `wininet` (schema: [aka.ms/winget-settings.schema.json](https://aka.ms/winget-settings.schema.json)). If a download ever looks frozen again, check that file first.
 - **Winget output is not piped, so it is not in the transcript.** winget only draws its progress bar when stdout is a console; piping hid a stalled download. Per-package winget text therefore goes straight to the terminal — for diagnostics use `%LOCALAPPDATA%\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir`.
-- **AutoHotkey v2 is not installed.** The four `.ahk` scripts are dormant unless you install it; they are kept only for the old mouse workaround. Deleting them is safe (Git history retains them).
 - `cleanup-system.ps1 -DryRun` is the safe first run.
 - `join-videos.ps1` expects clips with the same codec/resolution/fps/audio; otherwise use the re-encode fallback in `notes/ffmpeg-video-workflow.md`, or `remux-audio-back.ps1` when only the audio changed.
