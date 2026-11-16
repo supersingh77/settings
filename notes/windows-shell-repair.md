@@ -65,6 +65,30 @@ What was actually changed, with the backup that undoes it:
 
 **Test-method warning:** launching a file from inside an agent sandbox reports `Server execution failed` / `Access is denied` for **every** type, including ones that work fine by hand. Those errors are the sandbox refusing the shell launch, not the OS. Association behaviour has to be verified by double-clicking as the logged-in user.
 
+## Verified by hand, 16 Nov 2026 (after the association repair)
+
+Tested by double-clicking as the logged-in user — the only reliable method.
+
+| Action | Result |
+|---|---|
+| Double-click a **video** (`.mp4`/`.mkv`) | ✅ opens (VLC) |
+| Right-click → **Open with ▸ PotPlayer** | ✅ works, for video and for audio |
+| Right-click → **Play with PotPlayer** (`.m4a`) | ✅ works |
+| Right-click → **Open with ▸ GenOffice** (`.md`) | ✅ works |
+| Double-click **`.m4a`** | ❌ nothing |
+| Double-click **`.md`** | ❌ nothing |
+| Right-click → **Open** (the default verb) on `.m4a` | ❌ nothing |
+| **Choose another app** (any type) | ❌ nothing — this is the dead picker |
+
+**What that pattern means.** Every *explicit* handler launch works. Only the paths that go through **default-verb resolution** (double-click, right-click → Open) fail, and only for some types. The association *data* is provably fine: `.m4a` → `PotPlayerMini64.m4a` → `PotPlayerMini64.exe "%1"`, identical in shape to `.mp4`'s working chain. So this is not a registry-data problem any more — it is the shell's association-resolver that is damaged, alongside the picker.
+
+That is consistent with the root cause below: the 26100 shell binaries cannot correctly service the 26300 OS's association pipeline. Registry surgery has reached its limit.
+
+**Practical path until the image is repaired:**
+
+1. Use **right-click → Open with ▸ \<app\>** — verified working for every type in the table above.
+2. Try **Settings → Apps → Default apps → choose PotPlayer → set `.m4a`**, and GenOffice for `.md`. That writes a proper `UserChoice` (with its valid hash) through a supported API rather than the broken resolver, and is the one remaining thing that could restore double-click without reinstalling.
+
 ## What does not fix it
 
 - Re-registering the CBS packages as the current user — tried, no change to the picker.
