@@ -67,6 +67,7 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 |---------|------|--------|-------|--------|
 | Realtek PCIe GbE (RTL8168) | Wired | Up | 1 Gbps | **10.50.511.2021** (2021-05-11) |
 | Wi-Fi | — | Not present | — | No built-in Wi-Fi; phone/webcam uses the LAN |
+| Bluetooth | USB dongle (TP-Link) | Up | — | `USB\VID_2357&PID_0604` → "Generic Bluetooth Adapter", inbox `bth.inf`, status Started. No paired devices as of 16 Nov — pairing (Zebronics speaker) is a Settings step, not a driver problem |
 
 **IP:** 192.168.1.11 / 192.168.1.1
 
@@ -78,7 +79,7 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 | **Focusrite Scarlett Solo** (4th gen) | USB interface | Driver **4.150.0.432** + Control 2 **1.1210**; working |
 | **Razer Barracuda X 2.4** | USB wireless headset | Headphones + mic work while awake (−45 dB mean, −27.7 dB peak), but the mic **auto-mutes/sleeps when idle** (down to −74 dB). Not safe as the default recording mic |
 | **Kreo Owl Lite (webcam) mic** | USB (UVC) | Works — −31.8 dB mean / −6.1 dB peak measured. **OBS's pinned `Mic/Aux`**: wired, always on |
-| **Digitek USB wireless mic** | USB receiver `USBAudio1.0` | Not connected (device state: not present) |
+| **Digitek USB wireless mic** | USB (`USB\VID_3634&PID_4155`) | **Connected** 16 Nov: Windows endpoint `Microphone (USBAudio1.0)` is active, but **DirectShow cannot see it**, so ffmpeg/`mic-check.ps1` cannot measure it. OBS uses WASAPI and can |
 | **AMD HDMI Audio** | GPU → monitors | Endpoints for MAG 255XF and BenQ RL2240H. Output only — **no monitor microphone exists** |
 
 For streaming, capture game audio from the Focusrite/Razer endpoint and mic separately in OBS. The onboard Realtek jacks are currently unused.

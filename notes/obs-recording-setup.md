@@ -71,6 +71,8 @@ pwsh device/desktop/scripts/mic-check.ps1 -Seconds 6   # speak while it runs
 
 **Beware the false negative.** The same device measured −91 dB on one pass and −31 dB on the next (device still opening, or held by another app). Two passes, or one while speaking, before writing a mic off.
 
+`mic-check.ps1` uses **DirectShow**, the same path as ffmpeg. Some USB mics — the Digitek wireless receiver is one — register a Windows audio endpoint but expose no DirectShow device, so the script cannot see them even though OBS (which uses WASAPI) can. Judge those by OBS's own audio meter.
+
 ### Desktop Audio is still on "default"
 
 It currently resolves to `4 - MAG 255XF` (the monitor's HDMI). OBS's `device_id: "default"` means **it follows whatever Windows has as default output**, so:
