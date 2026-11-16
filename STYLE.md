@@ -1,0 +1,63 @@
+# STYLE.md — how code in this repo is written
+
+> Read this before writing or editing a script. It exists because this repo is read by agents as much as by its owner.
+
+## The premise
+
+Prose inside code is ambiguous. A comment describing a workaround looks identical to a comment describing intent, and a future reader — human or agent — cannot tell which it is. Worse, a stale comment reads as a requirement.
+
+This repo already carries knowledge that took hours to establish (`OBS silently ignores h264_texture_amf`; `the Barracuda mic auto-sleeps and records nothing`). That knowledge must survive. It must not live in a `#` line.
+
+**So: code carries no explanations, and no fact exists only in a comment.**
+
+## Rules
+
+1. **No comments in code.** `#` is only allowed for `#Requires` directives. If a line needs explaining, the line is wrong: rename it, split it, or move the explanation to Rule 2.
+2. **Facts live in one place, and it is not code.**
+   - *What should be true* → `device/*/declared/*.json`, using `_why` / `_note` keys.
+   - *Why it is this way* → `device/*.md` or `notes/*.md`.
+   - A fact repeated in two files is a bug; the copies will disagree.
+3. **Functions are pure by default.** Input through parameters, output through the return value. No `$global:`, no hidden state, no `Write-Host` inside functions that compute.
+4. **Side effects live at the edges.** One thin section — the `main` block at the bottom — performs every write, every external process call, every filesystem change.
+5. **Data is not code.** Enumerations (which extensions, which packages, which paths) are JSON. A script contains the algorithm that walks the data, never the list itself.
+6. **Anything that writes supports `-DryRun`**, and a dry run must be safe to run at any time, including when the machine already matches.
+7. **Anything that writes is idempotent.** Second run changes nothing. `0 changes` is the success message.
+8. **Exit codes are explicit.** Non-zero on failure, so a caller (or an agent) can tell without parsing text.
+9. **Prefer boring.** An explicit `foreach` that reads top to bottom beats a clever pipeline that must be simulated.
+10. **Names carry the meaning.** `Get-BrokenAssociation` not `$d` — this is how Rule 1 stays affordable.
+
+## Layout
+
+```
+device/<device>/declared/     intent: data + a thin apply script
+device/<device>/scripts/      operations: audit, maintenance, one-off tools
+notes/                        prose: why, trade-offs, dead ends
+```
+
+Code and data are separated by directory, not by convention. A script that hardcodes a list is in the wrong shape.
+
+## Tests are invariants, not unit tests
+
+For scripts this size, the valuable checks are properties:
+
+| Invariant | Why it earns its place |
+|---|---|
+| every script parses | catches syntax-only breakage before it runs |
+| no comments outside `#Requires` | Rule 1, enforced mechanically instead of by discipline |
+| every JSON in `declared/` is valid | those files are the source of truth; a typo silently disables a rule |
+| `-DryRun` mutates nothing | proves Rule 6 |
+| a converged machine reports 0 changes | proves Rule 7 — this is the check that would have caught the `Get-ChildItem` vs `GetValueNames` mistake |
+| every script is listed in its folder's README | keeps the index honest as code is added |
+
+A verifier script is planned, not present. Until it exists these rules are enforced by review, which is exactly the situation that produced three weeks of stale docs.
+
+## Tooling reality on this machine
+
+- `PSScriptAnalyzer` — **not installed**, and PSGallery is currently unreachable from this session (TLS handshake fails, same class of failure as the sandboxed `winget`).
+- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`.
+
+Therefore: **write the verifier with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 60-line script beats a dependency that cannot be installed.
+
+## When to break these rules
+
+Never silently. If a comment is genuinely unavoidable — a vendor bug that cannot be named in data, say — it goes in the relevant `.md` with a date, and the code gets no comment. The absence of an explanation in the code is the signal to go looking for the one in prose.

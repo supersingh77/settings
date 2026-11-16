@@ -32,6 +32,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 - **Inbox pattern**: one small `.md` per idea with title, device metadata, date, core thoughts. Process into canonical folders over time.
 - **Outbox pattern**: structured `.md` files ready to dispatch; remove once sent.
 - **Scripts**: live inside their owning device folder (e.g. `device/desktop/scripts/`), never at the repo root.
+- **Code style**: read [`STYLE.md`](STYLE.md) before writing or editing any script. No comments in code; facts live in `declared/*.json` or in prose docs. Functions pure, side effects at the edges, data separate from code.
 - **Verify live, never recall**: before editing a device doc, run that device's audit script — for the desktop that is `pwsh device/desktop/scripts/audit-state.ps1`, then read `device/desktop/audit-playbook.md`.
 - **No invented values**: mark anything unmeasured as `needs-review`.
 - **Git workflow**: `git pull` before starting; `git add . && git commit && git push` after changes.
