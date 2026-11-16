@@ -37,7 +37,7 @@ OS reports **26H2, build 26300.9457**, but the shell files are from the 26100 li
 
 | Extension | State | Resolves to |
 |---|---|---|
-| `.md` | no `UserChoice`; `HKCR\.md` → `Markdown` (Obsidian) | GenOffice (via the `Markdown Document` OpenWithProgid) |
+| `.md` | no `UserChoice`; `HKCR\.md` → `Markdown`, whose `shell\open\command` is **empty** | nothing — dead ProgId. GenOffice is the only registered handler (`Markdown Document` → `C:\Program Files\GenOffice\GenOffice.exe "%1"`) |
 | `.txt` | `UserChoice` → `AppX4ztfk…` (AppX Notepad), hash present | `Notepad.exe` (packaged) |
 | `.mp4` / `.m4a` | `UserChoiceLatest` with a `Hash` but **no `ProgId`** | `OpenWith.exe` — i.e. "no default" → the broken picker |
 
@@ -73,6 +73,8 @@ The image mixes **26100-era shell binaries and packages with a 26300 OS build**.
 
 ## Loose ends
 
-- Notepad++ 8.9.9.1 was installed during troubleshooting and is **still installed**; removal needs elevation (MSI uninstall returned 1603 without it).
+- **Notepad++ 8.9.9.1 — resolved 16 Nov 2026.** It was installed only during this troubleshooting and removed with `winget uninstall --id Notepad++.Notepad++ --exact` from an elevated shell (the MSI uninstall returns 1603 without elevation, which is why it sat there).
+- **Obsidian 1.15.1 — installed and removed 16 Nov 2026** (same day, to test `.md` handling). Its uninstaller left the `.md` mapping worse: `HKCR\.md` still points at the `Markdown` ProgId, but that ProgId's `shell\open\command` is now empty, and there is no `UserChoice`. Double-clicking a `.md` therefore does nothing. Stale `HKCR\Obsidian` and `HKCR\obsidian` keys also remain.
+  - Do **not** fix this by hand-writing `UserChoice` (see the rule above). It can be set from **Settings → Apps → Default apps → `.md`** once the picker is repaired, or GenOffice can be used explicitly.
 - A `.reg` snapshot of `HKCU\…\FileExts` lives in `%LOCALAPPDATA%\DesktopMaintenance`; `reg import` refuses the protected keys, so it is a reference only.
-- `.md` and `.txt` were restored to their original handling; `.mp4` / `.m4a` remain unresolved exactly as before.
+- `.txt` was restored to its original handling; `.mp4` / `.m4a` remain unresolved exactly as before.
