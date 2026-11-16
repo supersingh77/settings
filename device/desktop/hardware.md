@@ -67,7 +67,7 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 |---------|------|--------|-------|--------|
 | Realtek PCIe GbE (RTL8168) | Wired | Up | 1 Gbps | **10.50.511.2021** (2021-05-11) |
 | Wi-Fi | — | Not present | — | No built-in Wi-Fi; phone/webcam uses the LAN |
-| Bluetooth | USB dongle — TP-Link UB500 (BT 5.3) | Up | — | `USB\VID_2357&PID_0604` → "Generic Bluetooth Adapter" on **inbox `bth.inf` 10.0.26100.9444** (Microsoft, "Best Ranked / Installed"). No vendor driver is staged and none is needed on Win11 — TP-Link's installer targets Win7–10. **0 paired devices** as of 16 Nov: pairing the Zebronics speaker is a Settings step, not a driver problem |
+| Bluetooth | USB dongle — TP-Link UB500 (BT 5.3) | Up | — | `USB\VID_2357&PID_0604`. Ran on inbox `bth.inf` 10.0.26100.9444; **16 Nov the TP-Link package was installed**, so `oem36.inf` (Realtek 1.9.1051.3009, 2023-09-11) is now "Best Ranked / Installed" and `bth.inf` is "Outranked". Detects and pairs; **1 paired device** (ZEB-COUNTY). Note the vendor driver is *older* than the inbox stack — roll back by uninstalling the oem36 package in Device Manager if LE audio or discovery misbehaves |
 
 **IP:** 192.168.1.11 / 192.168.1.1
 
@@ -80,6 +80,7 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 | **Razer Barracuda X 2.4** | USB wireless headset | Headphones + mic work while awake (−45 dB mean, −27.7 dB peak), but the mic **auto-mutes/sleeps when idle** (down to −74 dB). Not safe as the default recording mic |
 | **Kreo Owl Lite (webcam) mic** | USB (UVC) | Works — −31.8 dB mean / −6.1 dB peak measured. **OBS's pinned `Mic/Aux`**: wired, always on |
 | **Digitek USB wireless mic** | USB (`USB\VID_3634&PID_4155`) | **Connected** 16 Nov: Windows endpoint `Microphone (USBAudio1.0)` is active, but **DirectShow cannot see it**, so ffmpeg/`mic-check.ps1` cannot measure it. OBS uses WASAPI and can |
+| **Zebronics ZEB-COUNTY** | Bluetooth speaker | Paired 16 Nov. Playback `Headphones (ZEB-COUNTY)` at 44.1 kHz; **mic** `Headset (ZEB-COUNTY Hands-Free)` is an HFP telephony endpoint (8–16 kHz) — present but unsuitable for recording |
 | **AMD HDMI Audio** | GPU → monitors | Endpoints for MAG 255XF and BenQ RL2240H. Output only — **no monitor microphone exists** |
 
 For streaming, capture game audio from the Focusrite/Razer endpoint and mic separately in OBS. The onboard Realtek jacks are currently unused.

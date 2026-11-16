@@ -55,7 +55,22 @@ Device inventory on this machine (16 Nov 2026):
 
 **The monitor has no microphone.** HDMI audio is output-only; the "extra mic" you noticed is the motherboard's Realtek mic jack, which Windows lists even with nothing connected.
 
-### Mic choice
+### Mic choice — by ear, 16 Nov 2026
+
+Asked to rank three live mics with each isolated, the answer was:
+
+| Rank | Mic | Character |
+|---|---|---|
+| 1 | **Kreo Owl Lite** | best raw quality, but **picks up the most room noise** (fan, keyboard, ambience) |
+| 2 | **Digitek wireless** (clipped to the collar) | slightly behind on fidelity, **much cleaner** — has its own noise cancelling, and being 20 cm from the mouth rejects the room |
+| 3 | **Razer Barracuda X** | surprisingly unimpressive; low output level, and it **auto-sleeps** when idle |
+
+That ranking is the useful result: **quality vs noise is the real trade-off**, not "which mic is better". Two ways to settle it, in order of effort:
+
+1. **Stick with the Owl Lite (current)** and add **Noise Suppression** — Audio Mixer → gear on `Mic/Aux` → Filters → `+` → Noise Suppression (RNNoise). That is exactly the filter that fixes "best quality but noisy", and it is why the webcam mic is still the pinned default.
+2. **Switch to the Digitek** — swap `Mic/Auxiliary Device 1` in OBS → Audio to `Microphone (USBAudio1.0)`. Lower ceiling, less work, and the collar position does the noise rejection for free.
+
+Keep only **one** voice source live. On 16 Nov the scene had the Owl Lite captured twice (its own source plus the global `Mic/Aux`) — the duplicate was deleted, and the Razer/Digitek sources were left muted. Both are still there, muted, for A/B testing.
 
 `Mic/Aux` is pinned to the **Owl Lite** webcam mic:
 
@@ -63,7 +78,7 @@ Device inventory on this machine (16 Nov 2026):
 WASAPI: Device 'Microphone (Owl Lite Audio)' [48000 Hz] initialized (source: Mic/Aux)
 ```
 
-Wired and always available beats a headset mic that silently sleeps. For better voice, wear the headset and switch `Mic/Aux` to it — but only after confirming with `mic-check.ps1` that it is awake and unmuted, because a sleeping Barracuda looks exactly like a dead mic:
+Wired and always available beats a headset mic that silently sleeps. To compare a candidate properly, confirm with `mic-check.ps1` that it is awake and unmuted — a sleeping Barracuda looks exactly like a dead mic:
 
 ```powershell
 pwsh device/desktop/scripts/mic-check.ps1 -Seconds 6   # speak while it runs
@@ -73,14 +88,20 @@ pwsh device/desktop/scripts/mic-check.ps1 -Seconds 6   # speak while it runs
 
 `mic-check.ps1` uses **DirectShow**, the same path as ffmpeg. Some USB mics — the Digitek wireless receiver is one — register a Windows audio endpoint but expose no DirectShow device, so the script cannot see them even though OBS (which uses WASAPI) can. Judge those by OBS's own audio meter.
 
-### Desktop Audio is still on "default"
+### Desktop Audio is on "default", and the default moved
 
-It currently resolves to `4 - MAG 255XF` (the monitor's HDMI). OBS's `device_id: "default"` means **it follows whatever Windows has as default output**, so:
+OBS stores `device_id: "default"`, so it follows the Windows default output. On 16 Nov that was the MAG 255XF HDMI; after the Zebronics **ZEB-COUNTY** Bluetooth speaker was paired and connected it became the speaker — visible in the log:
 
-- If you wear the headset while gaming → set the headset as the Windows default output, and OBS follows automatically.
-- If you want them independent, pin Desktop Audio to the headset in OBS → Audio (or edit `DesktopAudioDevice1.settings.device_id` in the scene collection).
+```
+WASAPI: Device 'Headphones (ZEB-COUNTY)' [44100 Hz] initialized (source: Desktop Audio)
+```
 
-Using the headset for both playback and mic also removes the echo risk of monitor speakers leaking into the mic.
+That is *working as designed*, but it means the captured device changes whenever you change the Windows default. Two consequences:
+
+- **Bluetooth adds 100–300 ms of latency** and drops to 44.1 kHz. Fine for listening, wrong for monitoring your own voice and liable to drift against the facecam.
+- **The speaker's microphone is telephony-grade** (`Headset — ZEB-COUNTY Hands-Free`, an HFP endpoint at 8–16 kHz). It is a new capture device, and it should stay unused for recording.
+
+For recording, pin Desktop Audio to whatever you actually monitor on — the Razer headset (2.4 GHz, low latency) is the reasonable choice — instead of trusting "default".
 
 ### Two traps worth remembering
 
