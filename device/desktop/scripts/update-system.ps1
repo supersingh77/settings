@@ -51,8 +51,8 @@ function ConvertFrom-WingetUpgradeTable {
     for ($i = $headerIndex + 1; $i -lt $Lines.Count; $i++) {
         $line = $Lines[$i]
         if ([string]::IsNullOrWhiteSpace($line)) { continue }
-        if ($line -match '^-+\s*$') { continue }           # column rule
-        if ($line.Length -le $srcCol) { break }            # "N upgrades available." etc.
+        if ($line -match '^-+\s*$') { continue }
+        if ($line.Length -le $srcCol) { break }
         $id = $line.Substring($idCol, $verCol - $idCol).Trim()
         if (-not $id) { break }
 
