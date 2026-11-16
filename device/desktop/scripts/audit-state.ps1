@@ -1,24 +1,9 @@
-# =============================================================================
-# audit-state.ps1 - READ-ONLY snapshot of every fact the desktop docs claim.
-#
-# Prints: OS/build, CPU/board/BIOS, GPU driver, volumes, monitor INF, installed
-# apps (ARP), taskbar pin order, Steam libraries, and "looks installed but isn't"
-# traps. Writes nothing, changes nothing, needs no elevation.
-#
-# Written for sessions where WMI/CIM, Get-Volume, Get-AppxPackage, UI Automation
-# and Export-StartLayout are blocked (agent sandboxes) - everything here uses
-# registry reads, .NET, and the on-disk Steam/pin files instead.
-#
-# Usage:
-#   pwsh device/desktop/scripts/audit-state.ps1
-#   pwsh device/desktop/scripts/audit-state.ps1 -OutFile .\state.md
-#   pwsh device/desktop/scripts/audit-state.ps1 -Since 2026-10-23
-# =============================================================================
 
 [CmdletBinding()]
 param(
     [string]$OutFile,
-    [datetime]$Since
+    [datetime]$Since,
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Continue'
@@ -39,9 +24,6 @@ function Try-Get([scriptblock]$sb) {
     try { & $sb } catch { $null } finally { $ErrorActionPreference = $prev }
 }
 
-# SMBIOS gives RAM SPD and core counts when WMI/CIM is blocked. The registry
-# blob starts with an 8-byte RawSMBIOSData header (version + length), then the
-# table: [type][length][handle] + formatted area + string set, ended by a double NUL.
 function Get-SmbiosTable {
     $raw = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\mssmbios\Data' -Name SMBiosData -ErrorAction Stop).SMBiosData
     if (-not $raw) { return $null }
@@ -63,8 +45,6 @@ function Get-SmbiosTable {
 
         if ($type -eq 4 -and $len -gt 0x26) {
             $cores = $raw[$i + 0x23]
-            # Thread Count is a WORD at 0x25, but some AMI tables carry the
-            # characteristics word right after it - fall back to the low byte.
             $threads = [int]$raw[$i + 0x25] -bor ([int]$raw[$i + 0x26] -shl 8)
             if ($threads -gt 256) { $threads = $raw[$i + 0x25] }
         }
@@ -97,7 +77,6 @@ function Get-SmbiosTable {
     [pscustomobject]@{ Cores = $cores; Threads = $threads; Dimms = $dimms }
 }
 
-# ---------------------------------------------------------------- OS --------
 Section 'OS'
 
 $cv = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
@@ -110,7 +89,6 @@ Out-Line "| Computer | $env:COMPUTERNAME |"
 Out-Line "| User | $env:USERNAME |"
 Out-Line "| PowerShell | $($PSVersionTable.PSVersion) |"
 
-# ------------------------------------------------------------- hardware -----
 Section 'Firmware / CPU'
 
 $bios = Try-Get { Get-ItemProperty 'HKLM:\HARDWARE\DESCRIPTION\System\BIOS' }
@@ -163,7 +141,6 @@ foreach ($d in $displays) { Out-Line "| Display | $d |" }
 
 Section 'Display modes'
 
-# EnumDisplaySettings reaches the live mode without WMI or admin rights.
 try {
     Add-Type -TypeDefinition @'
 using System;
@@ -204,7 +181,6 @@ if ($pnp -match 'No devices were found') { Out-Line 'None.' }
 elseif ($pnp) { Out-Line $pnp.Trim() }
 else { Out-Line 'needs-review - pnputil unavailable' }
 
-# -------------------------------------------------------------- volumes -----
 Section 'Volumes'
 
 foreach ($d in [System.IO.DriveInfo]::GetDrives()) {
@@ -215,7 +191,6 @@ foreach ($d in [System.IO.DriveInfo]::GetDrives()) {
 $missing = @('D:', 'E:') | Where-Object { -not (Test-Path "$_\") }
 if ($missing) { Out-Line ''; Out-Line "Drive letters absent on this machine: $($missing -join ', ') - docs must not reference them." }
 
-# ---------------------------------------------------------------- apps ------
 Section 'Installed apps (registry ARP)'
 
 $arp = @()
@@ -239,7 +214,6 @@ if ($Since) {
     }
 }
 
-# ------------------------------------------------------------- taskbar -----
 Section 'Taskbar pins (left to right)'
 
 $blob = Try-Get { (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -ErrorAction SilentlyContinue).Favorites }
@@ -261,8 +235,6 @@ if ($blob) {
     }
 
     $utf16Text = [Text.Encoding]::Unicode.GetString($blob)
-    # Packaged pins appear as an AppId ("Vendor.App_hash!App") or a package family
-    # name ("Vendor.App_hash"); versioned package paths must be skipped.
     $alias = @{ 'Files' = 'File Explorer'; 'WindowsStore' = 'Microsoft Store'; 'WindowsTerminal' = 'Terminal' }
     [regex]::Matches($utf16Text, '[A-Za-z0-9][A-Za-z0-9._-]*_[a-z0-9]{13}!?[A-Za-z0-9._-]*') |
         ForEach-Object { $_.Value } | Sort-Object -Unique |
@@ -281,7 +253,6 @@ if ($blob) {
         if ($off -ne [int]::MaxValue) { [pscustomobject]@{ Label = $_.Label; Offset = $off } }
     } | Group-Object Offset | ForEach-Object { $_.Group | Select-Object -First 1 } | Sort-Object Offset
 
-    # A packaged pin and its .lnk describe the same button - keep one.
     $seen = @{}
     $n = 0
     foreach ($o in $ordered) {
@@ -296,7 +267,6 @@ if ($blob) {
 }
 else { Out-Line 'needs-review - no Taskband blob readable' }
 
-# -------------------------------------------------------------- steam ------
 Section 'Steam libraries'
 
 $vdf = 'C:\Program Files (x86)\Steam\steamapps\libraryfolders.vdf'
@@ -318,7 +288,6 @@ foreach ($lib in 'V:\Games\SteamLibrary', 'Z:\Games\SteamLibrary') {
     }
 }
 
-# -------------------------------------------------------------- traps ------
 Section 'Looks installed but is not'
 
 $traps = @(
@@ -346,7 +315,6 @@ if (Test-Path $videos) {
     }
 }
 
-# OBS writes wherever its profile says, which is how C: keeps refilling.
 foreach ($ini in (Get-ChildItem "$env:APPDATA\obs-studio\basic\profiles\*\basic.ini" -ErrorAction SilentlyContinue)) {
     $text = Get-Content $ini.FullName -Raw -ErrorAction SilentlyContinue
     if ($text -match 'FilePath=([A-Za-z]:\\\\[^\r\n]+)') {
@@ -360,6 +328,11 @@ Section 'Done'
 Out-Line 'Read-only: nothing was changed.'
 
 if ($OutFile) {
-    $lines -join "`r`n" | Set-Content -LiteralPath $OutFile -Encoding UTF8
-    Write-Host "`nWritten to $OutFile"
+    if ($DryRun) {
+        Write-Host "`nDry run - would write to $OutFile. Nothing changed." -ForegroundColor Yellow
+    }
+    else {
+        $lines -join "`r`n" | Set-Content -LiteralPath $OutFile -Encoding UTF8
+        Write-Host "`nWritten to $OutFile"
+    }
 }
