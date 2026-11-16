@@ -14,6 +14,20 @@
 | `join-videos.ps1` | Lossless FFmpeg concat of clips in one folder, ordered by filename (chronological for OBS/phone timestamps). `-Folder` required; `-Output` defaults to `joined.mp4`; `-Extensions` overridable. All clips must share codec/resolution/fps/audio — otherwise it fails and you want the re-encode fallback in [`notes/ffmpeg-video-workflow.md`](../../../notes/ffmpeg-video-workflow.md). Supports `-DryRun`. | Active |
 | `remux-audio-back.ps1` | Puts a cleaned/noise-reduced audio file back into the original video with `-c:v copy`, then proves the video packets are bit-identical via MD5. Transcodes audio to AAC only when the codec is not MP4-compatible. | Active |
 
+## Reading `mic-check.ps1`
+
+| Mean level | Verdict | Meaning |
+|---|---|---|
+| −70 dB or lower | SILENT | muted, dead, or blocked — treat as unusable, do not "turn it up" |
+| −50 to −70 | very quiet | Windows input level too low |
+| −30 to −50 | quiet | usable, raise gain in OBS |
+| above −30, peak below −3 | healthy | in range |
+| peak above −3 | hot | clipping risk, lower gain |
+
+Target for voice: mean around **−18 dB**, peaks **−12 to −6 dB**. Digital silence (≈ −90 dB) never means a quiet room — a live mic always shows room tone around −45 to −60 dB.
+
+**Known false negative:** a device can read −91 dB on one pass and −40 dB on the next (still opening, or held by another app). Two passes, or one while speaking, before writing a mic off.
+
 ## User Aliases (PowerShell 7)
 
 Defined in `C:\Users\amar\Documents\PowerShell\profile.ps1` — **current user only**, no machine-wide PATH changes:
