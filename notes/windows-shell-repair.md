@@ -80,14 +80,56 @@ Tested by double-clicking as the logged-in user — the only reliable method.
 | Right-click → **Open** (the default verb) on `.m4a` | ❌ nothing |
 | **Choose another app** (any type) | ❌ nothing — this is the dead picker |
 
-**What that pattern means.** Every *explicit* handler launch works. Only the paths that go through **default-verb resolution** (double-click, right-click → Open) fail, and only for some types. The association *data* is provably fine: `.m4a` → `PotPlayerMini64.m4a` → `PotPlayerMini64.exe "%1"`, identical in shape to `.mp4`'s working chain. So this is not a registry-data problem any more — it is the shell's association-resolver that is damaged, alongside the picker.
+**What that pattern means.** Every *explicit* handler launch works. Only the paths that go through **default-verb resolution** (double-click, right-click → Open) fail, and only for some types. The association *data* is provably equivalent:
 
-That is consistent with the root cause below: the 26100 shell binaries cannot correctly service the 26300 OS's association pipeline. Registry surgery has reached its limit.
+| Type | UserChoice | Class → ProgId | Verbs | Outcome |
+|---|---|---|---|---|
+| `.mp4` | none | `PotPlayerMini64.MP4` | Enqueue, **open**, play | ✅ opens |
+| `.mkv` | none | `PotPlayerMini64.MKV` | Enqueue, **open**, play | ✅ opens |
+| `.m4a` | none | `PotPlayerMini64.m4a` | Enqueue, **open**, play | ❌ nothing |
+| `.md` | none | `Markdown Document` (shell default = `open`) | **open** | ❌ nothing |
+
+Identical structure, identical commands, identical hives — different outcomes. Registry surgery has therefore reached its limit; the difference is in the shell's resolver, not the data.
 
 **Practical path until the image is repaired:**
 
 1. Use **right-click → Open with ▸ \<app\>** — verified working for every type in the table above.
-2. Try **Settings → Apps → Default apps → choose PotPlayer → set `.m4a`**, and GenOffice for `.md`. That writes a proper `UserChoice` (with its valid hash) through a supported API rather than the broken resolver, and is the one remaining thing that could restore double-click without reinstalling.
+2. Try setting the default explicitly in **Settings → Apps → Default apps → choose PotPlayer → `.m4a`** (and GenOffice for `.md`). *Viewing* the page is not the same as clicking **Set default** — the click writes a real `UserChoice` with its valid hash, which takes priority over the broken fallback path. This is the one thing that could restore double-click without reinstalling.
+
+## What the 26100-vs-26300 mismatch actually is
+
+Windows identifies itself with a build number, and every system binary carries a matching file version. On a healthy machine they agree:
+
+| | Should be | On this machine |
+|---|---|---|
+| OS build | 26300.9457 | 26300.9457 |
+| `explorer.exe` | 10.0.26300.x | **10.0.26100.8117** |
+| `OpenWith.exe` | 10.0.26300.x | **10.0.26100.8117** |
+| `ShellHost.exe` | 10.0.26300.x | **10.0.26100.9278** |
+| `twinui.pcshell.dll` | 10.0.26300.x | **10.0.26100.9278** |
+
+26100 and 26300 are different servicing branches. ReviOS built this image by taking a 26100 base and replacing/patching enough of it to report 26300 — but the **shell stack stayed on 26100**. The result is a build that claims features its binaries don't implement:
+
+- **Explorer shows the old UI, no tabs** — tab support lives in the 26300 shell, which isn't present.
+- **`OpenWith.exe` / `ShellHost.exe` die at startup** (`0xC0000142`, DLL init failed) — they are compiled against components the newer OS now provides differently.
+- **Default-verb resolution is inconsistent** — an extension with valid handler data still may not launch, because the resolver that walks that data is the mismatched piece.
+
+This cannot be fixed from the registry, and with Windows Update disabled there is no self-healing path. The binary mismatch is the fault; the associations are only its most visible symptom.
+
+### The fix
+
+1. **In-place repair install (keeps apps and files).** Get Windows 11 **26H2 (26300)** media, mount the ISO, and run `setup.exe` from it inside Windows — choose **"Keep personal files and apps"**. This replaces the system binaries with matching 26300 versions. Expect the ReviOS tweaks/branding to be partly reverted (a repair install re-adds components ReviOS strips); Windows will behave closer to stock, with tabs and a working picker.
+2. **Clean install** with correct 26300 media if the repair fails — the same fallback as before.
+3. **Do not** hand-copy `explorer.exe` from another build. It is protected, and it depends on DLLs that would still be mismatched.
+
+Low-probability things worth trying first, because they are free:
+
+```cmd
+sfc /scannow
+DISM /Online /Cleanup-Image /RestoreHealth
+```
+
+If the component store itself holds 26100 pieces, DISM will report success and change nothing — which is exactly what the earlier attempt saw.
 
 ## What does not fix it
 
