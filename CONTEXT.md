@@ -1,6 +1,7 @@
 # CONTEXT.md — Project Bootup File
 
 > Every new chat reads this first. Update it at the end of each chat.
+> **This file is an index, not a database.** Volatile facts (versions, free space, pins, drive letters) live in the device docs — if you paste them here they will rot, and the last time that happened six files were wrong for three weeks.
 
 ## What This Is
 
@@ -20,53 +21,38 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## Devices
 
-| Device | Key Files |
-|--------|-----------|
-| Windows Desktop | `device/desktop/hardware.md`, `software.md`, `desktop.md`, `startmenu-taskbar.md`, `disk-cleanup.md`, `audit-playbook.md`, `scripts/` |
-| Windows Laptop | `device/laptop/hardware.md`, `software.md`, `scripts/` |
-| Fedora Laptop | `device/fedora-laptop/` — full setup, scripts, docs |
-| Phone | `device/phone/hardware.md`, `apps/`, `scripts/` |
+| Device | Entry point |
+|--------|-------------|
+| Windows Desktop | [`device/desktop/README.md`](device/desktop/README.md) — hardware, software, taskbar, desktop, disk cleanup, audit playbook, scripts |
+| Windows Laptop | [`device/laptop/README.md`](device/laptop/README.md) — hardware, software, cleanup script |
+| Fedora Laptop | [`device/fedora-laptop/README.md`](device/fedora-laptop/README.md) — full setup, scripts, docs |
+| Phone | [`device/phone/README.md`](device/phone/README.md) — hardware, app lists, ADB scripts |
 
 ## Key Conventions
 
-- **Inbox pattern**: One small `.md` file per idea with title, device metadata, date, core thoughts. Process into canonical folders over time.
-- **Outbox pattern**: Structured `.md` files ready to dispatch. Agent puts completed work here for user review before sending.
-- **Scripts**: Live inside their owning device folder (e.g. `device/desktop/scripts/`), not in a shared top-level `scripts/`.
-- **Desktop audits**: read `device/desktop/audit-playbook.md` first — verified commands for live pin/app/Steam state before editing those docs.
-- **Git workflow**: `git pull` before starting, `git add . && git commit && git push` after changes.
+- **Inbox pattern**: one small `.md` per idea with title, device metadata, date, core thoughts. Process into canonical folders over time.
+- **Outbox pattern**: structured `.md` files ready to dispatch; remove once sent.
+- **Scripts**: live inside their owning device folder (e.g. `device/desktop/scripts/`), never at the repo root.
+- **Verify live, never recall**: before editing a device doc, run that device's audit script — for the desktop that is `pwsh device/desktop/scripts/audit-state.ps1`, then read `device/desktop/audit-playbook.md`.
+- **No invented values**: mark anything unmeasured as `needs-review`.
+- **Git workflow**: `git pull` before starting; `git add . && git commit && git push` after changes.
 - **Commit style**: `area: brief description` (e.g. `desktop: fix stale notes`, `fedora-laptop: add lessons-learned doc`).
 
 ## Tech Stack / Package Managers
 
-- **Windows**: winget (primary), scoop (CLI helpers only: `dark`, `innounp`)
-- **Fedora**: bash scripts in `device/fedora-laptop/scripts/`
-- **Phone**: ADB-based scripts in `device/phone/scripts/`
+- **Windows**: winget primary — preference order **winget → vendor installer → scoop**, and **all-users/machine-wide before per-user**. scoop is not installed; Chocolatey is present but unused.
+- **Fedora**: bash scripts in `device/fedora-laptop/scripts/`.
+- **Phone**: ADB-based scripts in `device/phone/scripts/`.
 
 ## Active Threads
 
-- C: drive has **98.8 GB free** after the 23 Oct cleanup — no longer critical
-- Net worth / assets & liabilities feature was spec'd but the finance project is now in a separate repo
+- **Desktop shell is broken on this image** — `OpenWith.exe` / `ShellHost.exe` die at startup, so "Open with" does nothing and `.mp4`/`.m4a` have no default app. Root cause and repair path: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
+- **Desktop streaming stack is incomplete** — ShareX, DroidCam (client + OBS plugin) and input-overlay are still missing. See the gaps section in [`device/desktop/README.md`](device/desktop/README.md).
+- Net worth / assets & liabilities feature lives in the separate finance repo now.
 
-## What Changed Recently
+## Recent Changes
 
-- **2026-11-04 — `update` froze on the GitHub CLI download**: winget used **Delivery Optimization** (`DeliveryOptimization downloading from url:` then silence for 4 min). Fixed by `network.downloader: wininet` in `%LOCALAPPDATA%\Microsoft\WinGet\Settings\settings.json`, and by no longer piping winget per-package output — piping disabled winget's progress bar, which is what made the stall look like a dead terminal.
-- **2026-11-04 — `update` fixed for real; PowerShell now 7.6.9**: `winget upgrade` in 1.29.380 has **no `--exclude`** — the first fix attempt died on `0x8A150002` (invalid argument) before upgrading anything. `update-system.ps1` now parses the `winget upgrade` table and drives `winget upgrade --id <id> --exact` one package at a time, filtering `Microsoft.PowerShell`; a failing package is reported at the end instead of aborting the run. 7.6.9 itself was installed from **Command Prompt** — the MSI kills the pwsh-hosted install and rolls back 1603 (24 Oct 7.6.8, 1 Nov ×3 + 3 Nov 7.6.9). Documented in `device/desktop/scripts/README.md`.
-- **2026-11-03 — diagnosed `update` dying at package 1 (PowerShell 1603)**: PowerShell MSI replaces the running engine's binaries, Windows Installer closes `pwsh` mid-install, transaction rolls back; transcript ends at `The pipeline has been stopped.`
-- **2026-10-23 — ReviOS 26H2 rebuild**: clean Windows 11 Pro 26H2 (build 26300.9457) replacing the Atlas OS setup. Old `V:` → `E:`, old `Z:` → `D:`.
-- Drivers: AMD chipset 8.09.28.1124 (fixes `ACPI\AMDIF030`), Adrenalin 26.10.1 (32.0.32015.7029), Realtek audio 6.0.9231.1, Realtek LAN 10.50.511.2021, Focusrite 4.150.0.432.
-- Apps restored: 7-Zip, PowerShell 7.6.7, Python 3.14.7, GitHub CLI, FFmpeg (machine-wide), plus Discord, Steam, PotPlayer, HWiNFO, Twinkle Tray, Radmin VPN, LocalSend.
-- PXN V10 Pro wheel + A7 Gear Shift connected; PXN SimRacing 1.6.9 installed and detects the V10 Pro base/pedals.
-- MSI MAG 255XF monitor driver 1.0.0.0 (WHQL) + ICM installed; MPRT locks DDC/CI brightness, so Twinkle Tray needs MPRT off.
-- Display now 1920×1080 @ 300 Hz; C: 98.8 GB free after removing 46.6 GB (including the 38 GB `Windows.old`); Steam libraries on `E:`/`D:` need re-adding on first launch.
-- Full repo cleanup pass (2026-10-09): corrected desktop GPU to **8 GB** (WMI 32-bit cap explained), driver → 26.8.1, free space C: 13.0 / V: 32.4 / Z: 302.9 GB, RAM module detail, BIOS
-- `startmenu-taskbar.md` taskbar list corrected to the real **17** pins; "taskbar and Start disjoint" note fixed (they overlap on Settings/Terminal/Notepad)
-- `audit-playbook.md` §1 now documents the UI Automation method and the registry decode's packaged-app blind spot
-- `desktop.md` rewritten to the live `C:\Users\amar\Desktop` layout (`bills/`, `statements/`, `settings/`, `8/`; `Personal/` and `config/` no longer exist)
-- Fixed stale refs: streaming-workflow path → `settings\` + removed dead commit hashes; VRAM 4GB→8GB in notes/laptop docs
-- Added `install-links.sh` to the Fedora README tree
-- Added `device/desktop/audit-playbook.md` — verified commands for live pin/app/Steam audits (2026-10-09)
-- Fixed inverted "No Invented Values" rule in `README.md` (it read "Do guess")
-- Start menu / taskbar docs verified live against registry (2026-10-09): Zed → Cursor, Audacity unpinned
-- `software.md` reconciled with real installs — stale apps removed, AutoClaw/ZCode/MiniMax Code added
-- App-removal candidates sized and parked in `disk-cleanup.md` (no app changes made)
-- Finance project moved to separate repo; `CONTEXT.md` created (2026-10-09)
+- **2026-11-16** — `desktop:` full live re-audit. Corrected drive letters (`V:`/`Z:`, not `E:`/`D:`), free space, app inventory, taskbar pins and desktop layout; recorded the `ProductName` "Windows 10 Pro" quirk. Removed Notepad++ and Obsidian. Added `scripts/audit-state.ps1` and moved `remux-audio-back.ps1` out of the repo root. `CONTEXT.md` itself cut down to an index.
+- **2026-11-16** — `notes:` documented the ReviOS shell / "Open with" failure and its repair path.
+- **2026-11-04** — `desktop:` fixed `update` (WinINET downloader, per-package upgrades, PowerShell excluded) — details in [`device/desktop/scripts/README.md`](device/desktop/scripts/README.md).
+- **2026-10-23** — `desktop:` 26H2 rebuild baseline — details in [`device/desktop/hardware.md`](device/desktop/hardware.md) and [`disk-cleanup.md`](device/desktop/disk-cleanup.md).
