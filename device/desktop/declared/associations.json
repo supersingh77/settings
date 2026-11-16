@@ -4,9 +4,18 @@
 
   "markdown": {
     "extension": ".md",
-    "targetProgId": "Markdown Document",
-    "_why": "HKCR\\.md originally pointed at a 'Markdown' ProgId whose shell\\open\\command was empty, so double-click did nothing. 'Markdown Document' resolves to GenOffice, which has a command."
+    "targetProgId": "MarkdownText",
+    "openWithExe": "notepad.exe",
+    "_why": "GenOffice's handler never launched from a double-click even with a correct ProgId, a quoted command and an Applications registration - while 'Open with > GenOffice' worked. A plain notepad.exe handler copies the pattern that demonstrably works for PotPlayer: ordinary exe, quoted path, existing Applications entry. Notepad++ was removed on 16 Nov; this is the inbox notepad.exe that still exists in System32."
   },
+
+  "progIds": [
+    {
+      "name": "MarkdownText",
+      "description": "Markdown File",
+      "command": "\"C:\\Windows\\System32\\notepad.exe\" \"%1\""
+    }
+  ],
 
   "mediaExtensions": [
     ".mp4",

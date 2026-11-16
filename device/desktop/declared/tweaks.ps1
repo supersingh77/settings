@@ -109,31 +109,71 @@ function Register-Application {
     $script:changes++
 }
 
+function Ensure-ProgId {
+    param([string]$Name, [string]$Description, [string]$Command)
+    $key = "Registry::HKEY_CLASSES_ROOT\$Name"
+    $current = (Get-ItemProperty "$key\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+    if ($current -eq $Command) { return }
+    if ($DryRun) {
+        Write-Host "  would create ProgId $Name -> $Command"
+        $script:changes++
+        return
+    }
+    New-Item -Path "$key\shell\open\command" -Force | Out-Null
+    Set-ItemProperty -Path $key -Name '(default)' -Value $Description -Force
+    Set-ItemProperty -Path "$key\shell\open\command" -Name '(default)' -Value $Command -Force
+    Write-Host "  created ProgId $Name" -ForegroundColor Green
+    $script:changes++
+}
+
+function Set-OpenWithProgram {
+    param([string]$Extension, [string]$Executable)
+    if (-not $Executable) { return }
+    $listKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$Extension\OpenWithList"
+    $current = (Get-ItemProperty $listKey -ErrorAction SilentlyContinue).'a'
+    $mru = (Get-ItemProperty $listKey -ErrorAction SilentlyContinue).MRUList
+    if ($current -eq $Executable -and $mru -eq 'a') { return }
+    if ($DryRun) {
+        Write-Host "  would set $Extension OpenWithList a=$Executable"
+        $script:changes++
+        return
+    }
+    if (-not (Test-Path $listKey)) { New-Item -Path $listKey -Force | Out-Null }
+    Set-ItemProperty -Path $listKey -Name 'a' -Value $Executable -Force
+    Set-ItemProperty -Path $listKey -Name 'MRUList' -Value 'a' -Force
+    Write-Host "  $Extension OpenWithList a=$Executable" -ForegroundColor Green
+    $script:changes++
+}
+
 $isAdmin = Test-Admin
 $plan = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 
 Write-Host "tweaks.ps1  mode=$(if ($DryRun) { 'DRY RUN' } else { 'APPLY' })  admin=$isAdmin  manifest=$Manifest`n" -ForegroundColor Cyan
 
-Write-Host "1. $($plan.markdown.extension) handler"
+Write-Host "`n1. ProgIds"
+foreach ($progId in $plan.progIds) { Ensure-ProgId -Name $progId.name -Description $progId.description -Command $progId.command }
+
+Write-Host "`n2. $($plan.markdown.extension) handler"
 if (Get-ProgIdCommand $plan.markdown.targetProgId) {
     Set-ExtensionDefault -Extension $plan.markdown.extension -ProgId $plan.markdown.targetProgId
+    Set-OpenWithProgram -Extension $plan.markdown.extension -Executable $plan.markdown.openWithExe
 } else {
     Write-Host "  skip  no command on '$($plan.markdown.targetProgId)'" -ForegroundColor Yellow
 }
 
-Write-Host "`n2. 'Open with' entries"
+Write-Host "`n3. 'Open with' entries"
 foreach ($extension in $plan.mediaExtensions) { Add-OpenWithProgId -Extension $extension }
 Write-Host "  ($($plan.mediaExtensions.Count) media types checked; $script:changes change(s) so far)" -ForegroundColor DarkGray
 
-Write-Host "`n3. quoted command paths"
+Write-Host "`n4. quoted command paths"
 foreach ($progId in $plan.quoteCommandsForProgIds) { Repair-QuotedCommand -ProgId $progId }
 
-Write-Host "`n4. application registrations"
+Write-Host "`n5. application registrations"
 foreach ($app in $plan.applicationRegistrations) {
     Register-Application -ExePath $app.exePath -FriendlyName $app.friendlyName
 }
 
-Write-Host "`n5. not scriptable by design" -ForegroundColor DarkGray
+Write-Host "`n6. not scriptable by design" -ForegroundColor DarkGray
 Write-Host '  - default apps (UserChoice): hash-protected; use Settings > Default apps' -ForegroundColor DarkGray
 Write-Host '  - OBS settings: see declared/obs.json' -ForegroundColor DarkGray
 
