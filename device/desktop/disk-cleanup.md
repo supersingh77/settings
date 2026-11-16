@@ -1,6 +1,6 @@
 # C: Drive — Cleanup Reference
 
-> Updated: 16 Nov 2026 | C: **66.5 GB free** of 126.1 GB · V: 76.4 GB free · Z: 481.1 GB free
+> Updated: 17 Nov 2026 | C: **66.8 GB free** of 126.1 GB · V: 76.4 GB free · Z: 478.5 GB free
 > Evergreen checklist for the Windows desktop. Verify sizes before deleting anything.
 
 ## Drive Map
@@ -9,9 +9,9 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 
 | Drive | Label | Size | Free | Purpose |
 |-------|-------|------|------|---------|
-| **C:** | _(System)_ | 126.1 GB | **66.5 GB** | OS + core apps |
+| **C:** | _(System)_ | 126.1 GB | **66.8 GB** | OS + core apps |
 | **V:** | Vacuum Drive | 350.0 GB | 76.4 GB | Games, streaming software |
-| **Z:** | Mass Storage | 931.5 GB | 481.1 GB | Recordings, VODs, archives |
+| **Z:** | Mass Storage | 931.5 GB | 478.5 GB | Recordings, VODs, archives |
 
 ## Where C: Went (16 Nov 2026)
 
@@ -61,7 +61,7 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 
 **Result:** C: went from **52.2 GB → 98.8 GB free** (46.6 GB reclaimed) at that moment.
 
-> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **66.5 GB free**. Use the measured table above, not the 23 Oct number.
+> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **66.8 GB free**. Use the measured table above, not the 23 Oct number.
 
 ## Prevention
 

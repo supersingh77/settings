@@ -11,7 +11,7 @@
 | **CPU** | AMD Ryzen 7 5700X (8C/16T) |
 | **GPU** | AMD Radeon RX 7600 8 GB — Adrenalin 26.10.1 (driver 32.0.32015.7029) |
 | **RAM** | 16 GB DDR4-3000 (2 × 8 GB) |
-| **Storage** | C: 126.1 GB system (**66.5 GB free**) · V: 350 GB games · Z: 931.5 GB archive |
+| **Storage** | C: 126.1 GB system (**66.8 GB free**) · V: 350 GB games · Z: 931.5 GB archive |
 | **Display** | MSI MAG 255XF — 1080p @ **300 Hz** (secondary: BenQ RL2240H) |
 | **Role** | Gaming + streaming |
 
@@ -43,6 +43,6 @@
 - The phone-DroidCam route is retired (Kreo Owl Lite instead). `C:\Program Files\DroidCam` is an empty leftover folder, not an install; a stale `droidcam-obs` module entry remains in OBS's plugin manager.
 - **ShareX** and **input-overlay** are still missing.
 - `Z:\Games\SteamLibrary` (Celeste, Hollow Knight) is not registered in Steam; `V:` is.
-- `.mp4` / `.m4a` have no working default app — the shell app-picker is broken on this image ([windows-shell-repair.md](../../notes/windows-shell-repair.md)).
+- **"Choose another app" does not work** — the app picker is dead on this image (`ShellHost.exe` `0xC0000142`). Media types open correctly and `.md` does not, despite both having valid handlers; see [windows-shell-repair.md](../../notes/windows-shell-repair.md).
 - In-game shifter binding still needs a sim.
 - **16 Nov 2026:** Notepad++ and Obsidian removed. A default Obsidian vault is left at `Desktop\obsidian\` pending deletion.

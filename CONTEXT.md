@@ -46,7 +46,7 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## Active Threads
 
-- **Desktop shell is broken on this image** — `OpenWith.exe` / `ShellHost.exe` die at startup, so "Open with" does nothing and `.mp4`/`.m4a` have no default app. Root cause and repair path: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
+- **"Choose another app" is dead on this image** — `OpenWith.exe` / `ShellHost.exe` fail at startup. Video and audio open via PotPlayer (`OpenWithList` + class default); `.md` does not open, despite a correct handler. Root cause and everything tried: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
 - **Desktop streaming stack is being rebuilt** — OBS 33.0.1 is installed but has never been launched, and the old phone-DroidCam webcam path is retired now that a **Kreo Owl Lite** webcam exists (16 Nov 2026). ShareX and input-overlay are still missing. See the gaps section in [`device/desktop/README.md`](device/desktop/README.md).
 - Net worth / assets & liabilities feature lives in the separate finance repo now.
 

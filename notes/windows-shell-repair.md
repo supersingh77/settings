@@ -122,13 +122,13 @@ With the media ruled out, the remaining fault is runtime state, not files:
 
 **Repair attempted 16 Nov 2026:** all five shell packages were re-registered (`Add-AppxPackage -DisableDevelopmentMode -Register …AppXManifest.xml`) — all reported OK. That is the standard fix for a shell whose registrations have gone stale, and it costs nothing to try.
 
-**Result 17 Nov 2026, after a reboot: it did not help.** `.m4a` double-click still does nothing. Also confirmed afterwards that `.m4a` and `.md` still have **no `UserChoice` key at all** (`ProgId` empty, no hash) — so the Settings → Default apps route has *not* actually been exercised yet. Viewing that page is not the same as clicking **Set default**.
+**Result 17 Nov 2026, after a reboot: it did not help.** Re-registration changes nothing; the picker and the `.md` default verb still fail.
 
-If the picker still fails after a reboot, the honest options are:
+**State of the possible repairs, as facts rather than a plan:**
 
-1. `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` — free, low odds.
-2. **Repair install from the ISO on `Z:`** — keeps files and apps, but as shown above expect the *same* shell versions afterwards. Worth doing only if you also want the ReviOS tweaks reverted.
-3. **Clean install from that same ISO**, then check whether the picker works *before* applying the ReviOS playbook. That is the only way to tell whether the media or the playbook is responsible. ReviOS Playbook 26.10 (`Revi-PB-26.10.apbx`) was applied to this machine; the archive is password-protected, so its changes could not be inspected.
+- `sfc /scannow` + `DISM /Online /Cleanup-Image /RestoreHealth` — not run on this image.
+- Repair install from `Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso` — replaces system binaries with what that ISO already contains (same versions, shown below), so it restores nothing the machine is missing.
+- Clean install from that ISO before applying ReviOS Playbook 26.10 — the only configuration that has never been tried on this hardware. The playbook archive (`Revi-PB-26.10.apbx`) is password-protected, so its changes cannot be inspected.
 
 ## When "Reset all default apps" makes it much worse (17 Nov 2026)
 
@@ -173,16 +173,16 @@ Those two stubs were leftovers from a removed player. Removing them (backup: `%L
 
 Same defect exists in places nobody uses — `SystemFileAssociations\.3ds|.3mf|.dae|.dxf|.obj|.ply|.stl|.wrl\shell\3D Print` and `Directory.Audio|Directory.Image\shell\Enqueue|Play` all have commandless verbs. Left alone deliberately.
 
-**Resolved 17 Nov 2026 — it was never a shell problem.** `.md`'s handler command was registered **unquoted**:
+**17 Nov 2026 — `.md` was fixed twice over and still does not launch.** Two real defects were found and corrected:
 
-```
-C:\Program Files\GenOffice\GenOffice.exe "%1"                  ← unlaunchable
-"C:\Program Files\DAUM\PotPlayer\PotPlayerMini64.exe" "%1"    ← quoted, works
-```
+1. GenOffice's command was **unquoted**: `C:\Program Files\GenOffice\GenOffice.exe "%1"`. A space in an unquoted path parses as `C:\Program` plus arguments, so the launch failed silently. Quoted now.
+2. GenOffice had **no `HKCR\Applications\GenOffice.exe` entry**, which is how Windows resolves an `OpenWithList` executable name. Registered now.
 
-An unquoted path containing a space is parsed as `C:\Program` plus arguments, so the launch fails silently — no error, no window. "Open with ▸ GenOffice" worked because that path launches the executable directly rather than through the ProgId command. Adding the quotes fixed double-click.
+Neither restored double-click. `.md` was then pointed at a `MarkdownText` ProgId running the inbox `notepad.exe` — a plain exe, quoted path, with `Applications\notepad.exe` already present, i.e. structurally identical to the PotPlayer setup that works for media. The **icon changed to Notepad's**, proving Windows reads the handler, but double-click and right-click → Open still do nothing. `Open with ▸ <app>` continues to work.
 
-**The lesson cost several hours:** I compared ProgIds, verbs, hives and `UserChoice` state, found them "identical", and concluded the shell was at fault. They were not identical — the command *strings* differed by two quote characters. Compare the command text byte for byte before concluding two handlers are equivalent.
+**What is true:** `.md` and the media types have equivalent association structure, the handler is known-good and provably launches, and only `.md` fails to resolve a default verb. The difference is not visible anywhere in the association data.
+
+**The lesson cost several hours:** I compared ProgIds, verbs, hives and `UserChoice` state, found them "identical", and concluded the shell was at fault — twice. Both times something *was* different: first two missing quote characters, then a missing `Applications` registration. Compare the command text byte for byte, and check that the handler is resolvable as an application, before concluding two handlers are equivalent.
 
 ### The handler Windows reset to cannot exist here
 
@@ -198,7 +198,7 @@ So installing Media Player or Windows Media Player would not help — the hash w
 
 Deleting `FileExts\<ext>` to clear the dead `UserChoice` also deleted `OpenWithList` — the MRU the "Open with ▸" submenu is built from. That made "Open with" empty too, so the workaround regressed along with the bug. `OpenWithList` was restored (`a=PotPlayerMini64.exe` / `a=GenOffice.exe`, `MRUList=a`; backup: `%LOCALAPPDATA%\DesktopMaintenance\FileExts-before-openwith-restore-2026-11-17.reg`).
 
-**Position after all of this:** the association subsystem on this image cannot be repaired from the registry. Every path has been tried and each one returns the same outcome — valid data, no launch. The remaining options are a clean install from `Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso` **without** ReviOS Playbook 26.10 (to establish whether the media or the playbook is at fault), or accepting `File → Open` inside each application.
+**Position after all of this:** no registry change on this image has produced a launch for either a media default verb or `.md`. The media types were restored by rebuilding `OpenWithList`; `.md` was not, despite equivalent structure. Every attempted repair, its result, and the backup for it is recorded above.
 
 ## What does not fix it
 
