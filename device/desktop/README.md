@@ -38,7 +38,7 @@
 
 ## Current Gaps
 
-- **OBS is configured with the Owl Lite** (Display Capture + webcam, 1080p → 720p30) but is **not ready to broadcast**: no Twitch destination, no mic/audio source in the scene, and recordings still write to `C:\Users\amar\Videos` instead of `Z:`.
+- **OBS is recording-ready** — 1080p60, AMD AMF H.264 at CQP 23, writing to `Z:\Recordings` — but **not broadcast-ready**: no stream destination is set. Audio still comes from the webcam mic with desktop audio pinned to the monitor's HDMI, so levels/device choice is the next thing to check ([obs-recording-setup.md](../../notes/obs-recording-setup.md)).
 - The phone-DroidCam route is retired (Kreo Owl Lite instead). `C:\Program Files\DroidCam` is an empty leftover folder, not an install; a stale `droidcam-obs` module entry remains in OBS's plugin manager.
 - **ShareX** and **input-overlay** are still missing.
 - `Z:\Games\SteamLibrary` (Celeste, Hollow Knight) is not registered in Steam; `V:` is.

@@ -41,7 +41,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **Revision Tool** | 2.15.1 | `C:\Program Files\Revision Tool` | ReviOS control panel |
 | **Google Chrome** | 157.0.8103.51 | `C:\Program Files\Google\Chrome` | Primary browser |
 | **Mozilla Firefox** | 160.0 | `C:\Program Files\Mozilla Firefox` | Backup browser |
-| **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. 1080p base → **720p30**, simple mode, 6000 kbps. No stream destination set yet |
+| **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. **1080p60, AMD AMF H.264 (CQP 23), records to `Z:\Recordings`**. No stream destination yet — see [obs-recording-setup.md](../../notes/obs-recording-setup.md) |
 | **ExitLag** | 5.23.3 | `C:\Program Files\ExitLag` | Route optimizer |
 | **GenOffice** | 0.13.18 | `C:\Program Files\GenOffice` | Office-suite shell; self-updater in `%LOCALAPPDATA%` |
 | **ActivityWatch** | 0.14.3 | `C:\Program Files (x86)\ActivityWatch` | Time tracker; auto-starts from the user Startup folder |

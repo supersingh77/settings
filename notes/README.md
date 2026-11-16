@@ -6,6 +6,7 @@ Long-term reference guides that outlive a single task. One topic per file, dated
 
 | Note | Covers |
 |------|--------|
+| [obs-recording-setup.md](obs-recording-setup.md) | OBS as configured 16 Nov 2026: AMF, CQP 23, 1080p60, `Z:\Recordings`; the record-vs-stream split, audio gotchas, streaming bitrates per platform |
 | [ffmpeg-video-workflow.md](ffmpeg-video-workflow.md) | Lossless trim/concat of recordings; when to re-encode, when to remux |
 | [windows-shell-repair.md](windows-shell-repair.md) | ReviOS 26H2 shell failure: `OpenWith` / picker dies at launch, `.mp4`/`.m4a` have no default app. Unresolved — repair path documented |
 
