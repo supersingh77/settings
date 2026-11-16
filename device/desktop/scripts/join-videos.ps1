@@ -1,73 +1,75 @@
-# join-videos.ps1
-# Lossless concat of video clips in a folder, ordered by filename.
-#
-# Usage:
-#   .\join-videos.ps1 -Folder "C:\Users\amar\Downloads" -Output "joined.mp4"
-#
-# Notes:
-#   - Joins ALL video files in the folder, ordered by filename (chronological
-#     for phone/OBS timestamps like VID_20260905_160401.mp4).
-#   - Lossless (stream copy) — requires all clips to share codec/resolution/fps/audio.
-#   - If clips are incompatible, ffmpeg will error; fall back to the re-encode
-#     command in notes/ffmpeg-video-workflow.md.
-#   - This is a convenience template, not a magic black box. For one-off joins
-#     with unique cuts, just run the ffmpeg commands directly.
-
+[CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory)]
     [string]$Folder,
 
-    [string]$Output = "joined.mp4"
+    [string]$Output = 'joined.mp4',
+
+    [string[]]$Extensions = @('.mp4', '.mkv', '.mov', '.avi', '.webm', '.ts'),
+
+    [switch]$DryRun
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
-# Resolve FFmpeg: PATH first, then the machine-wide install used on this desktop.
-$ffmpeg = (Get-Command ffmpeg -ErrorAction SilentlyContinue).Source
-if (-not $ffmpeg) {
-    $candidate = "C:\Program Files\FFmpeg\bin\ffmpeg.exe"
-    if (Test-Path $candidate) { $ffmpeg = $candidate }
+function Get-FFmpegPath {
+    $onPath = (Get-Command ffmpeg -ErrorAction SilentlyContinue).Source
+    if ($onPath) { return $onPath }
+    $machineWide = 'C:\Program Files\FFmpeg\bin\ffmpeg.exe'
+    if (Test-Path -LiteralPath $machineWide) { return $machineWide }
+    return $null
 }
+
+function Get-ClipFiles {
+    param([string]$Directory, [string[]]$Patterns)
+    $found = foreach ($pattern in $Patterns) {
+        Get-ChildItem -LiteralPath $Directory -File -Filter "*$pattern"
+    }
+    @($found | Sort-Object Name)
+}
+
+function Format-ConcatEntry {
+    param([System.IO.FileInfo]$Clip)
+    "file '$($Clip.Name)'"
+}
+
+$ffmpeg = Get-FFmpegPath
 if (-not $ffmpeg) {
-    Write-Host "FFmpeg not found. Install it or add C:\Program Files\FFmpeg\bin to PATH." -ForegroundColor Red
+    Write-Host 'FFmpeg not found. Install it or add C:\Program Files\FFmpeg\bin to PATH.' -ForegroundColor Red
     exit 1
 }
 
-# Resolve folder
-$dir = (Resolve-Path $Folder).Path
-
-# Find video files (common extensions), ordered by name
-$exts = @("*.mp4", "*.mkv", "*.mov", "*.avi", "*.webm", "*.ts")
-$clips = @()
-foreach ($ext in $exts) {
-    $clips += Get-ChildItem -Path $dir -File -Filter $ext
-}
-$clips = $clips | Sort-Object Name
+$directory = (Resolve-Path -LiteralPath $Folder).Path
+$clips = Get-ClipFiles -Directory $directory -Patterns $Extensions
 
 if ($clips.Count -lt 2) {
-    Write-Host "Need at least 2 video files in $dir (found $($clips.Count))." -ForegroundColor Yellow
+    Write-Host "Need at least 2 video files in $directory (found $($clips.Count))." -ForegroundColor Yellow
     exit 1
 }
 
+$outputPath = Join-Path $directory $Output
+$listPath = Join-Path $directory 'clips.txt'
+
 Write-Host "Found $($clips.Count) clips (ordered by filename):" -ForegroundColor Cyan
-$clips | ForEach-Object { Write-Host "  $($_.Name)  ($([math]::Round($_.Length/1MB)) MB)" }
+$clips | ForEach-Object { Write-Host "  $($_.Name)  ($([math]::Round($_.Length / 1MB)) MB)" }
+Write-Host "Output: $outputPath"
 
-# Build concat list
-$listFile = Join-Path $dir "clips.txt"
-$clips | ForEach-Object { "file '$($_.Name)'" } | Set-Content -Path $listFile -Encoding ascii
-
-$outPath = Join-Path $dir $Output
-
-Write-Host "`nJoining losslessly -> $outPath" -ForegroundColor Cyan
-& $ffmpeg -f concat -safe 0 -i $listFile -c copy $outPath
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "`nDone. Output: $outPath" -ForegroundColor Green
-    Write-Host "Verify it plays, then delete clips.txt and the source clips."
-} else {
-    Write-Host "`nJoin failed. Clips may be incompatible (different codec/resolution/fps)." -ForegroundColor Red
-    Write-Host "See notes/ffmpeg-video-workflow.md for the re-encode fallback."
+if ($DryRun) {
+    Write-Host "`nDry run - would concat $($clips.Count) clips and write $listPath. Nothing changed." -ForegroundColor Yellow
+    exit 0
 }
 
-# Clean up the temp list file
-Remove-Item -Path $listFile -Force
+$clips | ForEach-Object { Format-ConcatEntry $_ } | Set-Content -Path $listPath -Encoding ascii
+& $ffmpeg -f concat -safe 0 -i $listPath -c copy $outputPath
+$ffmpegExit = $LASTEXITCODE
+Remove-Item -LiteralPath $listPath -Force -ErrorAction SilentlyContinue
+
+if ($ffmpegExit -eq 0) {
+    Write-Host "`nDone. Output: $outputPath" -ForegroundColor Green
+    Write-Host 'Verify it plays, then delete the source clips.'
+    exit 0
+}
+
+Write-Host "`nJoin failed. Clips are probably not identical in codec/resolution/fps/audio." -ForegroundColor Red
+Write-Host 'Re-encode fallback: notes/ffmpeg-video-workflow.md'
+exit 1
