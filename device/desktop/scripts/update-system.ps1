@@ -1,24 +1,3 @@
-# =============================================================================
-# update-system.ps1 - Update installed apps with winget
-#
-# Refreshes winget sources, lists available upgrades, then upgrades everything
-# it can, one package at a time. Some packages (MSIX/Store apps, vendor
-# installers) may still need a manual update or a UAC prompt.
-#
-# PowerShell itself is excluded from the upgrade pass on purpose. Its MSI has
-# to replace the binaries of the running engine, so Windows Installer shuts
-# this pwsh down mid-install and the transaction rolls back with MSI 1603
-# (seen 24 Oct, 1 Nov, 3 Nov 2026). The run ends by handing that one upgrade
-# off to Command Prompt, which survives the shutdown.
-#
-# Note: winget 1.29 has no --exclude for 'upgrade --all', so the target list is
-# parsed from 'winget upgrade' and driven per package. That also means one
-# failing package no longer aborts the rest of the run.
-#
-# Usage:
-#   pwsh device/desktop/scripts/update-system.ps1
-#   pwsh device/desktop/scripts/update-system.ps1 -DryRun
-# =============================================================================
 
 param(
     [switch]$DryRun
@@ -38,16 +17,10 @@ function success { Write-Host "${GREEN}[ok]${RESET}    $($args -join ' ')" }
 function warn    { Write-Host "${YELLOW}[warn]${RESET}  $($args -join ' ')" }
 function step    { Write-Host "`n${BOLD}--- $($args -join ' ') ---${RESET}" }
 
-# Packages that must never be upgraded from inside this session.
-# Microsoft.PowerShell: the MSI replaces the binaries of the pwsh running this
-# script; the installer shuts it down and rolls back (1603) every time.
 $excludedIds = @('Microsoft.PowerShell')
 
-# 0x8A15002B - winget found nothing applicable; not an error for this script.
 $wingetNothingToDo = -1978335189
 
-# winget prints its upgrade list as a fixed-width table. The column start
-# offsets come from the header line, so long package names do not shift it.
 function ConvertFrom-WingetUpgradeTable {
     param(
         [Parameter(Mandatory)]
@@ -129,7 +102,6 @@ try {
         exit 0
     }
 
-    # --- Build the target list -------------------------------------------
     $rows = Get-WingetUpgradeRows -Winget $winget
     $targets = @($rows | Where-Object { $_.Id -notin $excludedIds })
 
@@ -146,10 +118,6 @@ try {
         foreach ($t in $targets) {
             $n++
             Write-Host "`n${BOLD}($n/$($targets.Count))${RESET} $($t.Name) [$($t.Id)] $($t.Version) -> $($t.Available)"
-            # Deliberately NOT piped: winget only draws its download progress bar
-            # when stdout is a real console. Piping turned a stalled download into
-            # a silent 4-minute hang on 4 Nov 2026. This text therefore misses the
-            # transcript; winget's own logs in DiagOutputDir have it.
             & $winget upgrade --id $t.Id --exact --silent `
                 --accept-package-agreements --accept-source-agreements
             $code = $LASTEXITCODE
@@ -173,13 +141,11 @@ try {
         }
     }
 
-    # --- Remaining state -------------------------------------------------
     step "Remaining upgrades"
     $remaining = & $winget @listArgs 2>&1 | Out-String
     Write-Host $remaining
     $remainingExit = $LASTEXITCODE
 
-    # --- PowerShell self-upgrade hand-off --------------------------------
     $psPending = ($remaining -split "`r?`n" |
         Where-Object { $_ -match 'Microsoft\.PowerShell\b' }).Count -gt 0
     if ($psPending) {
