@@ -151,6 +151,15 @@ Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.
 
 Applied to all 19 media types, then `SHChangeNotify(SHCNEW_ASSOCCHANGED)` to make Explorer re-read them. Every extension fell back to its class default again (`PotPlayerMini64.*`), all of which still had valid commands.
 
+**But deleting the parent key also deleted `OpenWithList`** — the MRU the "Open with ▸" submenu is built from — which broke the workaround along with the bug. **Restoring it is what actually fixed double-click:**
+
+```
+HKCU\...\FileExts\<ext>\OpenWithList    a = PotPlayerMini64.exe (GenOffice.exe for .md)
+                                        MRUList = a
+```
+
+With no `UserChoice` and no MRU, the shell has nothing to fall back to and invokes the dead picker. With the MRU restored, double-click, right-click Open, "Play with PotPlayer" and "Add to playlist" all work again.
+
 ### The audio-only bug this uncovered
 
 With media associations restored, a new asymmetry appeared:
@@ -164,7 +173,16 @@ Those two stubs were leftovers from a removed player. Removing them (backup: `%L
 
 Same defect exists in places nobody uses — `SystemFileAssociations\.3ds|.3mf|.dae|.dxf|.obj|.ply|.stl|.wrl\shell\3D Print` and `Directory.Audio|Directory.Image\shell\Enqueue|Play` all have commandless verbs. Left alone deliberately.
 
-**Still true:** `.md` resolves correctly on paper (`HKCR\.md` → `Markdown Document` → shell default `open` → GenOffice command present) yet does not open. There is nothing left to fix in its data.
+**Resolved 17 Nov 2026 — it was never a shell problem.** `.md`'s handler command was registered **unquoted**:
+
+```
+C:\Program Files\GenOffice\GenOffice.exe "%1"                  ← unlaunchable
+"C:\Program Files\DAUM\PotPlayer\PotPlayerMini64.exe" "%1"    ← quoted, works
+```
+
+An unquoted path containing a space is parsed as `C:\Program` plus arguments, so the launch fails silently — no error, no window. "Open with ▸ GenOffice" worked because that path launches the executable directly rather than through the ProgId command. Adding the quotes fixed double-click.
+
+**The lesson cost several hours:** I compared ProgIds, verbs, hives and `UserChoice` state, found them "identical", and concluded the shell was at fault. They were not identical — the command *strings* differed by two quote characters. Compare the command text byte for byte before concluding two handlers are equivalent.
 
 ### The handler Windows reset to cannot exist here
 

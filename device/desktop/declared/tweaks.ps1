@@ -65,6 +65,25 @@ function Add-OpenWithProgId {
     $script:changes++
 }
 
+function Repair-QuotedCommand {
+    param([string]$ProgId)
+    $key = "Registry::HKEY_CLASSES_ROOT\$ProgId\shell\open\command"
+    $current = (Get-ItemProperty $key -ErrorAction SilentlyContinue).'(default)'
+    if (-not $current) { return }
+    if ($current -match '^\s*"') { return }
+    if ($current -notmatch '^(.+?\.exe)\s+(.*)$') { return }
+    $fixed = '"' + $Matches[1].Trim() + '" ' + $Matches[2].Trim()
+    if ($DryRun) {
+        Write-Host "  would quote $ProgId"
+        Write-Host "        -> $fixed"
+        $script:changes++
+        return
+    }
+    Set-ItemProperty -Path $key -Name '(default)' -Value $fixed -Force
+    Write-Host "  quoted $ProgId" -ForegroundColor Green
+    $script:changes++
+}
+
 $isAdmin = Test-Admin
 $plan = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 
@@ -81,7 +100,10 @@ Write-Host "`n2. 'Open with' entries"
 foreach ($extension in $plan.mediaExtensions) { Add-OpenWithProgId -Extension $extension }
 Write-Host "  ($($plan.mediaExtensions.Count) media types checked; $script:changes change(s) so far)" -ForegroundColor DarkGray
 
-Write-Host "`n3. not scriptable by design" -ForegroundColor DarkGray
+Write-Host "`n3. quoted command paths"
+foreach ($progId in $plan.quoteCommandsForProgIds) { Repair-QuotedCommand -ProgId $progId }
+
+Write-Host "`n4. not scriptable by design" -ForegroundColor DarkGray
 Write-Host '  - default apps (UserChoice): hash-protected; use Settings > Default apps' -ForegroundColor DarkGray
 Write-Host '  - OBS settings: see declared/obs.json' -ForegroundColor DarkGray
 

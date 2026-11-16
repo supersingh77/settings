@@ -30,5 +30,11 @@
     ".ac3"
   ],
 
+  "quoteCommandsForProgIds": [
+    "Markdown Document"
+  ],
+
+  "_quoteWhy": "GenOffice registered its handler unquoted: C:\\Program Files\\GenOffice\\GenOffice.exe \"%1\". An unquoted path with a space is parsed as C:\\Program plus arguments, so the launch fails silently - no error, no window - while 'Open with > GenOffice' still worked because that path launches the exe directly. tweaks.ps1 re-quotes these so a GenOffice update cannot reintroduce it.",
+
   "_mediaWhy": "These types kept a UserChoiceLatest with a hash but no ProgId, which made Windows treat them as having no default and hand them to the dead app picker. With those entries removed, the shell falls back to the HKCR default handler; re-exposing that same handler in OpenWithProgids gives a working 'Open with' submenu while the picker stays broken."
 }
