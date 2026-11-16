@@ -130,6 +130,42 @@ If the picker still fails after a reboot, the honest options are:
 2. **Repair install from the ISO on `Z:`** — keeps files and apps, but as shown above expect the *same* shell versions afterwards. Worth doing only if you also want the ReviOS tweaks reverted.
 3. **Clean install from that same ISO**, then check whether the picker works *before* applying the ReviOS playbook. That is the only way to tell whether the media or the playbook is responsible. ReviOS Playbook 26.10 (`Revi-PB-26.10.apbx`) was applied to this machine; the archive is password-protected, so its changes could not be inspected.
 
+## When "Reset all default apps" makes it much worse (17 Nov 2026)
+
+**Symptom:** after clicking *Reset all default apps* in Settings, even the video types that had been working stopped opening with anything.
+
+**Cause:** the reset writes a `UserChoice` for every media type pointing at a **packaged Media Player** that does not exist on this image:
+
+```
+.mp4 .mkv .avi .mov .m4v .wmv .mp3 .m4a .flac .wav .aac .ogg .opus .wma .ac3 .m2ts .ts .mpg .mpeg
+   → UserChoice ProgId = AppXqj98qxeaynz6dv4459ayz6bnqxbyaqcs   (not installed)
+```
+
+A `UserChoice` outranks the working per-user class default (`PotPlayerMini64.*`), so every media type pointed at a handler that cannot launch. That is why "reset" turned a partial breakage into a total one.
+
+**Recovery that worked** — delete the whole `FileExts\<ext>` key, not just the `UserChoice` subkey. Opening `UserChoice` for deletion is denied by its ACE, but deleting the parent key succeeds and takes the child with it:
+
+```powershell
+Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.mp4" -Recurse -Force
+```
+
+Applied to all 19 media types, then `SHChangeNotify(SHCNEW_ASSOCCHANGED)` to make Explorer re-read them. Every extension fell back to its class default again (`PotPlayerMini64.*`), all of which still had valid commands.
+
+### The audio-only bug this uncovered
+
+With media associations restored, a new asymmetry appeared:
+
+| Perceived type | `SystemFileAssociations\<type>\shell` | Outcome |
+|---|---|---|
+| `video` | **absent** | falls through to `HKCR\.mp4` → PotPlayer → ✅ opens |
+| `audio` | present, with `Enqueue` and `Play` verbs whose `command` key was **empty** | Windows merges those verbs in, resolves audio to a verb with no command → ❌ nothing happens |
+
+Those two stubs were leftovers from a removed player. Removing them (backup: `%LOCALAPPDATA%\DesktopMaintenance\SystemFileAssociations-audio-2026-11-17.reg`) is the only thing that has ever plausibly explained why `.mp4` opened and `.m4a` did not, given identical ProgIds and identical commands.
+
+Same defect exists in places nobody uses — `SystemFileAssociations\.3ds|.3mf|.dae|.dxf|.obj|.ply|.stl|.wrl\shell\3D Print` and `Directory.Audio|Directory.Image\shell\Enqueue|Play` all have commandless verbs. Left alone deliberately.
+
+**Still true:** `.md` resolves correctly on paper (`HKCR\.md` → `Markdown Document` → shell default `open` → GenOffice command present) yet does not open. There is nothing left to fix in its data.
+
 ## What does not fix it
 
 - Re-registering the CBS packages as the current user — tried, no change to the picker.
