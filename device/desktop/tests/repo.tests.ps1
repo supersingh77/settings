@@ -91,6 +91,13 @@ function Test-CheckDocsRejectsABrokenLink {
     Assert-True ($result.Output -match 'links') 'the failure must name the links rule'
 }
 
+function Test-CheckDocsRejectsAPathThatDoesNotExist {
+    $fixture = New-DocFixture "# Fixture`n`nSnapshots live in ``device/desktop/backup/`` (generated, never hand-edited).`n"
+    $result = Invoke-Script -Path $DocsScript -Arguments @('-RepoRoot', $fixture)
+    Assert-Equal 1 $result.ExitCode 'a doc naming a repo path that does not exist must fail'
+    Assert-True ($result.Output -match 'paths') 'the failure must name the paths rule'
+}
+
 function Test-CheckDocsRejectsAStaleBuild {
     $fixture = New-DocFixture "# Fixture`n`nRuns build **11111.1** on this machine.`n"
     $result = Invoke-Script -Path $DocsScript -Arguments @('-RepoRoot', $fixture)

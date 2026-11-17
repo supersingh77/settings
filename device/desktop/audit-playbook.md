@@ -154,9 +154,10 @@ Rules: bump the `Updated:` date · **verify live, never recall** · mark unverif
 
 ## 8. Machine-checked claims
 
-`pwsh device/desktop/scripts/check-docs.ps1` verifies what this playbook produces: every relative Markdown link resolves, every `build **x.y**` claim equals the live build, every drive letter in a desktop table is mounted, and every free-space claim dated on the same line is within tolerance of the measurement. It exits 1 when a doc wins.
+`pwsh device/desktop/scripts/check-docs.ps1` verifies what this playbook produces: every relative Markdown link resolves, every repo path written in backticks exists, every `build **x.y**` claim equals the live build, every drive letter in a desktop table is mounted, and every free-space claim dated on the same line is within tolerance of the measurement. It exits 1 when a doc wins.
 
-Two limits worth knowing:
+Three limits worth knowing:
 
 - An **undated** free-space number is treated as history, not a claim — that is why the 23 Oct figures in `disk-cleanup.md` survive.
 - App versions are only compared when the doc name matches an ARP entry **exactly**, or with a vendor-style suffix (`PotPlayer` → `PotPlayer-64 bit`). Packaged apps have no ARP entry, so their versions stay a prose claim backed by the audit's `Packaged apps` section, not a checked one.
+- A path is only checked when it starts with `device/`, `notes/`, `inbox/`, `outbox/` or names a root file. A folder relative to somewhere else — `accounts/` on the desktop, `%LOCALAPPDATA%\…` — cannot be resolved from here and is not checked.

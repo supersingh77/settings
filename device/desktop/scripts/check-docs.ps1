@@ -64,6 +64,18 @@ foreach ($doc in $docs) {
             $findings.Add((New-Finding 'links' 'FAIL' $relative "link target does not exist: $target"))
         }
     }
+
+    $outsideFences = [regex]::Replace($text, '(?ms)^\s*```.*?^\s*```\s*$', '')
+    foreach ($match in [regex]::Matches($outsideFences, '`([^`]+)`')) {
+        $claim = $match.Groups[1].Value.Trim().TrimEnd('/')
+        if ($claim -notmatch '^(device|notes|inbox|outbox)/' -and $claim -notin @('README.md', 'CONTEXT.md', 'STYLE.md')) { continue }
+        if ($claim -notmatch '^[\w./\-]+$') { continue }
+        $candidate = $null
+        try { $candidate = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $claim)) } catch { $candidate = $null }
+        if (-not $candidate -or -not (Test-Path -LiteralPath $candidate)) {
+            $findings.Add((New-Finding 'paths' 'FAIL' $relative "names a repo path that does not exist: $claim"))
+        }
+    }
 }
 
 foreach ($doc in $machineDocs) {
