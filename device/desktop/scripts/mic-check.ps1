@@ -5,6 +5,8 @@ param(
 
 $ErrorActionPreference = 'Continue'
 
+. (Join-Path $PSScriptRoot '..\lib\audio-levels.ps1')
+
 function Get-FFmpegPath {
     $onPath = (Get-Command ffmpeg.exe -ErrorAction SilentlyContinue).Source
     if ($onPath) { return $onPath }
@@ -29,16 +31,6 @@ function Measure-Capture {
         MeanDb = if ($meanMatch) { [double]$meanMatch.Matches[0].Groups[1].Value } else { $null }
         PeakDb = if ($peakMatch) { [double]$peakMatch.Matches[0].Groups[1].Value } else { $null }
     }
-}
-
-function Get-CaptureVerdict {
-    param($MeanDb, $PeakDb)
-    if ($null -eq $MeanDb) { return 'FAILED to open' }
-    if ($MeanDb -le -70) { return 'SILENT - muted, dead, or privacy-blocked' }
-    if ($MeanDb -le -50) { return 'very quiet - raise Windows mic level' }
-    if ($MeanDb -le -30) { return 'quiet - usable with gain' }
-    if ($null -ne $PeakDb -and $PeakDb -gt -3) { return 'hot - close to clipping' }
-    return 'healthy'
 }
 
 $ffmpeg = Get-FFmpegPath
