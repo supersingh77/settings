@@ -32,7 +32,7 @@
 
 ## Setup Rules
 
-1. **Storage:** C: = OS + core apps. Games/streaming software → **V:**. Recordings, VODs, archives → **Z:**. There is no `D:` or `E:` on this machine, despite what older revisions of these docs said.
+1. **Storage:** C: = OS + core apps. Games/streaming software → **V:**. Recordings, VODs, archives → **Z:**. The letters are a deliberate choice; do not renumber them to match a textbook layout.
 2. **Apps — preference order:** **winget** → **vendor installer** → **scoop**. **All users / machine-wide first**; per-user only when the vendor requires it (Discord, Twinkle Tray, LocalSend, DeepSeek Harness, T3 Code, Roblox, MSIX/AppX packages). No Razer Synapse, MCHOSE Hub, or vJoy.
 3. **Display:** keep 300 Hz for desktop/gaming. MPRT must be **off** for Twinkle Tray brightness; MPRT has no DDC/CI control.
 4. **Controllers:** the third-party Xbox 360 receiver opens Task View when the controller is off — unplug it or keep the controller on. PXN A7 shifter enumerates separately from the V10 Pro wheel.

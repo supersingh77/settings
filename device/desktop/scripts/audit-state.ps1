@@ -191,8 +191,6 @@ foreach ($d in [System.IO.DriveInfo]::GetDrives()) {
     $label = if ($d.VolumeLabel) { $d.VolumeLabel } else { '_' }
     Out-Line ("| {0} | {1} | {2} | {3:N1} GB | {4:N1} GB free |" -f $d.Name, $label, $d.DriveType, ($d.TotalSize / 1GB), ($d.TotalFreeSpace / 1GB))
 }
-$missing = @($targets.absentDriveLetters) | Where-Object { -not (Test-Path "$_\") }
-if ($missing) { Out-Line ''; Out-Line "Drive letters absent on this machine: $($missing -join ', ') - docs must not reference them." }
 
 Section 'Installed apps (registry ARP)'
 

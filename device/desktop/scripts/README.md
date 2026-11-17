@@ -60,7 +60,7 @@ Windows PowerShell 5.1 is left alone: its execution policy is `Restricted`, so a
 
 ## Notes
 
-- **audit-state.ps1 exists because of a real mistake.** The 23 Oct 2026 doc pass wrote drive letters (`E:`/`D:`) from memory; the machine has only `C:`, `V:`, `Z:`, and six files were wrong for three weeks. The script now prints the measured values so the docs can be checked against them in one command. It is written for agent sandboxes, where WMI/CIM, `Get-Volume`, `Get-AppxPackage`, UI Automation and `Export-StartLayout` are all blocked — it uses registry reads, .NET, and on-disk files instead.
+- **audit-state.ps1 prints the measured value for every fact these docs claim**, so a doc can be checked against the machine in one command instead of recalled. It is written for agent sandboxes, where WMI/CIM, `Get-Volume`, `Get-AppxPackage`, UI Automation and `Export-StartLayout` are all blocked — it uses registry reads, .NET, and on-disk files instead.
 - **winget dies inside a sandboxed agent session** with `0x8A150001` on every verb, including `--info`. Run winget (install *and* uninstall) from a normal elevated shell; machine-wide packages need UAC either way.
 - **PowerShell itself is excluded from `update`.** The PowerShell MSI replaces the binaries of the running engine, so Windows Installer closes `pwsh` mid-install and rolls back with MSI 1603 (failed 24 Oct, 1 Nov, 3 Nov 2026; the transcript ends at `The pipeline has been stopped.`). Run the PowerShell upgrade from **Command Prompt**, not from PowerShell:
 

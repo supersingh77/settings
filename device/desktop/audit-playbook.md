@@ -133,7 +133,7 @@ Get-ChildItem 'V:\Games\SteamLibrary\steamapps\common' -Directory
 Get-ChildItem 'Z:\Games\SteamLibrary\steamapps\common' -Directory
 ```
 
-- Libraries live on **V:** and **Z:** (there is no `D:`/`E:`).
+- Libraries live on **V:** and **Z:**.
 - `libraryfolders.vdf` is the truth for **registered** libraries; `appmanifest_*.acf` count is the truth for **installed** apps. They disagree right now: `V:` is registered with 6 apps, `Z:` has 2 manifests but is not registered.
 - A folder under `common\` with no appmanifest is a leftover, not an install.
 
@@ -150,7 +150,7 @@ Get-ChildItem 'Z:\Games\SteamLibrary\steamapps\common' -Directory
 
 Rules: bump the `Updated:` date · **verify live, never recall** · mark unverified values `needs-review` · tables over prose · cut historical waffle.
 
-> The 23 Oct pass got six files wrong about drive letters because it was written from memory instead of measured. Run `audit-state.ps1` first; it exists so that mistake cannot repeat.
+> Run `audit-state.ps1` first: it prints the measured value for every fact these docs claim, and `check-docs.ps1` fails when a doc disagrees with it.
 
 ## 8. Machine-checked claims
 

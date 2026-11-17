@@ -6,7 +6,7 @@
 
 ## Drive Map
 
-Measured 17 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hardware.md](hardware.md).
+Measured 17 Nov 2026. The drive letters are deliberate (`V:` games, `Z:` archive) — see [hardware.md](hardware.md) for the map.
 
 | Drive | Label | Size | Free | Purpose |
 |-------|-------|------|------|---------|

@@ -3,7 +3,7 @@
 > Updated: 17 Nov 2026 — volumes, drives and driver versions re-verified live (registry `Enum`/`Class` + `DriveInfo`).
 > CPU/RAM/VRAM/refresh/problem-devices re-verified 16 Nov 2026 **without WMI** — via SMBIOS types 4+17, `EnumDisplaySettings`, the driver key's `qwMemorySize`, and `pnputil`.
 > Still unverified: **S.M.A.R.T. health** and the **CPU cooler** (both need WMI/admin sensor access). Those two remain from the 23 Oct 2026 pass.
-> Drive letters did **not** change in the rebuild: the volumes are still **V:** (games) and **Z:** (archive). There is no `D:` or `E:` on this machine — earlier revisions of these docs claimed otherwise and were wrong.
+> The volumes are **V:** (games) and **Z:** (archive). Those letters are a deliberate choice, not the first free ones — do not renumber them.
 
 ## System Overview
 
