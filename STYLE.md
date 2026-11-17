@@ -30,7 +30,9 @@ This repo already carries knowledge that took hours to establish (`OBS silently 
 
 ```
 device/<device>/declared/     intent: data + a thin apply script
+device/<device>/lib/          pure functions: no registry, no files, no processes
 device/<device>/scripts/      operations: audit, maintenance, one-off tools
+device/<device>/tests/        invariants that call lib/ and the scripts' exit codes
 notes/                        prose: why, trade-offs, dead ends
 ```
 
@@ -40,31 +42,35 @@ Code and data are separated by directory, not by convention. A script that hardc
 
 For scripts this size, the valuable checks are properties:
 
-| Invariant | Why it earns its place |
-|---|---|
-| every script parses | catches syntax-only breakage before it runs |
-| no comments outside `#Requires` | Rule 1, enforced mechanically instead of by discipline |
-| every JSON in `declared/` is valid | those files are the source of truth; a typo silently disables a rule |
-| `-DryRun` mutates nothing | proves Rule 6 |
-| a converged machine reports 0 changes | proves Rule 7 — this is the check that would have caught the `Get-ChildItem` vs `GetValueNames` mistake |
-| every script is listed in its folder's README | keeps the index honest as code is added |
+| Invariant | Why it earns its place | Enforced by |
+|---|---|---|
+| every script parses | catches syntax-only breakage before it runs | `verify.ps1` |
+| no comments outside `#Requires` | Rule 1, enforced mechanically instead of by discipline | `verify.ps1` |
+| no global state | Rule 3; a hidden variable is a second code path | `verify.ps1` |
+| every writer exposes `-DryRun` | proves Rule 6 | `verify.ps1` |
+| every writer sets an explicit exit code | Rule 8; a silent 0 on failure is worse than a crash | `verify.ps1` |
+| every JSON in `declared/` is valid | those files are the source of truth; a typo silently disables a rule | `verify.ps1` |
+| every JSON in `declared/` is named by a script or a doc | dead intent is indistinguishable from intent | `verify.ps1` |
+| every script is listed in its folder's README | keeps the index honest as code is added | `verify.ps1` |
+| `-DryRun` mutates nothing | proves Rule 6 for the scripts that touch the machine | `run-tests.ps1` |
+| a converged machine reports 0 changes | proves Rule 7 — this is the check that would have caught the `Get-ChildItem` vs `GetValueNames` mistake | `run-tests.ps1` |
+| a parser returns the rows it is given | the winget table is fixed-width text, and a format change looks exactly like "nothing to upgrade" | `run-tests.ps1` |
 
-`device/desktop/scripts/verify.ps1` enforces all six. Every rule is hard: any failure exits 1, so a change that breaks one does not get committed. Its own rule list lives in code — the single exception to Rule 5, because the rules *are* the verifier's identity rather than data about the machine.
-
-Run it before committing:
+Two commands, both hard-failing, both runnable from any shell:
 
 ```powershell
-pwsh device/desktop/scripts/verify.ps1
+pwsh device/desktop/scripts/verify.ps1      # repo shape: 16 scripts, 3 declared JSON files
+pwsh device/desktop/tests/run-tests.ps1     # behaviour: 17 assertions
 ```
 
-As of 2026-11-17 it reports `0 failure(s), 0 warning(s)` across 10 scripts and 3 declared JSON files.
+`verify.ps1`'s own rule list lives in code — the single exception to Rule 5, because the rules *are* the verifier's identity rather than data about the machine.
 
 ## Tooling reality on this machine
 
-- `PSScriptAnalyzer` — **not installed**, and PSGallery is currently unreachable from this session (TLS handshake fails, same class of failure as the sandboxed `winget`).
-- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`.
+- `PSScriptAnalyzer` — **not installed**, and PSGallery is unreachable. Re-checked 2026-11-17: the TCP connection to `www.powershellgallery.com:443` opens and the TLS handshake then fails, with and without certificate validation. `Get-PSRepository` returns nothing. Treat any "just install the analyzer" plan as blocked, not as a step.
+- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`. Its syntax predates Pester 5 and it buys nothing over the 40 lines of assertions in `tests/run-tests.ps1`.
 
-Therefore: **write the verifier with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 60-line script beats a dependency that cannot be installed.
+Therefore: **write the checks with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 150-line verifier beats a dependency that cannot be installed — and it is why `verify.ps1` is the lint layer, not a wrapper around one.
 
 ## When to break these rules
 
