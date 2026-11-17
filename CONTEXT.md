@@ -48,11 +48,13 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 
 ## Active Threads
 
-- **"Choose another app" is dead on this image** — `OpenWith.exe` / `ShellHost.exe` fail at startup. Video and audio open via PotPlayer (`OpenWithList` + class default); `.md` does not open, despite a correct handler. Root cause and everything tried: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
+- **"Choose another app" is dead on this image** — `OpenWith.exe` / `ShellHost.exe` fail at startup. Video and audio open via PotPlayer (`OpenWithList` + class default); `.md` does not open, despite a correct handler. Symptoms, evidence, what not to do and the repair path: [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md). Unresolved.
 - **Desktop streaming stack is being rebuilt** — OBS 33.0.1 is installed but has never been launched, and the old phone-DroidCam webcam path is retired now that a **Kreo Owl Lite** webcam exists (16 Nov 2026). ShareX and input-overlay are still missing. See the gaps section in [`device/desktop/README.md`](device/desktop/README.md).
 - Net worth / assets & liabilities feature lives in the separate finance repo now.
 
 ## Recent Changes
+
+- **2026-11-17** — `docs:` removed the drive-letter archaeology. The letters are a deliberate choice, so the audit no longer carries an "absent drive letters" list and no doc explains the history any more; the drive maps stay, and `check-docs.ps1` still fails if a doc names a drive that is not mounted. [`notes/windows-shell-repair.md`](notes/windows-shell-repair.md) was cut from 229 lines to the facts that are still true, the four "do not do this" rules and the three-step repair path — the narration of fixes that fixed nothing is gone. Hand-writing `OpenWithList`/`OpenWithProgids` is fine; only `UserChoice` is off-limits, which is what the note now says and what `tweaks.ps1` already does.
 
 - **2026-11-17** — `desktop:` the docs became falsifiable. [`check-docs.ps1`](device/desktop/scripts/check-docs.ps1) fails when a Markdown link dangles, a `build` claim or documented drive letter is wrong, or a dated free-space claim drifts more than 5 GB (1 GB warns, 14 days of age warns); an undated number is treated as history, which is how the 23 Oct figures survive. `audit-state.ps1` now reads its machine lists from [`declared/audit-targets.json`](device/desktop/declared/audit-targets.json) instead of carrying them as literals, and a test asserts it really reads them — it did not, at first: a `[string]$Targets` parameter silently stringified the parsed JSON assigned to `$targets`.
 

@@ -1,229 +1,63 @@
-# Windows shell / "Open with" failure — diagnosis and repair path
+# Windows shell: no default verb, and the app picker never opens
 
-> Device: desktop | Written: 2026-11-16 | Status: unresolved on this image
+> Device: desktop | Verified 16-17 Nov 2026 | Status: unresolved on this image
 
-## Symptoms
-
-- Double-clicking `.mp4` / `.m4a` in `Videos/` and `.md` in `personal-ledger/diary/` does not open them.
-- Right-click → **Open with → Choose another app** does nothing (no dialog ever appears).
-- File Explorer has no tabs and looks like a cut-down build.
-
-## Verified evidence
-
-OS reports **26H2, build 26300.9457**, but the shell files are from the 26100 line:
-
-| Component | Version |
-|---|---|
-| `C:\Windows\explorer.exe` | 10.0.26100.8117 |
-| `C:\Windows\System32\OpenWith.exe` | 10.0.26100.8117 |
-| `C:\Windows\System32\ShellHost.exe` | 10.0.26100.9278 |
-| `twinui.pcshell.dll` | 10.0.26100.9278 |
-| `Windows.UI.Xaml.dll` | 10.0.26100.8972 |
-| `MicrosoftWindows.Client.CBS` | 1000.26100.360.0 |
-| `MicrosoftWindows.Client.Core` | 1000.26100.133.0 |
-| `Microsoft.UI.Xaml.CBS` | 9.2603.18001.0 |
-
-**The picker is dead, not slow:**
-
-- `OpenWith.exe` starts and exits **without creating a window** — `0xC0000142` (`STATUS_DLL_INIT_FAILED`) from a low-integrity process, `0x80073D54` from a normal-integrity process.
-- `ShellHost.exe` (the dialog host behind it) exits the same way.
-- Other GUI binaries (`mstsc.exe`, `mmc.exe`) start normally, so the desktop itself can create windows.
-
-**The shell can still launch associations:**
-
-- A synthetic `.zzz` → `cmd /c echo` association launched successfully through `ShellExecuteEx` (process created, marker file written). So the launch path is intact; the fault is specific to the shell/app-picker components.
-
-**Association state (re-checked 16 Nov 2026, 19:45):**
-
-| Extension | State | Resolves to |
-|---|---|---|
-| `.md` | no `UserChoice`; `HKCR\.md` → **`Markdown Document`** (repointed 16 Nov) | `GenOffice.exe "%1"` — works |
-| `.txt` | `UserChoice` → `AppX4ztfk…` (AppX Notepad), hash present | `Notepad.exe` (packaged) |
-| `.mp4` / `.m4a` / `.mkv` and 31 other media types | `UserChoiceLatest` held a **hash but no `ProgId`** → resolved to the dead picker. **Those 34 keys were deleted 16 Nov** | falls back to `HKCR` default, e.g. `PotPlayerMini64.MP4` → `PotPlayerMini64.exe "%1"` |
-
-- `UserChoice` keys are ACL-protected; deleting them fails without elevation.
-- **101 extensions still carry a hash-only `UserChoiceLatest`**, but most of those also have a valid `UserChoice` that wins — they are not the cause of the double-click failure.
-- `HKCR\txtfile` (the standard Text File class) is missing.
-- UCPD (User Choice Protection Driver) is **stopped**; the old `NoInternetOpenWith` policy and the stray `NoOpenWith` value on `OpenWith.exe` are **gone** as of 16 Nov, so they are no longer contributing.
-- No shell-hooking tools installed (no StartAllBack / ExplorerPatcher / Open-Shell).
-
-## Root cause
-
-The image mixes **26100-era shell binaries and packages with a 26300 OS build**. The modern Explorer UI (tabs) and the app picker both come from that shell stack, so they fail or fall back to the cut-down behaviour. The association store is a second, smaller problem: hash-only `UserChoiceLatest` entries make Windows treat video types as having no default and hand them to the broken picker.
-
-## Applied 16 Nov 2026
-
-What was actually changed, with the backup that undoes it:
-
-| Change | Effect | Undo |
-|---|---|---|
-| Deleted the 34 hash-only `UserChoiceLatest` keys (all media types) | Windows falls back to the `HKCR` default handler instead of "no default → picker" | `reg import %LOCALAPPDATA%\DesktopMaintenance\FileExts-backup-2026-11-16.reg` |
-| Repointed `HKCR\.md` → `Markdown Document` | `.md` now has a command (GenOffice) instead of a dead ProgId | `reg add "HKCR\.md" /ve /d Markdown /f` (restores the broken state) |
-| Added `PotPlayerMini64.*` to `OpenWithProgids` for media types | PotPlayer appears in the "Open with ▸" submenu | delete the value |
-
-**Correction to an earlier claim in this note:** `OpenWithProgids` was reported as empty. That was a **measurement error** — `Get-ChildItem` lists subkeys, not values, so a populated `OpenWithProgids` looked empty. The values were there all along (`WMP11.AssocFile.MP4`, etc.). Read them with `.GetValueNames()`.
-
-**Test-method warning:** launching a file from inside an agent sandbox reports `Server execution failed` / `Access is denied` for **every** type, including ones that work fine by hand. Those errors are the sandbox refusing the shell launch, not the OS. Association behaviour has to be verified by double-clicking as the logged-in user.
-
-## Verified by hand, 16 Nov 2026 (after the association repair)
-
-Tested by double-clicking as the logged-in user — the only reliable method.
+## What is broken
 
 | Action | Result |
 |---|---|
-| Double-click a **video** (`.mp4`/`.mkv`) | ✅ opens (VLC) |
-| Right-click → **Open with ▸ PotPlayer** | ✅ works, for video and for audio |
-| Right-click → **Play with PotPlayer** (`.m4a`) | ✅ works |
-| Right-click → **Open with ▸ GenOffice** (`.md`) | ✅ works |
-| Double-click **`.m4a`** | ❌ nothing |
-| Double-click **`.md`** | ❌ nothing |
-| Right-click → **Open** (the default verb) on `.m4a` | ❌ nothing |
-| **Choose another app** (any type) | ❌ nothing — this is the dead picker |
+| Double-click `.mp4` / `.mkv` | opens (PotPlayer) |
+| Double-click `.m4a` | nothing |
+| Double-click `.md` | nothing |
+| Right-click → **Open** (the default verb), `.m4a` / `.md` | nothing |
+| Right-click → **Open with ▸ \<app\>** | works for every type |
+| **Choose another app**, any type | no dialog ever appears |
+| File Explorer | no tabs |
 
-**What that pattern means.** Every *explicit* handler launch works. Only the paths that go through **default-verb resolution** (double-click, right-click → Open) fail, and only for some types. The association *data* is provably equivalent:
+Every *explicit* handler launch works. Only **default-verb resolution** fails, and only for some types.
 
-| Type | UserChoice | Class → ProgId | Verbs | Outcome |
-|---|---|---|---|---|
-| `.mp4` | none | `PotPlayerMini64.MP4` | Enqueue, **open**, play | ✅ opens |
-| `.mkv` | none | `PotPlayerMini64.MKV` | Enqueue, **open**, play | ✅ opens |
-| `.m4a` | none | `PotPlayerMini64.m4a` | Enqueue, **open**, play | ❌ nothing |
-| `.md` | none | `Markdown Document` (shell default = `open`) | **open** | ❌ nothing |
+## The picker is dead, not slow
 
-Identical structure, identical commands, identical hives — different outcomes. Registry surgery has therefore reached its limit; the difference is in the shell's resolver, not the data.
+`OpenWith.exe` and `ShellHost.exe` start and exit **without creating a window**: `0xC0000142` (`STATUS_DLL_INIT_FAILED`) from a low-integrity process, `0x80073D54` from a normal-integrity one. `mstsc.exe` and `mmc.exe` open normally, so the desktop itself can create windows. A synthetic `.zzz` association launched `cmd` through `ShellExecuteEx`, so the launch path is intact.
 
-**Practical path until the image is repaired:**
+## Version numbers are not the cause
 
-1. Use **right-click → Open with ▸ \<app\>** — verified working for every type in the table above.
-2. Try setting the default explicitly in **Settings → Apps → Default apps → choose PotPlayer → `.m4a`** (and GenOffice for `.md`). *Viewing* the page is not the same as clicking **Set default** — the click writes a real `UserChoice` with its valid hash, which takes priority over the broken fallback path. This is the one thing that could restore double-click without reinstalling.
+The OS reports **26300.9457** while the shell binaries are on the 26100 servicing line. That is the shipped configuration, not file damage: the original ISO's `install.wim` contains exactly what is installed, and DISM reports the image itself as 26300 / build 9457. This is an enablement-style release, so `26100.x` file versions are normal here.
 
-## The build number is NOT the problem (corrected 16 Nov 2026)
-
-An earlier revision of this note blamed a "26100 shell on a 26300 OS". **That was wrong**, and the install media proves it. The original ISO is still on disk (`Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso`), and mounting its `install.wim` shows the media ships *exactly* what is installed:
-
-| File | In the ISO's install.wim | Installed |
+| File | In the ISO | Installed |
 |---|---|---|
-| `explorer.exe` | 10.0.26100.8117 | 10.0.26100.8117 ✅ |
-| `ShellHost.exe` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
-| `twinui.pcshell.dll` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
-| `shell32.dll` | 10.0.26100.9278 | 10.0.26100.9278 ✅ |
-| `ntoskrnl.exe` | 10.0.26100.9457 | 10.0.26100.9457 ✅ |
+| `explorer.exe` | 10.0.26100.8117 | 10.0.26100.8117 |
+| `OpenWith.exe` | 10.0.26100.8117 | 10.0.26100.8117 |
+| `ShellHost.exe`, `twinui.pcshell.dll` | 10.0.26100.9278 | 10.0.26100.9278 |
+| `shell32.dll` | 10.0.26100.9278 | 10.0.26100.9278 |
+| `ntoskrnl.exe` | 10.0.26100.9457 | 10.0.26100.9457 |
 
-DISM reports the image itself as `Version: 10.0.26300, ServicePack Build: 9457`. So this is an **enablement-style release**: the OS reports 26300 while its binaries stay on the 26100 servicing line, at UBR 9457. Version numbers like `26100.8117` are therefore normal here — ReviOS replaced nothing, and there is no malicious or accidental file mix.
+Every shell package the picker depends on is present — `MicrosoftWindows.Client.CBS 1000.26100.360.0`, `Microsoft.Windows.Client.Core 1000.26100.133.0`, `Microsoft.UI.Xaml.CBS 9.2603.18001.0`, `ShellExperienceHost 10.0.26100.8115`, `StartMenuExperienceHost 10.0.26100.4768` — and none is provisioned offline. Re-registering all five changed nothing, so the fault is runtime state, not a missing or stale registration.
 
-What that also means: **a repair install from this same ISO would restore exactly the binaries you already have.** It is not a magic fix for the shell behaviour, and it would not add tabs if this media doesn't provide them.
+## The association data is equivalent, so the resolver is at fault
 
-### So what is actually broken
+Measured 17 Nov 2026. None of these carries a `UserChoice`, so each falls back to its class default:
 
-With the media ruled out, the remaining fault is runtime state, not files:
-
-- `ShellHost.exe` (the dialog host behind "Choose another app") exits with **`0xC0000142`** at DLL init, despite being the shipped binary.
-- `OpenWith.exe` starts and exits without creating a window.
-- Every shell package it depends on **is present**: `MicrosoftWindows.Client.CBS 1000.26100.360.0`, `Microsoft.Windows.Client.Core 1000.26100.133.0`, `Microsoft.UI.Xaml.CBS 9.2603.18001.0`, `ShellExperienceHost 10.0.26100.8115`, `StartMenuExperienceHost 10.0.26100.4768`. No packages are missing; none are provisioned offline, so they cannot be reinstalled from an image.
-
-**Repair attempted 16 Nov 2026:** all five shell packages were re-registered (`Add-AppxPackage -DisableDevelopmentMode -Register …AppXManifest.xml`) — all reported OK. That is the standard fix for a shell whose registrations have gone stale, and it costs nothing to try.
-
-**Result 17 Nov 2026, after a reboot: it did not help.** Re-registration changes nothing; the picker and the `.md` default verb still fail.
-
-**State of the possible repairs, as facts rather than a plan:**
-
-- `sfc /scannow` + `DISM /Online /Cleanup-Image /RestoreHealth` — not run on this image.
-- Repair install from `Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso` — replaces system binaries with what that ISO already contains (same versions, shown below), so it restores nothing the machine is missing.
-- Clean install from that ISO before applying ReviOS Playbook 26.10 — the only configuration that has never been tried on this hardware. The playbook archive (`Revi-PB-26.10.apbx`) is password-protected, so its changes cannot be inspected.
-
-## When "Reset all default apps" makes it much worse (17 Nov 2026)
-
-**Symptom:** after clicking *Reset all default apps* in Settings, even the video types that had been working stopped opening with anything.
-
-**Cause:** the reset writes a `UserChoice` for every media type pointing at a **packaged Media Player** that does not exist on this image:
-
-```
-.mp4 .mkv .avi .mov .m4v .wmv .mp3 .m4a .flac .wav .aac .ogg .opus .wma .ac3 .m2ts .ts .mpg .mpeg
-   → UserChoice ProgId = AppXqj98qxeaynz6dv4459ayz6bnqxbyaqcs   (not installed)
-```
-
-A `UserChoice` outranks the working per-user class default (`PotPlayerMini64.*`), so every media type pointed at a handler that cannot launch. That is why "reset" turned a partial breakage into a total one.
-
-**Recovery that worked** — delete the whole `FileExts\<ext>` key, not just the `UserChoice` subkey. Opening `UserChoice` for deletion is denied by its ACE, but deleting the parent key succeeds and takes the child with it:
-
-```powershell
-Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.mp4" -Recurse -Force
-```
-
-Applied to all 19 media types, then `SHChangeNotify(SHCNEW_ASSOCCHANGED)` to make Explorer re-read them. Every extension fell back to its class default again (`PotPlayerMini64.*`), all of which still had valid commands.
-
-**But deleting the parent key also deleted `OpenWithList`** — the MRU the "Open with ▸" submenu is built from — which broke the workaround along with the bug. **Restoring it is what actually fixed double-click:**
-
-```
-HKCU\...\FileExts\<ext>\OpenWithList    a = PotPlayerMini64.exe (GenOffice.exe for .md)
-                                        MRUList = a
-```
-
-With no `UserChoice` and no MRU, the shell has nothing to fall back to and invokes the dead picker. With the MRU restored, double-click, right-click Open, "Play with PotPlayer" and "Add to playlist" all work again.
-
-### The audio-only bug this uncovered
-
-With media associations restored, a new asymmetry appeared:
-
-| Perceived type | `SystemFileAssociations\<type>\shell` | Outcome |
+| Type | Class → command | Outcome |
 |---|---|---|
-| `video` | **absent** | falls through to `HKCR\.mp4` → PotPlayer → ✅ opens |
-| `audio` | present, with `Enqueue` and `Play` verbs whose `command` key was **empty** | Windows merges those verbs in, resolves audio to a verb with no command → ❌ nothing happens |
+| `.mp4` | `PotPlayerMini64.MP4` → quoted PotPlayer | opens |
+| `.mkv` | `PotPlayerMini64.MKV` → quoted PotPlayer | opens |
+| `.m4a` | `PotPlayerMini64.m4a` → quoted PotPlayer | nothing |
+| `.md` | `MarkdownText` → quoted `notepad.exe` ([why notepad](../device/desktop/declared/associations.json)) | nothing |
 
-Those two stubs were leftovers from a removed player. Removing them (backup: `%LOCALAPPDATA%\DesktopMaintenance\SystemFileAssociations-audio-2026-11-17.reg`) is the only thing that has ever plausibly explained why `.mp4` opened and `.m4a` did not, given identical ProgIds and identical commands.
+Identical structure, identical quoting, different outcomes. Registry surgery has reached its limit here.
 
-Same defect exists in places nobody uses — `SystemFileAssociations\.3ds|.3mf|.dae|.dxf|.obj|.ply|.stl|.wrl\shell\3D Print` and `Directory.Audio|Directory.Image\shell\Enqueue|Play` all have commandless verbs. Left alone deliberately.
+## What not to do
 
-**17 Nov 2026 — `.md` was fixed twice over and still does not launch.** Two real defects were found and corrected:
-
-1. GenOffice's command was **unquoted**: `C:\Program Files\GenOffice\GenOffice.exe "%1"`. A space in an unquoted path parses as `C:\Program` plus arguments, so the launch failed silently. Quoted now.
-2. GenOffice had **no `HKCR\Applications\GenOffice.exe` entry**, which is how Windows resolves an `OpenWithList` executable name. Registered now.
-
-Neither restored double-click. `.md` was then pointed at a `MarkdownText` ProgId running the inbox `notepad.exe` — a plain exe, quoted path, with `Applications\notepad.exe` already present, i.e. structurally identical to the PotPlayer setup that works for media. The **icon changed to Notepad's**, proving Windows reads the handler, but double-click and right-click → Open still do nothing. `Open with ▸ <app>` continues to work.
-
-**What is true:** `.md` and the media types have equivalent association structure, the handler is known-good and provably launches, and only `.md` fails to resolve a default verb. The difference is not visible anywhere in the association data.
-
-**The lesson cost several hours:** I compared ProgIds, verbs, hives and `UserChoice` state, found them "identical", and concluded the shell was at fault — twice. Both times something *was* different: first two missing quote characters, then a missing `Applications` registration. Compare the command text byte for byte, and check that the handler is resolvable as an application, before concluding two handlers are equivalent.
-
-### The handler Windows reset to cannot exist here
-
-`AppXqj98qxeaynz6dv4459ayz6bnqxbyaqcs` — the ProgId the reset wrote for every media type — is a **third-party package-family hash**, not a Microsoft Store one (Store packages end in `8wekyb3d8bbwe`). It is:
-
-- **not installed** for any user
-- **not provisioned** offline (only `Microsoft.WebMediaExtensions` is)
-- not obtainable from the Store, because it isn't a Store identity
-
-So installing Media Player or Windows Media Player would not help — the hash would still not match. The reset pointed every media type at a handler that has never existed on this image.
-
-### What the repair attempt cost, and the honest position
-
-Deleting `FileExts\<ext>` to clear the dead `UserChoice` also deleted `OpenWithList` — the MRU the "Open with ▸" submenu is built from. That made "Open with" empty too, so the workaround regressed along with the bug. `OpenWithList` was restored (`a=PotPlayerMini64.exe` / `a=GenOffice.exe`, `MRUList=a`; backup: `%LOCALAPPDATA%\DesktopMaintenance\FileExts-before-openwith-restore-2026-11-17.reg`).
-
-**Position after all of this:** no registry change on this image has produced a launch for either a media default verb or `.md`. The media types were restored by rebuilding `OpenWithList`; `.md` was not, despite equivalent structure. Every attempted repair, its result, and the backup for it is recorded above.
-
-## What does not fix it
-
-- Re-registering the CBS packages as the current user — tried, no change to the picker.
-- Deleting or repointing `UserChoice` by hand — Windows rewrites the keys, and doing it live can briefly make **every** extension resolve to `OpenWith.exe`.
-- Installing another text editor — does not touch Explorer or the picker.
+- **Do not write `UserChoice` by hand.** It is ACL-protected, Windows rewrites it, and a wrong value can make every extension resolve to the dead picker.
+- **Do not click "Reset all default apps".** It writes a `UserChoice` for 19 media types pointing at `AppXqj98qxeaynz6dv4459ayz6bnqxbyaqcs` — a third-party package hash that is neither installed nor provisioned — which turns a partial failure into a total one. Recovery: delete the whole `FileExts\<ext>` key (deleting `UserChoice` alone is denied), then restore `OpenWithList` with `a = <exe>` and `MRUList = a`, because deleting the parent takes the MRU with it and "Open with ▸" then has nothing to show.
+- **Do not trust a sandboxed launch.** An agent session reports `Server execution failed` / `Access is denied` for every type, including ones that work by hand. Association behaviour can only be verified by double-clicking as the logged-in user.
+- **Do not compare two handlers by eye.** Compare the command text byte for byte and confirm `HKCR\Applications\<exe>` exists. Both have been the real difference during this investigation.
 
 ## Repair path
 
-1. Optional, cheap first attempt (elevated): `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth`. Low odds on a modified image.
-2. **In-place repair install** with matching 26300 media — keeps files and apps.
-3. Clean install if the repair install fails.
-4. Until then: open files from inside the app (`File → Open`) rather than by double-click.
+1. `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth` — not yet run on this image.
+2. Repair install from `Z:\Downloads\Windows11_Client_x64_en-us_26300_9457.iso` — expected to change nothing, since it replaces binaries with the ones already installed.
+3. Clean install from that ISO, then ReviOS Playbook 26.10 — the only configuration never tried here. The playbook archive (`Revi-PB-26.10.apbx`) is password-protected, so its changes cannot be inspected.
 
-## Refactor — how this should be handled in this repo
-
-- **One read-only diagnostic script**, not a fix-all script: report OS/build, shell file versions, package versions, a picker launch test, and the `AssocQueryString` table for the affected extensions. No writes, no elevation needed.
-- **Keep the decision tree in a note** (this file). If the picker exits with `0xC0000142`/`0x80073D54` and the shell binaries are older than the OS build, it is an image problem — stop, do not patch the registry.
-- **Never write associations by hand.** Use the OS UI or the documented API; hand-editing `UserChoice` is protected, self-healing, and can make things worse.
-- **Scripts stay small, idempotent, and log to `%LOCALAPPDATA%\DesktopMaintenance`** — same pattern as `update-system.ps1` / `cleanup-system.ps1`.
-
-## Loose ends
-
-- **Notepad++ 8.9.9.1 — resolved 16 Nov 2026.** It was installed only during this troubleshooting and removed with `winget uninstall --id Notepad++.Notepad++ --exact` from an elevated shell (the MSI uninstall returns 1603 without elevation, which is why it sat there).
-- **Obsidian 1.15.1 — installed and removed 16 Nov 2026** (same day, to test `.md` handling). Its uninstaller left the `.md` mapping worse: `HKCR\.md` still points at the `Markdown` ProgId, but that ProgId's `shell\open\command` is now empty, and there is no `UserChoice`. Double-clicking a `.md` therefore does nothing. Stale `HKCR\Obsidian` and `HKCR\obsidian` keys also remain.
-  - Do **not** fix this by hand-writing `UserChoice` (see the rule above). It can be set from **Settings → Apps → Default apps → `.md`** once the picker is repaired, or GenOffice can be used explicitly.
-- A `.reg` snapshot of `HKCU\…\FileExts` lives in `%LOCALAPPDATA%\DesktopMaintenance`; `reg import` refuses the protected keys, so it is a reference only.
-- `.txt` was restored to its original handling; `.mp4` / `.m4a` remain unresolved exactly as before.
+Until one of those lands: right-click → **Open with ▸ \<app\>**, and set a default from **Settings → Apps → Default apps**. That UI is the only sanctioned writer of `UserChoice`, and it writes a valid hash, which is the one thing that could restore double-click without reinstalling anything.
