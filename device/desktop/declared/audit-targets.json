@@ -31,5 +31,11 @@
     "Files": "File Explorer",
     "WindowsStore": "Microsoft Store",
     "WindowsTerminal": "Terminal"
-  }
+  },
+
+  "packagedApps": [
+    "Microsoft.WindowsTerminal",
+    "com.notion.app.desktop.notion"
+  ],
+  "_packagedAppsWhy": "Packaged apps have no ARP entry, so software.md used to carry their versions from memory and marked Notion needs-review. The per-user AppModel repository lists them by name_version_arch__publisher, and it is readable where Get-AppxPackage is not."
 }

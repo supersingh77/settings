@@ -54,6 +54,7 @@ function Test-AuditReadsItsDeclaredTargets {
     Assert-True ($result.Output -match 'Monitor INF \| oem\d+\.inf') 'the audit must resolve the monitor model from declared/audit-targets.json'
     Assert-True ($result.Output -match 'Drive letters absent on this machine: D:, E:') 'the audit must read the absent drive letters from declared/audit-targets.json'
     Assert-True ($result.Output -match 'C:\\Program Files\\DroidCam') 'the audit must walk the not-an-install paths from declared/audit-targets.json'
+    Assert-True ($result.Output -match 'Packaged \| Microsoft\.WindowsTerminal \| \d') 'the audit must resolve packaged app versions from the AppX registry rather than from memory'
 }
 
 function Test-JoinVideosDryRunWritesNothing {

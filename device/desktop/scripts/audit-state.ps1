@@ -217,8 +217,21 @@ if ($Since) {
     }
 }
 
-Section 'Taskbar pins (left to right)'
+Section 'Packaged apps (AppX registry)'
 
+$packageRepo = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\Repository\Packages'
+$registeredPackages = @{}
+foreach ($key in (Try-Get { Get-ChildItem $packageRepo -ErrorAction SilentlyContinue })) {
+    $parts = $key.PSChildName -split '_'
+    if ($parts.Count -ge 2) { $registeredPackages[$parts[0]] = $parts[1] }
+}
+foreach ($name in @($targets.packagedApps)) {
+    $version = $registeredPackages[$name]
+    if ($version) { Out-Line "| Packaged | $name | $version |" }
+    else { Out-Line "| Packaged | $name | needs-review - not registered for this user |" }
+}
+
+Section 'Taskbar pins (left to right)'
 $blob = Try-Get { (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -ErrorAction SilentlyContinue).Favorites }
 if ($blob) {
     function Find-Offset([byte[]]$hay, [string]$needle, [bool]$utf16) {
