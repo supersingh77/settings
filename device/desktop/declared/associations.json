@@ -6,7 +6,8 @@
     "extension": ".md",
     "targetProgId": "MarkdownText",
     "openWithExe": "notepad.exe",
-    "_why": "GenOffice's handler never launched from a double-click even with a correct ProgId, a quoted command and an Applications registration - while 'Open with > GenOffice' worked. A plain notepad.exe handler copies the pattern that demonstrably works for PotPlayer: ordinary exe, quoted path, existing Applications entry. Notepad++ was removed on 16 Nov; this is the inbox notepad.exe that still exists in System32."
+    "_why": "GenOffice's handler never launched from a double-click even with a correct ProgId, a quoted command and an Applications registration - while 'Open with > GenOffice' worked. A plain notepad.exe handler copies the pattern that demonstrably works for PotPlayer: ordinary exe, quoted path, existing Applications entry. Notepad++ was removed on 16 Nov; this is the inbox notepad.exe that still exists in System32.",
+    "_removeWhen": "Double-click on .md launches again and the app picker works, i.e. notes/windows-shell-repair.md 'Repair path' steps 2-3 have been taken. Then point .md back at GenOffice and delete MarkdownText, this block's _why, and the notepad.exe OpenWithList entry. Until that day this is a stopgap, not the intended design - do not copy it to another machine as if it were."
   },
 
   "progIds": [
