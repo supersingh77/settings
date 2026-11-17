@@ -60,9 +60,11 @@ For scripts this size, the valuable checks are properties:
 Two commands, both hard-failing, both runnable from any shell:
 
 ```powershell
-pwsh device/desktop/scripts/verify.ps1      # repo shape: 17 scripts, 4 declared JSON files
-pwsh device/desktop/tests/run-tests.ps1     # behaviour
+pwsh device/desktop/scripts/verify.ps1      # repo shape; prints the script and JSON counts it checked
+pwsh device/desktop/tests/run-tests.ps1     # behaviour; prints the tests it ran
 ```
+
+Neither count belongs in this file: both tools report their own totals on every run, and a number copied here is a number that will be wrong within a month.
 
 For the desktop there is a third gate: `device/desktop/scripts/check-docs.ps1` compares the build, drive letters, dated free-space claims and app versions in the docs against the live machine, and exits 1 when a doc wins. A rule about prose needs a checker too, or it is only a preference.
 
@@ -71,9 +73,9 @@ For the desktop there is a third gate: `device/desktop/scripts/check-docs.ps1` c
 ## Tooling reality on this machine
 
 - `PSScriptAnalyzer` — **not installed**, and PSGallery is unreachable. Re-checked 2026-11-17: the TCP connection to `www.powershellgallery.com:443` opens and the TLS handshake then fails, with and without certificate validation. `Get-PSRepository` returns nothing. Treat any "just install the analyzer" plan as blocked, not as a step.
-- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`. Its syntax predates Pester 5 and the two hours it would cost to learn are not worth less than the 120 lines of assertions in `tests/`.
+- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`. Its syntax predates Pester 5 and the two hours it would cost to learn are not worth less than the plain assertions in `tests/`.
 
-Therefore: **write the checks with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 107-line verifier beats a dependency that cannot be installed — and it is why `verify.ps1` is the lint layer, not a wrapper around one.
+Therefore: **write the checks with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A verifier you can read in one sitting beats a dependency that cannot be installed — and it is why `verify.ps1` is the lint layer, not a wrapper around one.
 
 ## When to break these rules
 
