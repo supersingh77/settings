@@ -13,6 +13,8 @@ It is deliberately not a backup. Snapshots live in `device/desktop/backup/` (gen
 | `associations.json` | which handler each extension should fall back to, and which media types expose one in "Open with" | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
 | `tweaks.ps1` | the algorithm that walks `associations.json` — contains no lists of its own | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
 
+`tweaks.ps1` exits **1** if any write failed. A refused HKCR write used to print an error and still exit 0, which made a half-applied machine look converged; the summary now reports `change(s)` and `failure(s)` separately.
+
 ## Verify against reality
 
 Intent rots the moment nothing checks it — this repo already lost three weeks to docs that said `E:`/`D:` on a machine with only `V:`/`Z:`.
@@ -20,9 +22,10 @@ Intent rots the moment nothing checks it — this repo already lost three weeks 
 ```powershell
 pwsh device/desktop/scripts/audit-state.ps1     # what the machine actually is
 pwsh device/desktop/declared/tweaks.ps1 -DryRun # what this folder wants it to be
+pwsh device/desktop/tests/run-tests.ps1         # asserts the dry run reports 0 changes
 ```
 
-There is no `-Compare` yet. Until there is, treat these files as a checklist, not as enforcement.
+There is still no `-Compare`. The test suite is a one-sided substitute: it fails when this folder and the machine disagree, but it cannot tell you *which* entry differs. Until a real comparison exists, treat these files as a checklist, not as enforcement.
 
 ## Deliberately not declared
 

@@ -1,15 +1,16 @@
 # C: Drive — Cleanup Reference
 
-> Updated: 17 Nov 2026 | C: **66.8 GB free** of 126.1 GB · V: 76.4 GB free · Z: 478.5 GB free
+> Updated: 17 Nov 2026 | C: **67.0 GB free** of 126.1 GB · V: 76.4 GB free · Z: 478.5 GB free
+> Free space is a snapshot, not an invariant: re-run `pwsh device/desktop/scripts/audit-state.ps1` before quoting it.
 > Evergreen checklist for the Windows desktop. Verify sizes before deleting anything.
 
 ## Drive Map
 
-Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hardware.md](hardware.md).
+Measured 17 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hardware.md](hardware.md).
 
 | Drive | Label | Size | Free | Purpose |
 |-------|-------|------|------|---------|
-| **C:** | _(System)_ | 126.1 GB | **66.8 GB** | OS + core apps |
+| **C:** | _(System)_ | 126.1 GB | **67.0 GB** | OS + core apps |
 | **V:** | Vacuum Drive | 350.0 GB | 76.4 GB | Games, streaming software |
 | **Z:** | Mass Storage | 931.5 GB | 478.5 GB | Recordings, VODs, archives |
 
@@ -29,11 +30,11 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 
 | What | Where / How |
 |------|-------------|
-| Recordings parked on C: | `C:\Users\amar\Videos` — move the four pre-16-Nov clips to `Z:` and delete them from C:. OBS now writes straight to `Z:\Recordings` |
+| Recordings parked on C: | `C:\Users\amar\Videos` — check it is empty of `.mp4`/`.mkv`/`.m4a`/`.mov`; OBS writes straight to `Z:\Recordings` since 16 Nov |
 | User + Windows temp | `%TEMP%`, `C:\Windows\Temp` |
 | Recycle Bin | `Clear-RecycleBin` or Disk Cleanup |
 | Windows Update staging | Disk Cleanup → "Windows Update Cleanup"; don't delete `SoftwareDistribution` manually while updates are pending |
-| Old installers | `C:\Users\amar\Downloads` — keep only what you still need |
+| Old installers | `%USERPROFILE%\Downloads` — keep only what you still need |
 | AMD installer leftovers | `C:\AMD` — now only empty stub dirs + one log; safe to remove |
 | AMD shader caches | `%LOCALAPPDATA%\AMD\DxCache`, `VkCache`, `OglCache`, `DX9Cache` |
 | Discord / Chrome caches | In-app cache clearing; avoid deleting the whole profile |
@@ -61,7 +62,7 @@ Measured 16 Nov 2026. **There is no `D:` or `E:` on this machine** — see [hard
 
 **Result:** C: went from **52.2 GB → 98.8 GB free** (46.6 GB reclaimed) at that moment.
 
-> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **66.8 GB free**. Use the measured table above, not the 23 Oct number.
+> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **67.0 GB free**. Use the measured table above, not the 23 Oct number.
 
 ## Prevention
 

@@ -1,6 +1,6 @@
 # Desktop PC — Custom Build
 
-> Status: Active | Last verified: 16 Nov 2026 | OS: ReviOS 26H2
+> Status: Active | Last verified: 17 Nov 2026 | OS: ReviOS 26H2
 
 ## Quick Reference
 
@@ -11,7 +11,7 @@
 | **CPU** | AMD Ryzen 7 5700X (8C/16T) |
 | **GPU** | AMD Radeon RX 7600 8 GB — Adrenalin 26.10.1 (driver 32.0.32015.7029) |
 | **RAM** | 16 GB DDR4-3000 (2 × 8 GB) |
-| **Storage** | C: 126.1 GB system (**66.8 GB free**) · V: 350 GB games · Z: 931.5 GB archive |
+| **Storage** | C: 126.1 GB system (**67.0 GB free**, measured 17 Nov 2026) · V: 350 GB games · Z: 931.5 GB archive |
 | **Display** | MSI MAG 255XF — 1080p @ **300 Hz** (secondary: BenQ RL2240H) |
 | **Role** | Gaming + streaming |
 
@@ -25,7 +25,9 @@
 | [Desktop Layout](desktop.md) | Actual `C:\Users\amar\Desktop` contents |
 | [Disk Cleanup](disk-cleanup.md) | Drive map, measured consumers, recurring checklist |
 | [Audit Playbook](audit-playbook.md) | Commands to verify pins/apps/drivers/Steam live |
-| [Scripts](scripts/README.md) | Maintenance, video tools, `audit-state.ps1` |
+| [Scripts](scripts/README.md) | Maintenance, video tools, `audit-state.ps1`, `verify.ps1` |
+| [Tests](tests/README.md) | Behavioural invariants: parsers, verdict thresholds, dry runs, converged state |
+| [Library](lib/README.md) | Pure functions the scripts and tests share |
 | [Declared state](declared/README.md) | Rebuildable intent: package manifest, OBS settings, registry tweaks |
 
 ## Setup Rules
@@ -34,7 +36,7 @@
 2. **Apps — preference order:** **winget** → **vendor installer** → **scoop**. **All users / machine-wide first**; per-user only when the vendor requires it (Discord, Twinkle Tray, LocalSend, DeepSeek Harness, T3 Code, Roblox, MSIX/AppX packages). No Razer Synapse, MCHOSE Hub, or vJoy.
 3. **Display:** keep 300 Hz for desktop/gaming. MPRT must be **off** for Twinkle Tray brightness; MPRT has no DDC/CI control.
 4. **Controllers:** the third-party Xbox 360 receiver opens Task View when the controller is off — unplug it or keep the controller on. PXN A7 shifter enumerates separately from the V10 Pro wheel.
-5. **Before editing:** run `pwsh device/desktop/scripts/audit-state.ps1` and apply the checks in [audit-playbook.md](audit-playbook.md). Bump the `Updated` date and record only verified values.
+5. **Before editing:** run `pwsh device/desktop/scripts/audit-state.ps1` and apply the checks in [audit-playbook.md](audit-playbook.md). Bump the `Updated` date and record only verified values. **Before committing:** `verify.ps1` and `tests/run-tests.ps1` must both exit 0.
 6. **Maintenance:** in PowerShell 7, `update` and `cleanup` run the scripts in [`scripts/`](scripts/README.md). Both accept `-DryRun`. `update` deliberately skips PowerShell itself — its MSI kills the session it replaces (MSI 1603), so that one upgrade runs from Command Prompt.
 
 ## Current Gaps

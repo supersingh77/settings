@@ -52,12 +52,13 @@ Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
 
 | Drive | Label | Type | Capacity | Free | Purpose |
 |-------|-------|------|----------|------|---------|
-| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **66.8 GB** | OS + core apps |
+| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **67.0 GB** | OS + core apps |
 | **V:** | Vacuum Drive | NVMe — XPG GAMMIX S11 Pro | 350.0 GB | 76.4 GB | Games/streaming |
 | **Z:** | Mass Storage | HDD — Seagate ST1000DM010 | 931.5 GB | 478.5 GB | Recordings/archive |
 
-- C: is at **66.8 GB free**, not the 98.8 GB quoted on 23 Oct. The 98.8 figure never reconciled against used space (an 11 GB pagefile alone plus the app set put it far lower) — treat this table as the reference.
-- Growth is ordinary app install (Chrome/Discord/Python/.NET/obs) plus **1.87 GB of Nov 12–14 recordings sitting in `C:\Users\amar\Videos`**, which breaks the "recordings → Z:" rule.
+- Free space was re-measured **17 Nov 2026**: C: **67.0 GB** (up from 66.8 GB on 16 Nov). Treat the number as volatile — the capacities and labels are the stable part of this table.
+- C: was at **98.8 GB free** on 23 Oct. The 98.8 figure never reconciled against used space (an 11 GB pagefile alone plus the app set put it far lower) — treat this table as the reference.
+- Growth since then is ordinary app install and cache (Chrome/Discord/Python/.NET/OBS). The 1.87 GB of Nov 12–14 recordings that used to sit in `C:\Users\amar\Videos` was moved to `Z:\Recordings` on 17 Nov; `audit-state.ps1` now reports that folder as empty of recordings.
 - Steam: **`V:` is registered** in `libraryfolders.vdf` with 6 apps. **`Z:` is not registered** despite holding Celeste + Hollow Knight — add it in Steam → Settings → Storage.
 - "Both disks report Healthy" is from the 23 Oct SMART check; not re-verifiable from an agent session.
 

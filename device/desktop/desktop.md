@@ -1,13 +1,13 @@
 # Desktop Layout — Files, Folders & Shortcuts
 
-> Device: Desktop PC | Updated: 16 Nov 2026
+> Device: Desktop PC | Updated: 17 Nov 2026
 > Scope: the actual `C:\Users\amar\Desktop` folder. For taskbar/Start pins see [startmenu-taskbar.md](startmenu-taskbar.md).
 
 ## Current Contents
 
 | Type | Items |
 |------|-------|
-| **Folders** | `accounts/` — finance/ID material, 85.7 MB (contents not enumerated) · `statements/` — bank/credit statements, 32.7 MB (contents not enumerated) · `personal-ledger/` — 2.6 MB, ledger app data + `diary/` · `settings/` — this repo (0.6 MB) · `obsidian/` — see note below |
+| **Folders** | `accounts/` — finance/ID material, 85.7 MB (contents not enumerated) · `statements/` — bank/credit statements, 32.7 MB (contents not enumerated) · `personal-ledger/` — 2.6 MB, ledger app data + `diary/` · `settings/` — this repo (1.0 MB, re-measured 17 Nov) · `obsidian/` — see note below |
 | **Shortcuts** | `Roblox Player.lnk` → `%LOCALAPPDATA%\Roblox\Versions\version-5a21b87bbc2641cf\RobloxPlayerBeta.exe` · `Roblox Studio.lnk` → `…\Roblox\Versions\RobloxStudioInstaller.exe` |
 | **Files** | No user files at the desktop root; `desktop.ini` is hidden/system |
 

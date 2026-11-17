@@ -39,7 +39,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **Realtek Audio Driver** | 6.0.9231.1 | `C:\Program Files (x86)\Realtek\Audio` | Includes Realtek Audio Control |
 | **Realtek Ethernet Driver** | 10.50.511.2021 | `C:\Program Files (x86)\Realtek\NICDRV_8169` | RTL8168 1 Gbps |
 | **Revision Tool** | 2.15.1 | `C:\Program Files\Revision Tool` | ReviOS control panel |
-| **Google Chrome** | 157.0.8103.51 | `C:\Program Files\Google\Chrome` | Primary browser |
+| **Google Chrome** | 157.0.8103.79 | `C:\Program Files\Google\Chrome` | Primary browser; auto-updates on its own schedule, so this version rots fastest |
 | **Mozilla Firefox** | 160.0 | `C:\Program Files\Mozilla Firefox` | Backup browser |
 | **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. **1080p60, AMD AMF H.264 (CQP 23), records to `Z:\Recordings`**. No stream destination yet — see [obs-recording-setup.md](../../notes/obs-recording-setup.md) |
 | **ExitLag** | 5.23.3 | `C:\Program Files\ExitLag` | Route optimizer |
@@ -101,6 +101,6 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 - **Steam libraries:** `V:\Games\SteamLibrary` is registered in `libraryfolders.vdf` (6 apps). `Z:\Games\SteamLibrary` has 2 app manifests on disk but is **not** registered — add it from Steam → Settings → Storage.
 - **PXN:** installer is unsigned (official PXN domain); app reports 1.6.8.0; vJoy not installed.
 - **MPRT:** no DDC/CI VCP on this monitor; Twinkle Tray brightness requires MPRT off.
-- **Disk:** C: 66.8 GB free of 126.1 GB; V: 76.4 GB; Z: 478.5 GB.
+- **Disk:** C: 67.0 GB free of 126.1 GB; V: 76.4 GB; Z: 478.5 GB (measured 17 Nov 2026).
 - **`ProductName` lies:** the registry reports **Windows 10 Pro** on this 26H2 image. ReviOS left it stale — trust `DisplayVersion` + `CurrentBuild.UBR`, not `ProductName`.
 - **Not installs, despite looking like it:** `C:\tools\php84` holds only a `php.ini` (no binary, no `php` on PATH) and `C:\AMD\Chipset_Software` holds a single log file. An empty folder or stray config is not an install.
