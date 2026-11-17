@@ -1,6 +1,6 @@
 # Software Documentation — Installed Apps
 
-> Updated: 17 Nov 2026 — full re-inventory from registry ARP + on-disk paths + file versions.
+> Updated: 17 Nov 2026 — full re-inventory from registry ARP + on-disk paths + file versions + the per-user AppModel repository for packaged apps.
 > Managers: **winget** (primary) · **scoop** not installed · Chocolatey 2.7.4 present but unused
 > System runtimes (VC++, .NET) are listed only where they affect the setup.
 
@@ -27,7 +27,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **PowerShell 7** | 7.6.10 | `C:\Program Files\PowerShell\7` | Official all-users MSI; never upgrade from inside `update` |
 | **Python 3.14** | 3.14.10 | `C:\Program Files\Python314` | Official all-users installer; PATH set |
 | **GitHub CLI** | 2.104.0 | `C:\Program Files\GitHub CLI` | `gh` on machine PATH |
-| **FFmpeg** | 9.0.2 | `C:\Program Files\FFmpeg\bin` | Manual (gyan.dev build), no ARP entry; PATH set |
+| **FFmpeg** | 9.0.2 | `C:\Program Files\FFmpeg\bin` | Manual (gyan.dev build), no ARP entry; PATH set. `ffmpeg -version` reports `9.0.2-full_build-www.gyan.dev`, re-checked 17 Nov 2026 |
 | **Steam** | 2.10.91.91 | `C:\Program Files (x86)\Steam` | `V:` library registered; `Z:` library still unregistered (see Notes) |
 | **PotPlayer** | 26.10.21.0 | `C:\Program Files\DAUM\PotPlayer` | 64-bit; signed Kakao build |
 | **HWiNFO** | 8.54 | `C:\Program Files\HWiNFO64` | Hardware monitoring |
@@ -46,7 +46,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **GenOffice** | 0.13.18 | `C:\Program Files\GenOffice` | Office-suite shell; self-updater in `%LOCALAPPDATA%` |
 | **GameSir Connect** | 1.17.4 | `C:\Program Files (x86)\GameSir Connect` | Controller firmware + remapping; installed 17 Nov to update the pad, which fixed the phantom Task View input |
 | **ActivityWatch** | 0.14.3 | `C:\Program Files (x86)\ActivityWatch` | Time tracker; auto-starts from the user Startup folder |
-| **Riot Vanguard** | 1.19.2-23 | `C:\Program Files\Riot Vanguard` | VALORANT anti-cheat; kernel driver, auto-starts |
+| **Riot Vanguard** | 1.19.2-23 | `C:\Program Files\Riot Vanguard` | VALORANT anti-cheat; kernel driver, auto-starts. Its ARP entry carries **no** version — this number comes from `vgc.exe` (`1.19.2-23+20261112.144447`, read 17 Nov 2026) |
 | **Microsoft Visual C++ 2015–2022** | 14.52.37029 | x64 + x86 | Runtime dependency; older 2010/2012/2013 runtimes also present |
 | **Microsoft .NET 8 (Host + Desktop Runtime)** | 8.0.34 | — | Runtime dependency; pulled in by OBS/ExitLag |
 
@@ -60,8 +60,8 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | **DeepSeek Harness** | 0.2.2-rc.3 | `%LOCALAPPDATA%\Programs\DeepSeek Harness` | Current AI coding harness |
 | **T3 Code (Beta)** | 0.1.9 | `%LOCALAPPDATA%\Programs\t3code` | Pinned on the taskbar |
 | **Roblox Player** | — | `%LOCALAPPDATA%\Roblox` | Auto-starts to tray; Studio also present |
-| **Notion** | _needs-review_ | AppX | Installed 16 Nov; packaged, version not readable without AppX enumeration |
-| **Windows Terminal** | 1.24.11911.0 | MSIX | Store package; pinned |
+| **Notion** | 7.44.0.0 | AppX | Installed 16 Nov; package identity `com.notion.app.desktop.notion`. Version read 17 Nov from the per-user AppModel repository — `Get-AppxPackage` is blocked in an agent session |
+| **Windows Terminal** | 1.25.3131.0 | MSIX | Store package; pinned. Read 17 Nov from the AppModel repository |
 | **Realtek Audio Control** | 1.1.137.0 | MSIX | Installed with the Realtek audio driver (last verified 23 Oct) |
 | **Microsoft Edge WebView2** | 157.0.4341.60 | `C:\Program Files (x86)\Microsoft\EdgeWebView` | Runtime dependency |
 | **Store apps** | — | MSIX | Paint, Notepad, Calculator, Photos, Snipping Tool, Xbox/Game Bar, Phone Link |
@@ -77,7 +77,7 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 | Realtek LAN (RTL8168) | 10.50.511.2021 | 1 Gbps, link up |
 | Focusrite Scarlett Solo | 4.150.0.432 | With Control 2 1.1210 |
 
-**No problem devices** — re-verified 16 Nov 2026 with `pnputil /enum-devices /problem` (returns "No devices were found"), which works when `Get-PnpDevice`'s WMI path is blocked.
+**No problem devices** — re-verified 17 Nov 2026 with `pnputil /enum-devices /problem` (returns "No devices were found"), which works when `Get-PnpDevice`'s WMI path is blocked.
 
 ## Deliberately Not Installed
 

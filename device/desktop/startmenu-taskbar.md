@@ -11,7 +11,7 @@
 | 1 | File Explorer | desktop app |
 | 2 | Microsoft Store | packaged (`Microsoft.WindowsStore_8wekyb3d8bbwe!App`) |
 | 3 | Google Chrome | desktop app |
-| 4 | Terminal | packaged (`Microsoft.WindowsTerminal_8wekyb3d8bbwe!App`, 1.24.11911.0) |
+| 4 | Terminal | packaged (`Microsoft.WindowsTerminal_8wekyb3d8bbwe!App`, 1.25.3131.0) |
 | 5 | DeepSeek Harness | desktop app |
 | 6 | GenOffice | desktop app |
 | 7 | T3 Code (Beta) | desktop app |

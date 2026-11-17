@@ -14,7 +14,7 @@ Inside a sandboxed agent session (DeepSeek Harness, etc.) the following are **bl
 | `Get-CimInstance` / `Get-WmiObject` / WMI | `Access denied` | SMBIOS registry blob (RAM + cores), `EnumDisplaySettings` (refresh), driver-key `qwMemorySize` (VRAM), `[System.IO.DriveInfo]` |
 | `Get-Volume`, `Get-PhysicalDisk` | `Access denied` | `[System.IO.DriveInfo]::GetDrives()` |
 | `Get-PnpDevice` | `Access denied` | `pnputil /enum-devices /problem` — **this one works** |
-| `Get-AppxPackage` | `Access is denied` | ARP keys; `Taskband` blob for packaged pin IDs |
+| `Get-AppxPackage` | `Access is denied` | HKCU `…\AppModel\Repository\Packages` — the package name carries the version (`Name_1.2.3.4_x64__publisher`). This is how Terminal and Notion versions are measured; `Taskband` still supplies packaged pin IDs |
 | UI Automation on the taskbar | returns nothing | `User Pinned\TaskBar` folder + `Taskband\Favorites` blob |
 | `Export-StartLayout` | `0x80070490 Element not found` | visual check |
 | `winget` (any verb) | `0x8A150001` even for `--info` | run winget from an **elevated, unsandboxed** shell |
@@ -111,7 +111,7 @@ Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Enum\DISPLAY' -Recurse |
   Where-Object { $_ }
 ```
 
-- Expected: **no problem devices** (last verified 23 Oct).
+- Expected: **no problem devices** (last verified 17 Nov 2026).
 - Monitor should resolve through `oem30.inf` → `MSI MAG 255XF`, with `MSI MAG 255XF.icm` in `System32\spool\drivers\color`. A `Generic PnP Monitor` entry means the INF did not take.
 - MPRT is not exposed as a DDC/CI VCP on this monitor; don't chase software toggles.
 
@@ -151,3 +151,12 @@ Get-ChildItem 'Z:\Games\SteamLibrary\steamapps\common' -Directory
 Rules: bump the `Updated:` date · **verify live, never recall** · mark unverified values `needs-review` · tables over prose · cut historical waffle.
 
 > The 23 Oct pass got six files wrong about drive letters because it was written from memory instead of measured. Run `audit-state.ps1` first; it exists so that mistake cannot repeat.
+
+## 8. Machine-checked claims
+
+`pwsh device/desktop/scripts/check-docs.ps1` verifies what this playbook produces: every relative Markdown link resolves, every `build **x.y**` claim equals the live build, every drive letter in a desktop table is mounted, and every free-space claim dated on the same line is within tolerance of the measurement. It exits 1 when a doc wins.
+
+Two limits worth knowing:
+
+- An **undated** free-space number is treated as history, not a claim — that is why the 23 Oct figures in `disk-cleanup.md` survive.
+- App versions are only compared when the doc name matches an ARP entry **exactly**, or with a vendor-style suffix (`PotPlayer` → `PotPlayer-64 bit`). Packaged apps have no ARP entry, so their versions stay a prose claim backed by the audit's `Packaged apps` section, not a checked one.
