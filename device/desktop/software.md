@@ -101,6 +101,6 @@ Scope: **all users / machine-wide first**. Per-user only when the vendor require
 - **Steam libraries:** `V:\Games\SteamLibrary` is registered in `libraryfolders.vdf` (6 apps). `Z:\Games\SteamLibrary` has 2 app manifests on disk but is **not** registered — add it from Steam → Settings → Storage.
 - **PXN:** installer is unsigned (official PXN domain); app reports 1.6.8.0; vJoy not installed.
 - **MPRT:** no DDC/CI VCP on this monitor; Twinkle Tray brightness requires MPRT off.
-- **Disk:** C: 67.0 GB free of 126.1 GB; V: 76.4 GB; Z: 478.5 GB (measured 17 Nov 2026).
+- **Disk:** C: 65.5 GB free of 126.1 GB; V: 133.0 GB; Z: 478.4 GB (measured 18 Nov 2026).
 - **`ProductName` lies:** the registry reports **Windows 10 Pro** on this 26H2 image. ReviOS left it stale — trust `DisplayVersion` + `CurrentBuild.UBR`, not `ProductName`.
 - **Not installs, despite looking like it:** `C:\tools\php84` holds only a `php.ini` (no binary, no `php` on PATH) and `C:\AMD\Chipset_Software` holds a single log file. An empty folder or stray config is not an install.

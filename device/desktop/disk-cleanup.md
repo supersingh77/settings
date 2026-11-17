@@ -1,18 +1,18 @@
 # C: Drive — Cleanup Reference
 
-> Updated: 17 Nov 2026 | C: **67.0 GB free** of 126.1 GB · V: 76.4 GB free · Z: 478.5 GB free
+> Updated: 18 Nov 2026 | C: **65.5 GB free** of 126.1 GB · V: 133.0 GB free · Z: 478.4 GB free
 > Free space is a snapshot, not an invariant: re-run `pwsh device/desktop/scripts/audit-state.ps1` before quoting it.
 > Evergreen checklist for the Windows desktop. Verify sizes before deleting anything.
 
 ## Drive Map
 
-Measured 17 Nov 2026. The drive letters are deliberate (`V:` games, `Z:` archive) — see [hardware.md](hardware.md) for the map.
+Measured 18 Nov 2026. The drive letters are deliberate (`V:` games, `Z:` archive) — see [hardware.md](hardware.md) for the map.
 
 | Drive | Label | Size | Free | Purpose |
 |-------|-------|------|------|---------|
-| **C:** | _(System)_ | 126.1 GB | **67.0 GB** | OS + core apps |
-| **V:** | Vacuum Drive | 350.0 GB | 76.4 GB | Games, streaming software |
-| **Z:** | Mass Storage | 931.5 GB | 478.5 GB | Recordings, VODs, archives |
+| **C:** | _(System)_ | 126.1 GB | **65.5 GB** | OS + core apps |
+| **V:** | Vacuum Drive | 350.0 GB | 133.0 GB | Games, streaming software |
+| **Z:** | Mass Storage | 931.5 GB | 478.4 GB | Recordings, VODs, archives |
 
 ## Where C: Went (16 Nov 2026)
 
@@ -62,7 +62,7 @@ Measured 17 Nov 2026. The drive letters are deliberate (`V:` games, `Z:` archive
 
 **Result:** C: went from **52.2 GB → 98.8 GB free** (46.6 GB reclaimed) at that moment.
 
-> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **67.0 GB free**. Use the measured table above, not the 23 Oct number.
+> That 98.8 GB did not survive the app re-population and was never a reconciled figure — three weeks later C: sits at **65.5 GB free**. Use the measured table above, not the 23 Oct number.
 
 ## Prevention
 

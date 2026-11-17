@@ -11,7 +11,7 @@
 | **CPU** | AMD Ryzen 7 5700X (8C/16T) |
 | **GPU** | AMD Radeon RX 7600 8 GB — Adrenalin 26.10.1 (driver 32.0.32015.7029) |
 | **RAM** | 16 GB DDR4-3000 (2 × 8 GB) |
-| **Storage** | C: 126.1 GB system (**67.0 GB free**, measured 17 Nov 2026) · V: 350 GB games · Z: 931.5 GB archive |
+| **Storage** | C: 126.1 GB system (**65.5 GB free**, measured 18 Nov 2026) · V: 350 GB games · Z: 931.5 GB archive |
 | **Display** | MSI MAG 255XF — 1080p @ **300 Hz** (secondary: BenQ RL2240H) |
 | **Role** | Gaming + streaming |
 
