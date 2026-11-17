@@ -269,6 +269,7 @@ else { Out-Line 'needs-review - no Taskband blob readable' }
 
 Section 'Steam libraries'
 
+$registered = @()
 $vdf = 'C:\Program Files (x86)\Steam\steamapps\libraryfolders.vdf'
 if (Test-Path $vdf) {
     $registered = Select-String -Path $vdf -Pattern '"path"\s+"(.+)"' -AllMatches |
@@ -336,3 +337,5 @@ if ($OutFile) {
         Write-Host "`nWritten to $OutFile"
     }
 }
+
+exit 0

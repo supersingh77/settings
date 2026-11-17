@@ -9,8 +9,9 @@ $BOLD   = "`e[1m"
 $GREEN  = "`e[32m"
 $YELLOW = "`e[33m"
 $CYAN   = "`e[36m"
-$RED    = "`e[31m"
 $RESET  = "`e[0m"
+
+$exitCode = 0
 
 function info    { Write-Host "${CYAN}[info]${RESET}  $($args -join ' ')" }
 function success { Write-Host "${GREEN}[ok]${RESET}    $($args -join ' ')" }
@@ -60,7 +61,13 @@ if (-not $isAdmin) {
     info "Would run: Dism.exe /Online /Cleanup-Image /StartComponentCleanup"
 } else {
     & Dism.exe /Online /Cleanup-Image /StartComponentCleanup | Out-Host
-    success "DISM component cleanup finished."
+    if ($LASTEXITCODE -ne 0) {
+        warn "DISM exited $LASTEXITCODE - component store not cleaned."
+        $exitCode = 1
+    }
+    else {
+        success "DISM component cleanup finished."
+    }
 }
 
 step "Emptying Recycle Bin"
@@ -80,7 +87,13 @@ if ($DryRun) {
     info "Would run: ipconfig /flushdns"
 } else {
     ipconfig /flushdns | Out-Host
-    success "DNS cache flushed."
+    if ($LASTEXITCODE -ne 0) {
+        warn "ipconfig /flushdns exited $LASTEXITCODE."
+        $exitCode = 1
+    }
+    else {
+        success "DNS cache flushed."
+    }
 }
 
 step "Cleaning Delivery Optimization cache"
@@ -98,20 +111,23 @@ if (Test-Path -LiteralPath $doCache) {
     info "Delivery Optimization cache not found - skipping."
 }
 
-step "Review-only: driver installers (not deleted)"
+step "Review-only: installer leftovers (not deleted)"
 $review = @(
     'C:\AMD',
-    'C:\Users\amar\Downloads\drivers-26h2'
+    (Join-Path $env:USERPROFILE 'Downloads')
 )
 foreach ($path in $review) {
     if (Test-Path -LiteralPath $path) {
         info "$path = $(Get-FolderMB $path) MB"
     }
 }
-info "Delete these manually only after Device Manager is clean and no installer is running."
+info "Delete leftover installers by hand once the matching driver or app is confirmed working."
 
 step "Cleanup complete"
 Write-Host ""
 Write-Host "${GREEN}Maintenance tasks finished.${RESET}"
-Write-Host "${YELLOW}Tip:${RESET} run ${CYAN}winget upgrade --all${RESET} for app updates."
+if ($exitCode -eq 0) {
+    Write-Host "${YELLOW}Tip:${RESET} run ${CYAN}winget upgrade --all${RESET} for app updates."
+}
 Write-Host ""
+exit $exitCode

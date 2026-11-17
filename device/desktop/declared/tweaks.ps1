@@ -6,10 +6,29 @@ param(
 
 $ErrorActionPreference = 'Continue'
 $script:changes = 0
+$script:failures = 0
 
 function Test-Admin {
     ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
         [Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Invoke-Write {
+    param([string]$What, [scriptblock]$Action)
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Stop'
+    try {
+        & $Action | Out-Null
+    }
+    catch {
+        Write-Host "  fail  $What : $($_.Exception.Message)" -ForegroundColor Red
+        $script:failures++
+        return $false
+    }
+    finally {
+        $ErrorActionPreference = $previous
+    }
+    return $true
 }
 
 function Get-DefaultProgId {
@@ -39,7 +58,8 @@ function Set-ExtensionDefault {
         $script:changes++
         return
     }
-    Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$Extension" -Name '(default)' -Value $ProgId -Force
+    $path = "Registry::HKEY_CLASSES_ROOT\$Extension"
+    if (-not (Invoke-Write "set $Extension default" { Set-ItemProperty -Path $path -Name '(default)' -Value $ProgId -Force })) { return }
     Write-Host "  set   $Extension -> $ProgId" -ForegroundColor Green
     $script:changes++
 }
@@ -59,8 +79,11 @@ function Add-OpenWithProgId {
         $script:changes++
         return
     }
-    if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
-    New-ItemProperty -Path $key -Name $progId -Value '' -PropertyType String -Force | Out-Null
+    $action = {
+        if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
+        New-ItemProperty -Path $key -Name $progId -Value '' -PropertyType String -Force | Out-Null
+    }
+    if (-not (Invoke-Write "add '$progId' to $Extension\OpenWithProgids" $action)) { return }
     Write-Host "  add   $progId -> $Extension\OpenWithProgids" -ForegroundColor Green
     $script:changes++
 }
@@ -79,7 +102,7 @@ function Repair-QuotedCommand {
         $script:changes++
         return
     }
-    Set-ItemProperty -Path $key -Name '(default)' -Value $fixed -Force
+    if (-not (Invoke-Write "quote $ProgId" { Set-ItemProperty -Path $key -Name '(default)' -Value $fixed -Force })) { return }
     Write-Host "  quoted $ProgId" -ForegroundColor Green
     $script:changes++
 }
@@ -101,10 +124,13 @@ function Register-Application {
         $script:changes++
         return
     }
-    New-Item -Path "$root\shell\open\command" -Force | Out-Null
-    Set-ItemProperty -Path $root -Name '(default)' -Value $FriendlyName -Force
-    Set-ItemProperty -Path $root -Name 'FriendlyAppName' -Value $FriendlyName -Force
-    Set-ItemProperty -Path "$root\shell\open\command" -Name '(default)' -Value $command -Force
+    $action = {
+        New-Item -Path "$root\shell\open\command" -Force | Out-Null
+        Set-ItemProperty -Path $root -Name '(default)' -Value $FriendlyName -Force
+        Set-ItemProperty -Path $root -Name 'FriendlyAppName' -Value $FriendlyName -Force
+        Set-ItemProperty -Path "$root\shell\open\command" -Name '(default)' -Value $command -Force
+    }
+    if (-not (Invoke-Write "register $exeName" $action)) { return }
     Write-Host "  registered $exeName" -ForegroundColor Green
     $script:changes++
 }
@@ -119,9 +145,12 @@ function Ensure-ProgId {
         $script:changes++
         return
     }
-    New-Item -Path "$key\shell\open\command" -Force | Out-Null
-    Set-ItemProperty -Path $key -Name '(default)' -Value $Description -Force
-    Set-ItemProperty -Path "$key\shell\open\command" -Name '(default)' -Value $Command -Force
+    $action = {
+        New-Item -Path "$key\shell\open\command" -Force | Out-Null
+        Set-ItemProperty -Path $key -Name '(default)' -Value $Description -Force
+        Set-ItemProperty -Path "$key\shell\open\command" -Name '(default)' -Value $Command -Force
+    }
+    if (-not (Invoke-Write "create ProgId $Name" $action)) { return }
     Write-Host "  created ProgId $Name" -ForegroundColor Green
     $script:changes++
 }
@@ -138,9 +167,12 @@ function Set-OpenWithProgram {
         $script:changes++
         return
     }
-    if (-not (Test-Path $listKey)) { New-Item -Path $listKey -Force | Out-Null }
-    Set-ItemProperty -Path $listKey -Name 'a' -Value $Executable -Force
-    Set-ItemProperty -Path $listKey -Name 'MRUList' -Value 'a' -Force
+    $action = {
+        if (-not (Test-Path $listKey)) { New-Item -Path $listKey -Force | Out-Null }
+        Set-ItemProperty -Path $listKey -Name 'a' -Value $Executable -Force
+        Set-ItemProperty -Path $listKey -Name 'MRUList' -Value 'a' -Force
+    }
+    if (-not (Invoke-Write "set $Extension OpenWithList a=$Executable" $action)) { return }
     Write-Host "  $Extension OpenWithList a=$Executable" -ForegroundColor Green
     $script:changes++
 }
@@ -177,7 +209,8 @@ Write-Host "`n6. not scriptable by design" -ForegroundColor DarkGray
 Write-Host '  - default apps (UserChoice): hash-protected; use Settings > Default apps' -ForegroundColor DarkGray
 Write-Host '  - OBS settings: see declared/obs.json' -ForegroundColor DarkGray
 
-Write-Host "`nsummary: $script:changes change(s)" + $(if ($DryRun) { ' (dry run - nothing written)' } else { '' })
+$suffix = if ($DryRun) { ' (dry run - nothing written)' } else { '' }
+Write-Host ("`nsummary: {0} change(s), {1} failure(s){2}" -f $script:changes, $script:failures, $suffix)
 if (-not $DryRun -and -not $isAdmin) { Write-Host 'WARNING: not elevated - HKCR writes will fail' -ForegroundColor Red }
-if ($script:changes -gt 0 -and -not $DryRun) { exit 0 }
+if ($script:failures -gt 0) { exit 1 }
 exit 0

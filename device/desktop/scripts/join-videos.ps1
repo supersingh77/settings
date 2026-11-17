@@ -21,11 +21,11 @@ function Get-FFmpegPath {
 }
 
 function Get-ClipFiles {
-    param([string]$Directory, [string[]]$Patterns)
+    param([string]$Directory, [string[]]$Patterns, [string[]]$ExcludeNames = @())
     $found = foreach ($pattern in $Patterns) {
         Get-ChildItem -LiteralPath $Directory -File -Filter "*$pattern"
     }
-    @($found | Sort-Object Name)
+    @($found | Where-Object { $ExcludeNames -notcontains $_.Name } | Sort-Object Name)
 }
 
 function Format-ConcatEntry {
@@ -40,7 +40,7 @@ if (-not $ffmpeg) {
 }
 
 $directory = (Resolve-Path -LiteralPath $Folder).Path
-$clips = Get-ClipFiles -Directory $directory -Patterns $Extensions
+$clips = Get-ClipFiles -Directory $directory -Patterns $Extensions -ExcludeNames @((Split-Path -Leaf $Output))
 
 if ($clips.Count -lt 2) {
     Write-Host "Need at least 2 video files in $directory (found $($clips.Count))." -ForegroundColor Yellow
