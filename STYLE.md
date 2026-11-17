@@ -55,13 +55,16 @@ For scripts this size, the valuable checks are properties:
 | `-DryRun` mutates nothing | proves Rule 6 for the scripts that touch the machine | `run-tests.ps1` |
 | a converged machine reports 0 changes | proves Rule 7 — this is the check that would have caught the `Get-ChildItem` vs `GetValueNames` mistake | `run-tests.ps1` |
 | a parser returns the rows it is given | the winget table is fixed-width text, and a format change looks exactly like "nothing to upgrade" | `run-tests.ps1` |
+| the docs match the machine | prose rots silently; a number nobody checks is a rumour with a date on it | `check-docs.ps1` |
 
 Two commands, both hard-failing, both runnable from any shell:
 
 ```powershell
-pwsh device/desktop/scripts/verify.ps1      # repo shape: 16 scripts, 3 declared JSON files
-pwsh device/desktop/tests/run-tests.ps1     # behaviour: 17 assertions
+pwsh device/desktop/scripts/verify.ps1      # repo shape: 17 scripts, 4 declared JSON files
+pwsh device/desktop/tests/run-tests.ps1     # behaviour
 ```
+
+For the desktop there is a third gate: `device/desktop/scripts/check-docs.ps1` compares the build, drive letters, dated free-space claims and app versions in the docs against the live machine, and exits 1 when a doc wins. A rule about prose needs a checker too, or it is only a preference.
 
 `verify.ps1`'s own rule list lives in code — the single exception to Rule 5, because the rules *are* the verifier's identity rather than data about the machine.
 

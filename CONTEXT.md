@@ -33,8 +33,8 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 - **Outbox pattern**: structured `.md` files ready to dispatch; remove once sent.
 - **Scripts**: live inside their owning device folder (e.g. `device/desktop/scripts/`), never at the repo root.
 - **Code style**: read [`STYLE.md`](STYLE.md) before writing or editing any script. No comments in code; facts live in `declared/*.json` or in prose docs. Functions pure, side effects at the edges, data separate from code.
-- **Shape**: pure functions in `device/<device>/lib/`, invariants in `device/<device>/tests/`, intent in `device/<device>/declared/`. A script that hardcodes a list is in the wrong shape.
-- **Before committing**: `pwsh device/desktop/scripts/verify.ps1` (repo shape) and `pwsh device/desktop/tests/run-tests.ps1` (behaviour) must both exit 0. They are the lint and test layers — PSScriptAnalyzer cannot be installed here and Pester is 3.4.0.
+- **Shape**: pure functions in `device/<device>/lib/`, invariants in `device/<device>/tests/`, intent in `device/<device>/declared/` (including the machine lists `audit-state.ps1` walks). A script that hardcodes a list is in the wrong shape.
+- **Before committing**: `pwsh device/desktop/scripts/verify.ps1` (repo shape), `pwsh device/desktop/tests/run-tests.ps1` (behaviour) and `pwsh device/desktop/scripts/check-docs.ps1` (docs vs machine) must all exit 0. Together they are the lint and test layers — PSScriptAnalyzer cannot be installed here and Pester is 3.4.0.
 - **Verify live, never recall**: before editing a device doc, run that device's audit script — for the desktop that is `pwsh device/desktop/scripts/audit-state.ps1`, then read `device/desktop/audit-playbook.md`.
 - **No invented values**: mark anything unmeasured as `needs-review`.
 - **Git workflow**: `git pull` before starting; `git add . && git commit && git push` after changes.
@@ -53,6 +53,8 @@ Personal config + life-log repo covering all devices (Windows desktop, Windows l
 - Net worth / assets & liabilities feature lives in the separate finance repo now.
 
 ## Recent Changes
+
+- **2026-11-17** — `desktop:` the docs became falsifiable. [`check-docs.ps1`](device/desktop/scripts/check-docs.ps1) fails when a Markdown link dangles, a `build` claim or documented drive letter is wrong, or a dated free-space claim drifts more than 5 GB (1 GB warns, 14 days of age warns); an undated number is treated as history, which is how the 23 Oct figures survive. `audit-state.ps1` now reads its machine lists from [`declared/audit-targets.json`](device/desktop/declared/audit-targets.json) instead of carrying them as literals, and a test asserts it really reads them — it did not, at first: a `[string]$Targets` parameter silently stringified the parsed JSON assigned to `$targets`.
 
 - **2026-11-17** — `desktop:` code split from its effects and put under test. Pure functions moved to [`device/desktop/lib/`](device/desktop/lib/README.md) (`ConvertFrom-WingetUpgradeTable`, `Get-CaptureVerdict`), and [`device/desktop/tests/run-tests.ps1`](device/desktop/tests/README.md) now asserts 17 properties with no external dependency. Five real defects were fixed: the mic verdict compared dB as strings, `update` could report "nothing to upgrade" when the winget table failed to parse, a failed `tweaks.ps1` write still exited 0, `cleanup-system.ps1` named a Downloads path that no longer existed, and `join-videos.ps1` could ingest its own previous output. `verify.ps1` gained three hard rules (no global state, explicit exit codes, declared data must be referenced) and now parses each script once through the AST instead of scanning text it wrote itself.
 - **2026-11-17** — `docs:` the verifier's claims were corrected — it said "every rule is hard" while enforcing six of ten — and the desktop numbers were re-measured (C: 67.0 GB free, Chrome 157.0.8103.79, 8 taskbar pins after the Notion installer stub disappeared).

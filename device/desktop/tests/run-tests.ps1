@@ -71,15 +71,15 @@ $results = [System.Collections.Generic.List[object]]::new()
 
 try {
     foreach ($file in $testFiles) {
-        $before = @(Get-ChildItem Function:\ | Select-Object -ExpandProperty Name)
         . $file.FullName
-        $after = @(Get-ChildItem Function:\ | Select-Object -ExpandProperty Name)
-        $added = @($after | Where-Object { $before -notcontains $_ -and $_ -like 'Test-*' })
+        $added = @(Get-ChildItem Function:\ | Where-Object {
+            $_.Name -like 'Test-*' -and $_.ScriptBlock.File -eq $file.FullName
+        })
 
         foreach ($name in $added) {
-            $label = "$($file.Name)::$name"
+            $label = "$($file.Name)::$($name.Name)"
             try {
-                & $name
+                & $name.Name
                 $results.Add([pscustomobject]@{ Test = $label; Result = 'PASS'; Detail = '' })
             } catch {
                 $results.Add([pscustomobject]@{ Test = $label; Result = 'FAIL'; Detail = $_.Exception.Message })

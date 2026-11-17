@@ -11,6 +11,7 @@ It is deliberately not a backup. Snapshots live in `device/desktop/backup/` (gen
 | `winget-export.json` | 40 installed packages with pinned versions | `winget import -i winget-export.json` |
 | `obs.json` | OBS recording/audio settings that were deliberately chosen | manual, or `obs-websocket` (scripted in this repo's history) |
 | `associations.json` | which handler each extension should fall back to, and which media types expose one in "Open with" | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
+| `audit-targets.json` | what `audit-state.ps1` looks for: absent drive letters, the monitor model, Steam library paths, the not-an-install trap folders, the recordings policy and taskbar name aliases | `pwsh scripts/audit-state.ps1` (read-only) |
 | `tweaks.ps1` | the algorithm that walks `associations.json` — contains no lists of its own | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
 
 `tweaks.ps1` exits **1** if any write failed. A refused HKCR write used to print an error and still exit 0, which made a half-applied machine look converged; the summary now reports `change(s)` and `failure(s)` separately.
@@ -22,6 +23,7 @@ Intent rots the moment nothing checks it — this repo already lost three weeks 
 ```powershell
 pwsh device/desktop/scripts/audit-state.ps1     # what the machine actually is
 pwsh device/desktop/declared/tweaks.ps1 -DryRun # what this folder wants it to be
+pwsh device/desktop/scripts/check-docs.ps1      # do the docs still say the same thing
 pwsh device/desktop/tests/run-tests.ps1         # asserts the dry run reports 0 changes
 ```
 

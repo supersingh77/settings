@@ -36,7 +36,7 @@
 2. **Apps — preference order:** **winget** → **vendor installer** → **scoop**. **All users / machine-wide first**; per-user only when the vendor requires it (Discord, Twinkle Tray, LocalSend, DeepSeek Harness, T3 Code, Roblox, MSIX/AppX packages). No Razer Synapse, MCHOSE Hub, or vJoy.
 3. **Display:** keep 300 Hz for desktop/gaming. MPRT must be **off** for Twinkle Tray brightness; MPRT has no DDC/CI control.
 4. **Controllers:** the third-party Xbox 360 receiver opens Task View when the controller is off — unplug it or keep the controller on. PXN A7 shifter enumerates separately from the V10 Pro wheel.
-5. **Before editing:** run `pwsh device/desktop/scripts/audit-state.ps1` and apply the checks in [audit-playbook.md](audit-playbook.md). Bump the `Updated` date and record only verified values. **Before committing:** `verify.ps1` and `tests/run-tests.ps1` must both exit 0.
+5. **Before editing:** run `pwsh device/desktop/scripts/audit-state.ps1` and apply the checks in [audit-playbook.md](audit-playbook.md). Bump the `Updated` date and record only verified values. **Before committing:** `verify.ps1`, `check-docs.ps1` and `tests/run-tests.ps1` must all exit 0 — `check-docs.ps1` is what stops these numbers rotting again.
 6. **Maintenance:** in PowerShell 7, `update` and `cleanup` run the scripts in [`scripts/`](scripts/README.md). Both accept `-DryRun`. `update` deliberately skips PowerShell itself — its MSI kills the session it replaces (MSI 1603), so that one upgrade runs from Command Prompt.
 
 ## Current Gaps
