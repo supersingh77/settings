@@ -2,7 +2,7 @@
 
 Some of this machine can be expressed as intent and rebuilt from it. This folder holds that intent: small, hand-curated, reviewable files that describe **what the desktop should look like**, not what it currently looks like.
 
-It is deliberately not a backup. Snapshots live in `device/desktop/backup/` (generated, never hand-edited). The distinction matters: a snapshot can be restored, an intent file can be *argued with*.
+It is deliberately not a backup. Snapshots — `.reg` exports of `FileExts` and friends — live in `%LOCALAPPDATA%\DesktopMaintenance`, outside the repo, generated and never hand-edited. They stay out of git on purpose: a registry export is machine state that goes stale and carries personal paths. The distinction matters: a snapshot can be restored, an intent file can be *argued with*.
 
 ## What's here
 
