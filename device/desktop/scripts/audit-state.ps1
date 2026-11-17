@@ -3,10 +3,12 @@
 param(
     [string]$OutFile,
     [datetime]$Since,
+    [string]$TargetFile = (Join-Path $PSScriptRoot '..\declared\audit-targets.json'),
     [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Continue'
+$targets = Get-Content -LiteralPath $TargetFile -Raw | ConvertFrom-Json
 $lines = [System.Collections.Generic.List[string]]::new()
 
 function Out-Line([string]$text = '') {
@@ -123,11 +125,12 @@ $vram = Try-Get { (Get-ItemProperty (Join-Path $cls '0000')).'HardwareInformatio
 if ($vram) { Out-Line "| VRAM | $([math]::Round($vram / 1GB, 2)) GB (qwMemorySize; the 32-bit MemorySize field under-reports) |" }
 
 $monInf = Try-Get {
-    Select-String -Path 'C:\Windows\INF\oem*.inf' -Pattern 'MSI MAG 255XF' -List -ErrorAction SilentlyContinue |
+    Select-String -Path 'C:\Windows\INF\oem*.inf' -Pattern $targets.monitorModel -List -ErrorAction SilentlyContinue |
         Select-Object -ExpandProperty Filename
 }
 if ($monInf) { Out-Line "| Monitor INF | $($monInf -join ', ') |" }
-$icm = Try-Get { Get-ChildItem 'C:\Windows\System32\spool\drivers\color' -Filter '*MSI*' -ErrorAction SilentlyContinue }
+$icmVendor = ($targets.monitorModel -split '\s+')[0]
+$icm = Try-Get { Get-ChildItem 'C:\Windows\System32\spool\drivers\color' -Filter "*$icmVendor*" -ErrorAction SilentlyContinue }
 if ($icm) { Out-Line "| Monitor ICM | $($icm.Name -join ', ') |" }
 
 $displays = Try-Get {
@@ -188,7 +191,7 @@ foreach ($d in [System.IO.DriveInfo]::GetDrives()) {
     $label = if ($d.VolumeLabel) { $d.VolumeLabel } else { '_' }
     Out-Line ("| {0} | {1} | {2} | {3:N1} GB | {4:N1} GB free |" -f $d.Name, $label, $d.DriveType, ($d.TotalSize / 1GB), ($d.TotalFreeSpace / 1GB))
 }
-$missing = @('D:', 'E:') | Where-Object { -not (Test-Path "$_\") }
+$missing = @($targets.absentDriveLetters) | Where-Object { -not (Test-Path "$_\") }
 if ($missing) { Out-Line ''; Out-Line "Drive letters absent on this machine: $($missing -join ', ') - docs must not reference them." }
 
 Section 'Installed apps (registry ARP)'
@@ -235,7 +238,8 @@ if ($blob) {
     }
 
     $utf16Text = [Text.Encoding]::Unicode.GetString($blob)
-    $alias = @{ 'Files' = 'File Explorer'; 'WindowsStore' = 'Microsoft Store'; 'WindowsTerminal' = 'Terminal' }
+    $alias = @{}
+    foreach ($pair in $targets.taskbarAliases.PSObject.Properties) { $alias[$pair.Name] = $pair.Value }
     [regex]::Matches($utf16Text, '[A-Za-z0-9][A-Za-z0-9._-]*_[a-z0-9]{13}!?[A-Za-z0-9._-]*') |
         ForEach-Object { $_.Value } | Sort-Object -Unique |
         Where-Object { $_ -notmatch '_\d+\.\d+' } |
@@ -281,7 +285,7 @@ if (Test-Path $vdf) {
 }
 else { Out-Line 'needs-review - libraryfolders.vdf not found (Steam not launched yet)' }
 
-foreach ($lib in 'V:\Games\SteamLibrary', 'Z:\Games\SteamLibrary') {
+foreach ($lib in $targets.steamLibraries) {
     if (Test-Path $lib) {
         $apps = @(Get-ChildItem (Join-Path $lib 'steamapps') -Filter 'appmanifest_*.acf' -ErrorAction SilentlyContinue).Count
         $isReg = $registered -and ($registered | Where-Object { $_ -like "*$lib*" })
@@ -291,28 +295,26 @@ foreach ($lib in 'V:\Games\SteamLibrary', 'Z:\Games\SteamLibrary') {
 
 Section 'Looks installed but is not'
 
-$traps = @(
-    'C:\Program Files\DroidCam',
-    'C:\tools\php84',
-    'C:\AMD\Chipset_Software'
-)
+$traps = @($targets.notInstalls.paths)
+$stubBytes = [double]$targets.notInstalls.stubSizeMb * 1MB
 foreach ($t in $traps) {
     if (-not (Test-Path $t)) { continue }
     $files = @(Get-ChildItem $t -Recurse -File -Force -ErrorAction SilentlyContinue)
     $size = ($files | Measure-Object Length -Sum).Sum
     $verdict = if ($files.Count -eq 0) { 'EMPTY - not an install' }
-               elseif ($size -lt 1MB) { 'STUB - config/log only, not an install' }
+               elseif ($size -lt $stubBytes) { 'STUB - config/log only, not an install' }
                else { 'real content' }
     Out-Line ("| {0} | {1} files | {2:N2} MB | {3} |" -f $t, $files.Count, ($size / 1MB), $verdict)
 }
 
-$videos = Join-Path $env:USERPROFILE 'Videos'
+$videos = Join-Path $env:USERPROFILE $targets.recordings.folderRelativeToHome
+$recordingExtensions = @($targets.recordings.extensions)
 if (Test-Path $videos) {
-    $v = @(Get-ChildItem $videos -File -Force -ErrorAction SilentlyContinue | Where-Object Extension -in '.mp4', '.mkv', '.m4a', '.mov')
+    $v = @(Get-ChildItem $videos -File -Force -ErrorAction SilentlyContinue | Where-Object Extension -in $recordingExtensions)
     if ($v.Count) {
         $sum = ($v | Measure-Object Length -Sum).Sum / 1GB
         Out-Line ''
-        Out-Line ("⚠ {0:N2} GB of recordings sit in {1} - out of policy, they belong on Z:." -f $sum, $videos)
+        Out-Line ("⚠ {0:N2} GB of recordings sit in {1} - out of policy, they belong on {2}." -f $sum, $videos, $targets.recordings.policyTarget)
     }
 }
 

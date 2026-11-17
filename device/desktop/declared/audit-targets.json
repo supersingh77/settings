@@ -1,0 +1,35 @@
+{
+  "_note": "What audit-state.ps1 looks for, kept apart from how it looks for it. Data only - the script holds the algorithm.",
+  "_why": "These lists were literals inside the script, which made a machine fact look like program logic: a path and a doc sentence could disagree without either being visibly wrong. Editing this file changes what the audit reports; editing the script changes how it reports.",
+
+  "absentDriveLetters": ["D:", "E:"],
+  "_absentWhy": "The desktop docs state that this machine has no D: or E:. The audit prints the list on every run so a stale claim cannot survive quietly.",
+
+  "monitorModel": "MSI MAG 255XF",
+
+  "steamLibraries": ["V:\\Games\\SteamLibrary", "Z:\\Games\\SteamLibrary"],
+  "_steamWhy": "V: is registered in libraryfolders.vdf; Z: holds two manifests but is not. The audit prints both sides so the difference stays visible.",
+
+  "notInstalls": {
+    "stubSizeMb": 1,
+    "paths": [
+      "C:\\Program Files\\DroidCam",
+      "C:\\tools\\php84",
+      "C:\\AMD\\Chipset_Software"
+    ]
+  },
+  "_notInstallsWhy": "Folders that look like installs and are not. Empty means no install; smaller than the stub size means a config or log with no binaries behind it.",
+
+  "recordings": {
+    "folderRelativeToHome": "Videos",
+    "extensions": [".mp4", ".mkv", ".m4a", ".mov"],
+    "policyTarget": "Z:\\Recordings"
+  },
+  "_recordingsWhy": "Recording to C: breaks the storage rule. The audit measures the folder instead of trusting the doc that says it was emptied.",
+
+  "taskbarAliases": {
+    "Files": "File Explorer",
+    "WindowsStore": "Microsoft Store",
+    "WindowsTerminal": "Terminal"
+  }
+}
