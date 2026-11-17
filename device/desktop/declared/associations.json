@@ -50,10 +50,11 @@
   "_appRegistrationWhy": "Windows resolves an OpenWithList entry by executable name, which only works for applications registered under HKCR\\Applications\\<exe>. PotPlayer had that registration; GenOffice never created one, so .md had a ProgId with a valid command and still would not launch. Registering it makes GenOffice a first-class application for Open-with purposes.",
 
   "quoteCommandsForProgIds": [
-    "Markdown Document"
+    "Markdown Document",
+    "Text Document"
   ],
 
-  "_quoteWhy": "GenOffice registered its handler unquoted: C:\\Program Files\\GenOffice\\GenOffice.exe \"%1\". An unquoted path with a space is parsed as C:\\Program plus arguments, so the launch fails silently - no error, no window - while 'Open with > GenOffice' still worked because that path launches the exe directly. tweaks.ps1 re-quotes these so a GenOffice update cannot reintroduce it.",
+  "_quoteWhy": "GenOffice registered its handler unquoted: C:\\Program Files\\GenOffice\\GenOffice.exe \"%1\". An unquoted path with a space is parsed as C:\\Program plus arguments, so the launch fails silently - no error, no window - while 'Open with > GenOffice' still worked because that path launches the exe directly. tweaks.ps1 re-quotes these so a GenOffice update cannot reintroduce it. Text Document is the same defect one step away: .txt currently resolves through a packaged-Notepad UserChoice, but its class default is that same unquoted GenOffice command, so removing that UserChoice would make .txt fail like .md did.",
 
   "_mediaWhy": "These types kept a UserChoiceLatest with a hash but no ProgId, which made Windows treat them as having no default and hand them to the dead app picker. With those entries removed, the shell falls back to the HKCR default handler; re-exposing that same handler in OpenWithProgids gives a working 'Open with' submenu while the picker stays broken."
 }
