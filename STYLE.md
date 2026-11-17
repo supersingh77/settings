@@ -68,9 +68,9 @@ pwsh device/desktop/tests/run-tests.ps1     # behaviour: 17 assertions
 ## Tooling reality on this machine
 
 - `PSScriptAnalyzer` — **not installed**, and PSGallery is unreachable. Re-checked 2026-11-17: the TCP connection to `www.powershellgallery.com:443` opens and the TLS handshake then fails, with and without certificate validation. `Get-PSRepository` returns nothing. Treat any "just install the analyzer" plan as blocked, not as a step.
-- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`. Its syntax predates Pester 5 and it buys nothing over the 40 lines of assertions in `tests/run-tests.ps1`.
+- `Pester` — only **3.4.0**, the version shipped in `C:\Program Files\WindowsPowerShell\Modules`. Its syntax predates Pester 5 and the two hours it would cost to learn are not worth less than the 120 lines of assertions in `tests/`.
 
-Therefore: **write the checks with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 150-line verifier beats a dependency that cannot be installed — and it is why `verify.ps1` is the lint layer, not a wrapper around one.
+Therefore: **write the checks with zero external dependencies.** PowerShell can parse itself (`[System.Management.Automation.Language.Parser]`), read JSON (`ConvertFrom-Json`), and assert. A 107-line verifier beats a dependency that cannot be installed — and it is why `verify.ps1` is the lint layer, not a wrapper around one.
 
 ## When to break these rules
 
