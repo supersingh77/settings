@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+REPO_ROOT="$(cd "$(dirname "$(realpath "$0")")/../../.." && pwd)"
+
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/_lib.sh"
 
@@ -64,7 +66,7 @@ ALIAS_MARKER="device/fedora-laptop/shellrc"
 if grep -Fq "$ALIAS_MARKER" "$BASHRC" 2>/dev/null; then
     warn "Existing settings aliases found in ${BASHRC}; no changes made."
 else
-    printf '\n%s\n' 'if [ -f "$HOME/Desktop/settings/device/fedora-laptop/shellrc" ]; then . "$HOME/Desktop/settings/device/fedora-laptop/shellrc"; fi' >> "$BASHRC"
+    printf '\n%s\n' "export SETTINGS_ROOT='$REPO_ROOT'" 'if [ -f "$SETTINGS_ROOT/device/fedora-laptop/shellrc" ]; then . "$SETTINGS_ROOT/device/fedora-laptop/shellrc"; fi' >> "$BASHRC"
     success "Repo shell commands enabled in ${BASHRC}."
 fi
 

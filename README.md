@@ -88,6 +88,8 @@ When an AI agent assists with this repository, it must follow these principles:
 4. **Clean Commits**: Commit changes with clear, concise messages and verify `git status` before completing turns.
 5. **Step-by-Step**: Work in small steps, commit after each — don't batch everything into one giant change.
 
+> Repository editing workflow and tool-use guardrails are in [`AGENTS.md`](AGENTS.md).
+
 ---
 
 ## Privacy & Security

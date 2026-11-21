@@ -1,4 +1,5 @@
-alias docs='cd "$HOME/Desktop/settings/device/fedora-laptop"'
+SETTINGS_ROOT="${SETTINGS_ROOT:-$HOME/Desktop/settings}"
+alias docs="cd '$SETTINGS_ROOT/device/fedora-laptop'"
 alias update='update-system'
 alias update-openwork='update-openwork'
 alias update-uad='update-uad'
