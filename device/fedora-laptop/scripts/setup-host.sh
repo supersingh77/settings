@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+CHECK_ONLY=false
+if [ "${1:-}" = "--check" ]; then
+    CHECK_ONLY=true
+elif [ "$#" -gt 0 ]; then
+    printf 'Usage: %s [--check]\n' "$0" >&2
+    exit 2
+fi
+
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$SCRIPT_DIR/_lib.sh"
@@ -27,6 +35,8 @@ GHOSTTY_REPO_DEST="/etc/yum.repos.d/_copr:alternateved:ghostty.repo"
 
 if [ -f "$GHOSTTY_REPO_DEST" ]; then
     warn "Ghostty COPR repo already exists at ${GHOSTTY_REPO_DEST}, skipping."
+elif [ "$CHECK_ONLY" = true ]; then
+    info "Would add Ghostty COPR repo for Fedora ${FEDORA_VERSION}."
 else
     info "Downloading repo file from: ${GHOSTTY_REPO_URL}"
     sudo wget -q "$GHOSTTY_REPO_URL" -O "$GHOSTTY_REPO_DEST" ||
@@ -41,6 +51,8 @@ if rpm-ostree status --json 2>/dev/null | python3 -c \
     warn "Firefox override-remove is already staged, skipping."
 elif ! rpm -q firefox &>/dev/null; then
     warn "Firefox is not currently installed, skipping override-remove."
+elif [ "$CHECK_ONLY" = true ]; then
+    info "Would stage Firefox base override removal."
 else
     info "Staging Firefox removal..."
     rpm-ostree override remove firefox firefox-langpacks 2>/dev/null ||
@@ -63,6 +75,8 @@ done
 
 if [ ${#PACKAGES_TO_INSTALL[@]} -eq 0 ]; then
     warn "All packages are already installed, skipping rpm-ostree install."
+elif [ "$CHECK_ONLY" = true ]; then
+    info "Would stage host packages: ${PACKAGES_TO_INSTALL[*]}"
 else
     info "Staging installation of: ${PACKAGES_TO_INSTALL[*]}"
     rpm-ostree install "${PACKAGES_TO_INSTALL[@]}" ||
@@ -70,10 +84,15 @@ else
     success "Packages staged: ${PACKAGES_TO_INSTALL[*]}"
 fi
 
-step "All changes staged successfully"
+if [ "$CHECK_ONLY" = true ]; then
+    info "Check-only complete; no changes made."
+    exit 0
+fi
+
+step "Host setup complete"
 
 echo ""
-echo -e "${BOLD}Changes may be staged for the next deployment.${RESET}"
+echo -e "${BOLD}Current deployment status:${RESET}"
 rpm-ostree status
-info "Review staged changes and reboot manually if a new deployment is queued."
-info "After reboot, run make -C '$REPO_ROOT' setup-user."
+info "Review rpm-ostree status; reboot only if a new deployment is pending."
+info "After any required reboot, run make -C '$REPO_ROOT' setup-user."

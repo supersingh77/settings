@@ -1,5 +1,7 @@
 import importlib.util
+import os
 import pathlib
+import subprocess
 import tempfile
 import unittest
 
@@ -47,6 +49,41 @@ class AuditTests(unittest.TestCase):
             finally:
                 AUDIT.ROOT = original_root
             self.assertEqual(len(issues), 1)
+
+    def test_user_setup_check_mode_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            bindir = root / "bin"
+            home = root / "home"
+            bindir.mkdir()
+            home.mkdir()
+            trace = root / "writes.log"
+            for name, body in {
+                "id": "#!/bin/sh\necho 1000\n",
+                "rpm": "#!/bin/sh\necho 44\n",
+            }.items():
+                path = bindir / name
+                path.write_text(body)
+                path.chmod(0o755)
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(AUDIT.ROOT / "device/fedora-laptop/scripts/setup-user.sh"),
+                    "--check",
+                ],
+                env={
+                    **os.environ,
+                    "PATH": f"{bindir}:/usr/bin:/bin",
+                    "HOME": str(home),
+                    "TRACE": str(trace),
+                },
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((home / ".bashrc").exists())
+            self.assertFalse(trace.exists())
 
 
 if __name__ == "__main__":

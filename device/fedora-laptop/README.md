@@ -25,7 +25,7 @@
 
 Daily checks: `make linux` from the repository root. This creates the pinned local Ruff environment and runs audit/tests; ShellCheck and shfmt run if installed.
 
-To rebuild the host, inspect `scripts/setup-host.sh` first: it stages rpm-ostree changes and removes Firefox. Run `make setup-host`, reboot if a deployment is staged, then `make setup-user`.
+To rebuild, preview with `make setup-host ARGS=--check` and `make setup-user ARGS=--check`. The host setup can remove Firefox and stage a deployment; inspect it before running. Reboot if a deployment is staged before running user setup.
 
 ---
 

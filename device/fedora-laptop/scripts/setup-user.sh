@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+CHECK_ONLY=false
+if [ "${1:-}" = "--check" ]; then
+    CHECK_ONLY=true
+elif [ "$#" -gt 0 ]; then
+    printf 'Usage: %s [--check]\n' "$0" >&2
+    exit 2
+fi
+
 REPO_ROOT="$(cd "$(dirname "$(realpath "$0")")/../../.." && pwd)"
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
@@ -13,12 +21,17 @@ if [ "$(id -u)" -eq 0 ]; then
     error "Do NOT run this script as root. Run as your normal user."
 fi
 
-if ! command -v toolbox &>/dev/null; then
+if [ "$CHECK_ONLY" != true ] && ! command -v toolbox &>/dev/null; then
     error "toolbox not found. Run make setup-host, reboot, then retry."
 fi
 
 FEDORA_VERSION=$(rpm -E %fedora)
 CONTAINER="fedora-toolbox-${FEDORA_VERSION}"
+
+if [ "$CHECK_ONLY" = true ]; then
+    printf 'Check only: would create/update Fedora Toolbox, install adb/fastboot, FFmpeg, 7-Zip, gh, update OpenWork, install command links, and configure shell startup.\n'
+    exit 0
+fi
 
 success "Pre-flight checks passed."
 

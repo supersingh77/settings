@@ -15,7 +15,7 @@ test:
 	.venv/bin/python -m unittest discover -s device/fedora-laptop/tests -v
 
 setup-host:
-	bash device/fedora-laptop/scripts/setup-host.sh
+	bash device/fedora-laptop/scripts/setup-host.sh $(ARGS)
 
 setup-user:
-	bash device/fedora-laptop/scripts/setup-user.sh
+	bash device/fedora-laptop/scripts/setup-user.sh $(ARGS)

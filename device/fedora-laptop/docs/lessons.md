@@ -132,7 +132,7 @@ Confirm that the desired new version is the booted deployment (`●`) and check 
 
 On 2026-10-08, before the user's current `update` run, the booted deployment was `44.20261006.0` with kernel `7.2.8-200.fc44`. A system update to `44.20261008.0` was cached/pending, including kernel `7.2.9-200.fc44` and UPower `1.91.5`; it was not yet booted. Treat these as a dated observation, not the current state after that update run.
 
-The update script also updates Flatpaks, OpenWork, UAD-NG, Antigravity, and toolbox packages before `rpm-ostree upgrade`. Those user-app/container changes can take effect immediately; host base-system changes require booting the new deployment. See `scripts/update-system.sh` and `apps.md`.
+The update script updates Flatpaks, OpenWork, UAD-NG, Antigravity, Toolbox packages, and the host deployment. User-app/container changes can take effect immediately; host base-system changes require booting the staged deployment. See `scripts/update-system.sh`.
 
 ---
 
