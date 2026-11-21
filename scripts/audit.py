@@ -9,7 +9,7 @@ PYTHON_FILES = ("*.py",)
 SHELL_FILES = ("*.sh",)
 IGNORED_PARTS = {".git", ".opencode", "__pycache__"}
 COMMENT_MARKERS = {".sh": re.compile(r"^\s*#(?!\!)"), ".py": re.compile(r"^\s*#(?!\!)")}
-DOC_LINK = re.compile(r"\[[^]]+\]\(([^)]+\.md)(?:#[^)]+)?\)")
+DOC_LINK = re.compile(r"\[[^]]+\]\(([^)]+)(?:#[^)]+)?\)")
 FRESHNESS = re.compile(
     r"last verified|last checked|verified on|as of|last updated|current host|host queried",
     re.IGNORECASE,
@@ -99,10 +99,13 @@ def doc_issues(paths):
             for target in DOC_LINK.findall(line):
                 if "://" in target:
                     continue
+                file_target, _, _fragment = target.partition("#")
+                if not file_target:
+                    file_target = path.name
                 linked = (
-                    (ROOT / target).resolve()
-                    if target.startswith("device/")
-                    else (path.parent / target).resolve()
+                    (ROOT / file_target).resolve()
+                    if file_target.startswith("device/")
+                    else (path.parent / file_target).resolve()
                 )
                 if not linked.exists():
                     issues.append(f"{path}:{number}: missing document {target}")
@@ -183,7 +186,8 @@ def main():
         "documentation": doc_issues(
             path
             for path in source_paths("*.md")
-            if "fedora-laptop" in path.parts or path == ROOT / "README.md"
+            if "fedora-laptop" in path.parts
+            or path in {ROOT / "README.md", ROOT / "device/README.md"}
         ),
     }
     for issue in changed_errors:

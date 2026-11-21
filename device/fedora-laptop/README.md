@@ -18,7 +18,7 @@
 
 - **[Hardware](hardware.md)** — machine details, verified memory caveat, storage and power quirks
 - **[Applications](apps.md)** — install sources and live inventory commands
-- **[Setup](#setup)** — current host and user setup commands
+- **[Setup](#-setup)** — current host and user setup commands
 - **[Troubleshooting](docs/troubleshooting.md)** — symptoms and recovery steps
 - **[Lessons learned](docs/lessons.md)** — Silverblue-specific deployment and incident lessons
 

@@ -34,6 +34,20 @@ class AuditTests(unittest.TestCase):
                 AUDIT.ROOT = original_root
             self.assertEqual(len(issues), 2)
 
+    def test_device_index_relative_links_are_checked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            source = root / "device" / "README.md"
+            source.parent.mkdir()
+            source.write_text("[phone apps](phone/apps/)\n")
+            original_root = AUDIT.ROOT
+            AUDIT.ROOT = root
+            try:
+                issues = AUDIT.doc_issues([source])
+            finally:
+                AUDIT.ROOT = original_root
+            self.assertEqual(len(issues), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
