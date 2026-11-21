@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import os
 import pathlib
@@ -84,6 +85,48 @@ class AuditTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse((home / ".bashrc").exists())
             self.assertFalse(trace.exists())
+
+    def test_phone_capture_check_mode_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            bindir = root / "bin"
+            bindir.mkdir()
+            adb = bindir / "adb"
+            adb.write_text(
+                "#!/bin/sh\n"
+                "if [ \"$1\" = devices ]; then printf 'List of devices attached\\nSERIAL device\\n'; exit; fi\n"
+                'if [ "$1" = -s ]; then shift 2; fi\n'
+                'if [ "$1" = shell ]; then shift; fi\n'
+                'case "$1" in\n'
+                ' getprop) case "$2" in ro.product.device) echo spes;; ro.product.model) echo 2201117TI;; ro.product.name) echo spes_in;; ro.build.version.release) echo 13;; ro.build.version.sdk) echo 33;; ro.build.display.id) echo V816;; ro.build.fingerprint) echo fingerprint;; ro.build.version.security_patch) echo 2025-02-01;; ro.miui.ui.version.name) echo V816;; ro.boot.vbmeta.device_state) echo locked;; ro.boot.verifiedbootstate) echo green;; esac;;\n'
+                " cat) echo MemTotal: 6000000 kB;;\n"
+                " pm) printf 'package:one\\npackage:two\\n';;\n"
+                "esac\n"
+            )
+            adb.chmod(0o755)
+            phone_dir = AUDIT.ROOT / "device/phone"
+            script = phone_dir / "scripts/capture-phone.sh"
+            target = phone_dir / "personal"
+            before = {
+                path.relative_to(target): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in target.rglob("*")
+                if path.is_file()
+            }
+            result = subprocess.run(
+                ["bash", str(script), "personal", "SERIAL", "--check"],
+                env={**os.environ, "PATH": f"{bindir}:/usr/bin:/bin"},
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("Check only", result.stdout)
+            after = {
+                path.relative_to(target): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in target.rglob("*")
+                if path.is_file()
+            }
+            self.assertEqual(after, before)
 
 
 if __name__ == "__main__":

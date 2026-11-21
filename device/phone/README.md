@@ -15,7 +15,7 @@
 
 ## Capture
 
-Run `bash device/phone/scripts/capture-phone.sh <work|personal> <adb-serial>`; the script targets that serial, validates Redmi Note 11 `spes`, and never saves the serial. Review the generated role folder before committing. Package lists cover Android user 0; `not-installed-user-0.txt` is a package-state difference, not an authoritative list of apps intentionally removed by the owner.
+Preview without writing using `bash device/phone/scripts/capture-phone.sh <work|personal> <adb-serial> --check`. Omit `--check` to capture. The script targets that serial, validates Redmi Note 11 `spes`, and never saves the serial. Review the generated role folder before committing. Package lists cover Android user 0; `not-installed-user-0.txt` is a package-state difference, not an authoritative list of apps intentionally removed by the owner.
 
 ## Debloating (UAD-NG)
 
