@@ -15,3 +15,4 @@
 - Do not mix commands into a patch call or assume a failed call changed nothing: inspect file/status after any tool error.
 - Before committing, review the full staged diff and status. Do not commit or alter unrelated pre-existing changes.
 - Keep each topic's current facts in one canonical place. Supporting docs should cover procedures, risks, or explanations—not repeat inventories or file maps. For device pairs, put shared facts in the parent README and only differences in per-device notes.
+- Prefer read-only inventory scripts over manually maintained volatile facts. Treat program output/configuration as the source of truth; docs may explain interpretation, risks, or where the output lives, but must not mirror changing values or repeat command/file maps.
