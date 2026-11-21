@@ -2,13 +2,12 @@
 
 > Two physical units: work (4 GB) and personal (6 GB). Shared model facts live here; differences are under [`work/`](work/) and [`personal/`](personal/).
 
-## Overview
+## Shared baseline
 
 - **Model:** Redmi Note 11 (`2201117TI`, device `spes`, product `spes_in`)
 - **Shared hardware:** Qualcomm SM6225/Snapdragon 680; 6.43-inch AMOLED, 1080×2400; 5000 mAh battery; USB-C charging
-- **Work:** 4 GB RAM; stock India MIUI `V816.0.6.0.TGCINXM`; see [`work/`](work/)
-- **Personal:** 6 GB RAM; same model and current MIUI build; see [`personal/`](personal/)
-- **Per-device snapshots:** [`work/`](work/) and [`personal/`](personal/)
+- **Work differences:** 4 GB RAM; see [`work/`](work/)
+- **Personal differences:** 6 GB RAM; see [`personal/`](personal/)
 - **Shared model facts:** [`hardware.md`](hardware.md)
 - **Historical app snapshot:** [`archive/2026-09-01/`](archive/2026-09-01/) — role was not recorded; do not treat as current.
 - **No root** — root would break banking apps.
