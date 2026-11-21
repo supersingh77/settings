@@ -1,6 +1,8 @@
 # OpenWork internal
 .opencode/
 .venv/
+__pycache__/
+*.py[cod]
 
 # Git backup (temporary)
 .git-backup/

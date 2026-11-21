@@ -5,7 +5,7 @@
 | Field | Verified detail |
 |---|---|
 | Model | ASUS VivoBook X505ZA |
-| OS at last check | Fedora Silverblue 44.20261119.1, kernel 7.3.4-200.fc44 (2026-11-21) |
+| OS | Fedora Silverblue 44 |
 | CPU / graphics | Ryzen 5 2500U (4C/8T), Radeon Vega 8 integrated graphics |
 | Memory | 10 GiB visible to Linux; 8 GiB zram. Physical module inventory is listed below with an explicit verification caveat. |
 | Storage | WD Green 480 GB NVMe for Silverblue; internal Seagate 1 TB HDD currently unmounted |
@@ -144,8 +144,6 @@
 - OSTree immutable base system for reliability ✅
 - UPower dead-battery mitigation: configured; verify per active deployment (see
   [recovery notes](docs/troubleshooting.md))
-- TLP is not installed; keep the platform's default power-management stack unless a measured
-  problem justifies changing it.
 
 ## Follow-up
 

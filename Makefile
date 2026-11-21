@@ -1,4 +1,8 @@
-.PHONY: setup-dev audit test setup-host setup-user
+.PHONY: linux setup-dev audit test setup-host setup-user
+
+linux:
+	$(MAKE) setup-dev
+	$(MAKE) audit
 
 setup-dev:
 	python3 -m venv .venv

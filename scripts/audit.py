@@ -33,12 +33,34 @@ def source_paths(pattern):
 
 
 def changed_code_paths():
-    result = run(["git", "diff", "--unified=0", "HEAD", "--"])
-    if result.returncode:
-        return [], [result.stderr.strip() or "Unable to inspect changed files"]
+    issues = []
+    errors = []
+    for command in (
+        ["git", "diff", "--unified=0", "HEAD", "--"],
+        ["git", "diff", "--cached", "--unified=0", "--"],
+    ):
+        result = run(command)
+        if result.returncode:
+            errors.append(result.stderr.strip() or "Unable to inspect diff")
+            continue
+        issues.extend(added_comment_lines(result.stdout))
+    untracked = run(["git", "ls-files", "--others", "--exclude-standard"])
+    if untracked.returncode:
+        errors.append(untracked.stderr.strip() or "Unable to inspect untracked files")
+    else:
+        for name in untracked.stdout.splitlines():
+            path = ROOT / name
+            if path.suffix in COMMENT_MARKERS and (
+                "scripts" in path.parts or "tests" in path.parts
+            ):
+                issues.extend(comment_issues([path]))
+    return issues, errors
+
+
+def added_comment_lines(diff):
     issues = []
     current = None
-    for line in result.stdout.splitlines():
+    for line in diff.splitlines():
         if line.startswith("+++ b/"):
             current = ROOT / line[6:]
         elif (
@@ -53,7 +75,7 @@ def changed_code_paths():
                 continue
             if COMMENT_MARKERS[current.suffix].search(code):
                 issues.append(f"{current.relative_to(ROOT)}: newly added code comment")
-    return issues, []
+    return issues
 
 
 def comment_issues(paths):
@@ -153,10 +175,6 @@ def main():
         and ("device/fedora-laptop" in path.parts or path == ROOT / "scripts/audit.py")
     ]
     changed, changed_errors = changed_code_paths()
-    changed = [
-        path for path in changed if "scripts" in path.parts or "tests" in path.parts
-    ]
-    changed = sorted(set(changed))
     checks = {
         "lint": lint_issues(shell_files, python_files),
         "shell syntax": syntax_issues(shell_files),

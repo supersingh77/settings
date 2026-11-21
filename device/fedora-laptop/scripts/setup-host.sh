@@ -3,6 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$SCRIPT_DIR/_lib.sh"
 
 step "Pre-flight checks"
@@ -75,4 +76,4 @@ echo ""
 echo -e "${BOLD}Changes may be staged for the next deployment.${RESET}"
 rpm-ostree status
 info "Review staged changes and reboot manually if a new deployment is queued."
-info "After reboot, run make -C ~/Desktop/settings setup-user."
+info "After reboot, run make -C '$REPO_ROOT' setup-user."

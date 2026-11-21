@@ -24,19 +24,27 @@
 
 ## Setup
 
-Run the host setup, reboot if it stages changes, then run the user setup.
+Daily use: run the Linux repo checks from the repository root. Setup commands below are for rebuild/recovery, not routine maintenance.
+
+Set the clone path once in your shell with `export SETTINGS_ROOT="$(git rev-parse --show-toplevel)"`.
 
 ```bash
-make -C ~/Desktop/settings setup-host
+make linux
+```
+
+Host setup stages changes, may remove Firefox, and requires a reboot before user setup. Review the script before running it.
+
+```bash
+make -C "$SETTINGS_ROOT" setup-host
 ```
 
 ```bash
-make -C ~/Desktop/settings setup-user
+make -C "$SETTINGS_ROOT" setup-user
 ```
 
 ```bash
-make -C ~/Desktop/settings setup-dev
-make -C ~/Desktop/settings audit
+make -C "$SETTINGS_ROOT" setup-dev
+make -C "$SETTINGS_ROOT" audit
 ```
 
 The local Ruff version is pinned in `Makefile`; ShellCheck and shfmt are optional system tools. The audit runs available linters, shell syntax checks, tests, changed-code comment checks, and Fedora documentation checks.
@@ -46,7 +54,7 @@ The local Ruff version is pinned in `Makefile`; ShellCheck and shfmt are optiona
 ## ⚡ Daily Commands
 
 ```bash
-make -C ~/Desktop/settings audit
+make -C "$SETTINGS_ROOT" audit
 
 # Fast daily update (Flatpaks + OpenWork + UAD-NG + Antigravity + toolbox + rpm-ostree)
 update
@@ -111,9 +119,11 @@ Same principle as the Windows desktop: an app lives in exactly **one** place —
 UAD-NG runs via `fedora-toolbox-44` (which has `adb` installed).
 
 ```bash
-bash ~/Desktop/settings/device/fedora-laptop/scripts/launch-uad.sh  # launch with device checks
-toolbox run -c fedora-toolbox-44 adb devices                  # check ADB manually
+make -C "$SETTINGS_ROOT" setup-user
+toolbox run -c fedora-toolbox-44 adb devices
 ```
+
+Run `launch-uad` from the configured shell for device checks and launch.
 
 Search **UAD-NG** in GNOME Activities to launch from the app grid. See **[`docs/uad-ng.md`](docs/uad-ng.md)** for USB debugging steps, ADB troubleshooting, and update instructions.
 
