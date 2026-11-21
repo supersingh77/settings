@@ -17,14 +17,13 @@
 ## Documentation Map
 
 - **[Hardware](hardware.md)** — machine details, verified memory caveat, storage and power quirks
-- **[Applications](apps.md)** — install sources and live inventory commands
 - **[Setup](#-setup)** — current host and user setup commands
 - **[Troubleshooting](docs/troubleshooting.md)** — symptoms and recovery steps
 - **[Lessons learned](docs/lessons.md)** — Silverblue-specific deployment and incident lessons
 
 ## Setup
 
-Daily use: run the Linux repo checks from the repository root. Setup commands below are for rebuild/recovery, not routine maintenance.
+Daily use: run `make linux` from the repository root. Setup commands below are for rebuild/recovery, not routine maintenance.
 
 Set the clone path once in your shell with `export SETTINGS_ROOT="$(git rev-parse --show-toplevel)"`.
 
@@ -123,11 +122,9 @@ Same principle as the Windows desktop: an app lives in exactly **one** place —
 UAD-NG runs via `fedora-toolbox-44` (which has `adb` installed).
 
 ```bash
-make -C "$SETTINGS_ROOT" setup-user
+launch-uad
 toolbox run -c fedora-toolbox-44 adb devices
 ```
-
-Run `launch-uad` from the configured shell for device checks and launch.
 
 Search **UAD-NG** in GNOME Activities to launch from the app grid. See **[`docs/uad-ng.md`](docs/uad-ng.md)** for USB debugging steps, ADB troubleshooting, and update instructions.
 
@@ -138,10 +135,3 @@ Search **UAD-NG** in GNOME Activities to launch from the app grid. See **[`docs/
 Use [`docs/troubleshooting.md`](docs/troubleshooting.md) for current recovery guidance. The longer [`docs/lessons.md`](docs/lessons.md) file is retained for the Silverblue deployment and battery quirks documented there.
 
 ---
-
-## More
-
-- [Hardware profile](hardware.md)
-- [Application sources](apps.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Silverblue lessons](docs/lessons.md)
