@@ -1,24 +1,11 @@
 #!/bin/bash
-# =============================================================================
-# install-links.sh — Symlink runtime scripts into ~/.local/bin
-#
-# The runtime scripts (update-system, cleanup-system, etc.) self-locate via
-# SCRIPT_DIR, so they work from anywhere. This script creates symlinks in
-# ~/.local/bin (which is on PATH) so you can call them as plain commands
-# without hardcoding the repo path in aliases.
-#
-# If the repo ever moves, just re-run this script to re-point the symlinks.
-#
-# Usage:
-#   bash scripts/install-links.sh
-# =============================================================================
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_lib.sh"
 BIN_DIR="$HOME/.local/bin"
 
-# Scripts to link: <command name> <relative path to script>
 LINKS=(
     "update-system:update-system.sh"
     "cleanup-system:cleanup-system.sh"
@@ -37,13 +24,15 @@ for entry in "${LINKS[@]}"; do
     dest="$BIN_DIR/$cmd"
 
     if [ ! -f "$src" ]; then
-        echo "⚠️  Skipping $cmd — source not found: $src"
+        warn "Skipping $cmd — source not found: $src"
         continue
     fi
 
-    # Remove existing file/symlink at destination (but not a real file we'd clobber)
-    if [ -e "$dest" ] || [ -L "$dest" ]; then
+    if [ -L "$dest" ]; then
         rm -f "$dest"
+    elif [ -e "$dest" ]; then
+        echo "Refusing to replace non-symlink: $dest" >&2
+        exit 1
     fi
 
     ln -s "$src" "$dest"

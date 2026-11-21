@@ -5,229 +5,178 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CODE_SUFFIXES = {".sh", ".py"}
+PYTHON_FILES = ("*.py",)
+SHELL_FILES = ("*.sh",)
 IGNORED_PARTS = {".git", ".opencode", "__pycache__"}
-SHEBANG = re.compile(r"^#!")
-COMMENT_MARKERS = {
-    ".sh": re.compile(r"^\s*#(?!\!)"),
-    ".py": re.compile(r"^\s*#(?!\!)"),
-}
-DATE = re.compile(r"\b(?:20\d{2})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\b")
+COMMENT_MARKERS = {".sh": re.compile(r"^\s*#(?!\!)"), ".py": re.compile(r"^\s*#(?!\!)")}
 DOC_LINK = re.compile(r"\[[^]]+\]\(([^)]+\.md)(?:#[^)]+)?\)")
+FRESHNESS = re.compile(
+    r"last verified|last checked|verified on|as of|last updated|current host|host queried",
+    re.IGNORECASE,
+)
+DATE = re.compile(r"\b(?:20\d{2})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\b")
 
 
-def tracked_paths():
-    output = subprocess.run(
-        ["git", "-C", str(ROOT), "ls-files", "-z"],
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout
-    return [ROOT / path.decode() for path in output.split(b"\0") if path]
-
-
-def code_comment_issues(paths):
-    issues = []
-    for path in paths:
-        if path.suffix not in CODE_SUFFIXES or not path.is_file():
-            continue
-        if "scripts" not in path.parts:
-            continue
-        if path.suffix == ".py" and "fedora-laptop" in path.parts:
-            continue
-        if path.suffix == ".sh" and (
-            "fedora-laptop" not in path.parts or path.name != "test-shell.sh"
-        ):
-            continue
-        for number, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
-            if SHEBANG.match(line):
-                continue
-            if COMMENT_MARKERS[path.suffix].search(line):
-                issues.append(f"{path.relative_to(ROOT)}:{number}: code comment")
-    return issues
-
-
-def new_code_comment_issues(paths):
-    result = subprocess.run(
-        [
-            "git",
-            "-C",
-            str(ROOT),
-            "diff",
-            "--unified=0",
-            "--",
-            "device/fedora-laptop/scripts",
-            "scripts",
-        ],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
+def run(command, **options):
+    return subprocess.run(
+        command, cwd=ROOT, text=True, capture_output=True, check=False, **options
     )
+
+
+def source_paths(pattern):
+    return sorted(
+        path
+        for path in ROOT.rglob(pattern)
+        if path.is_file()
+        and not any(part in IGNORED_PARTS | {".venv"} for part in path.parts)
+    )
+
+
+def changed_code_paths():
+    result = run(["git", "diff", "--unified=0", "HEAD", "--"])
+    if result.returncode:
+        return [], [result.stderr.strip() or "Unable to inspect changed files"]
     issues = []
     current = None
     for line in result.stdout.splitlines():
         if line.startswith("+++ b/"):
             current = ROOT / line[6:]
-        elif line.startswith("@@"):
-            continue
         elif (
             line.startswith("+")
             and not line.startswith("+++")
             and current
-            and current.suffix in CODE_SUFFIXES
+            and current.suffix in COMMENT_MARKERS
+            and ("scripts" in current.parts or "tests" in current.parts)
         ):
-            if SHEBANG.match(line[1:]) or not COMMENT_MARKERS[current.suffix].search(
-                line[1:]
-            ):
+            code = line[1:]
+            if code.startswith("#!"):
                 continue
-            issues.append(f"{current.relative_to(ROOT)}: added code comment")
-    return issues
+            if COMMENT_MARKERS[current.suffix].search(code):
+                issues.append(f"{current.relative_to(ROOT)}: newly added code comment")
+    return issues, []
 
 
-def stale_date_issues(paths):
+def comment_issues(paths):
     issues = []
     for path in paths:
-        if path.suffix != ".md" or not path.is_file():
-            continue
-        text = path.read_text(errors="replace")
-        for line_number, line in enumerate(text.splitlines(), 1):
-            if re.search(
-                r"last verified|last checked|verified on|as of|last updated|current host|host queried",
-                line,
-                re.IGNORECASE,
-            ):
-                dates = DATE.findall(line)
-                if dates:
-                    issues.append(
-                        f"{path.relative_to(ROOT)}:{line_number}: dated freshness claim(s): {', '.join(dict.fromkeys(dates))}"
-                    )
-    return issues
-
-
-def current_claim_issues(paths):
-    issues = []
-    for path in paths:
-        if path.suffix != ".md" or not path.is_file():
-            continue
         for number, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
-            if re.search(
-                r"last verified|last checked|verified on|as of|last updated",
-                line,
-                re.IGNORECASE,
-            ) and DATE.search(line):
-                issues.append(f"{path.relative_to(ROOT)}:{number}: dated status claim")
+            if line.startswith("#!"):
+                continue
+            if COMMENT_MARKERS[path.suffix].search(line):
+                issues.append(f"{path}:{number}: code comment")
     return issues
 
 
-def broken_doc_link_issues(paths):
+def doc_issues(paths):
     issues = []
     for path in paths:
-        if path.suffix != ".md" or not path.is_file():
-            continue
-        for link in DOC_LINK.findall(path.read_text(errors="replace")):
-            if "://" in link:
-                continue
-            target = (
-                (ROOT / link).resolve()
-                if link.startswith("device/")
-                else (path.parent / link).resolve()
-            )
-            if not target.exists():
-                issues.append(f"{path.relative_to(ROOT)}: missing document {link}")
+        text = path.read_text(errors="replace")
+        for number, line in enumerate(text.splitlines(), 1):
+            if FRESHNESS.search(line) and DATE.search(line):
+                issues.append(f"{path}:{number}: dated freshness claim")
+            for target in DOC_LINK.findall(line):
+                if "://" in target:
+                    continue
+                linked = (
+                    (ROOT / target).resolve()
+                    if target.startswith("device/")
+                    else (path.parent / target).resolve()
+                )
+                if not linked.exists():
+                    issues.append(f"{path}:{number}: missing document {target}")
+    readme = ROOT / "device/fedora-laptop/README.md"
+    if readme.exists():
+        setup_refs = re.findall(r"scripts/([A-Za-z0-9_.-]+\.sh)", readme.read_text())
+        if any(
+            not (ROOT / "device/fedora-laptop/scripts" / name).exists()
+            for name in setup_refs
+        ):
+            issues.append(f"{readme}: setup script reference does not exist")
     return issues
 
 
-def lint_issues(paths):
-    commands = (
-        (
-            "shellcheck",
-            "shellcheck",
-            ["-x", "-P", str(ROOT / "device/fedora-laptop/scripts")],
-            ".sh",
-        ),
-        ("ruff", "ruff", ["check"], ".py"),
-        ("shfmt", "shfmt", ["-d", "-i", "4", "-ci"], ".sh"),
-    )
+def lint_issues(shell_files, python_files):
     issues = []
-    for tool, binary, arguments, suffix in commands:
-        files = [
-            str(path)
-            for path in paths
-            if path.suffix == suffix
-            and "fedora-laptop" in path.parts
-            and "scripts" in path.parts
-        ]
+    checks = ("shellcheck", "shfmt", "ruff")
+    for tool in checks:
+        files = shell_files if tool in {"shellcheck", "shfmt"} else python_files
         if not files:
             continue
+        options = {
+            "shellcheck": ["-x", "-P", str(ROOT / "device/fedora-laptop/scripts")],
+            "shfmt": ["-d", "-i", "4", "-ci"],
+            "ruff": ["check"],
+        }[tool]
         executable = shutil.which(tool)
-        runner = [executable] if executable else None
-        if not runner:
-            toolbox = shutil.which("toolbox")
-            if toolbox:
-                runner = [toolbox, "run", "-c", "fedora-toolbox-44", binary]
-        if not runner:
-            issues.append(f"{tool} unavailable; install it to enable this check")
+        if executable:
+            command = [executable, *options, *(str(path) for path in files)]
+        elif tool == "ruff" and (ROOT / ".venv/bin/ruff").exists():
+            command = [
+                str(ROOT / ".venv/bin/ruff"),
+                *options,
+                *(str(path) for path in files),
+            ]
+        else:
+            print(f"INFO {tool} unavailable; skipped")
             continue
-        result = subprocess.run(
-            [*runner, *arguments, *files],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        result = run(command)
         if result.returncode:
-            issues.extend(
-                line for line in (result.stdout + result.stderr).splitlines() if line
-            )
+            issues.extend((result.stdout + result.stderr).splitlines())
+    return issues
+
+
+def tests():
+    test_files = sorted((ROOT / "device/fedora-laptop/tests").glob("test_*.py"))
+    issues = []
+    for path in test_files:
+        result = run([sys.executable, "-m", "unittest", str(path.relative_to(ROOT))])
+        if result.returncode:
+            issues.append((result.stdout + result.stderr).strip())
+    return issues
+
+
+def syntax_issues(shell_files):
+    issues = []
+    for path in shell_files:
+        result = run(["bash", "-n", str(path)])
+        if result.returncode:
+            issues.append((result.stdout + result.stderr).strip())
     return issues
 
 
 def main():
-    paths = tracked_paths()
-    paths.extend(
+    shell_files = [path for path in source_paths("*.sh") if "scripts" in path.parts]
+    python_files = [
         path
-        for path in ROOT.rglob("*.py")
-        if not any(part in IGNORED_PARTS for part in path.parts)
-    )
-    paths.extend(
-        path
-        for path in ROOT.rglob("*.sh")
-        if not any(part in IGNORED_PARTS for part in path.parts)
-    )
-    selected = [path for path in paths if "fedora-laptop" in path.parts]
+        for path in source_paths("*.py")
+        if ("scripts" in path.parts or "tests" in path.parts)
+        and ("device/fedora-laptop" in path.parts or path == ROOT / "scripts/audit.py")
+    ]
+    changed, changed_errors = changed_code_paths()
+    changed = [
+        path for path in changed if "scripts" in path.parts or "tests" in path.parts
+    ]
+    changed = sorted(set(changed))
     checks = {
-        "lint": lint_issues(selected),
-        "new code comments": new_code_comment_issues(selected),
+        "lint": lint_issues(shell_files, python_files),
+        "shell syntax": syntax_issues(shell_files),
+        "tests": tests(),
+        "new code comments": changed,
+        "documentation": doc_issues(
+            path
+            for path in source_paths("*.md")
+            if "fedora-laptop" in path.parts or path == ROOT / "README.md"
+        ),
     }
-    warnings = {
-        "existing code comments to migrate": code_comment_issues(selected),
-        "dated status claims": current_claim_issues(selected),
-        "broken Markdown links to review": broken_doc_link_issues(selected),
-    }
-    checks["tests"] = []
-    for test in sorted(ROOT.rglob("test_*.py")) + sorted(ROOT.rglob("test-*.py")):
-        if any(part in IGNORED_PARTS for part in test.parts):
-            continue
-        result = subprocess.run(
-            [sys.executable, "-m", "unittest", str(test.relative_to(ROOT))],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if result.returncode:
-            checks["tests"].append((result.stdout + result.stderr).strip())
-    failures = 0
+    for issue in changed_errors:
+        checks["new code comments"].append(issue)
+    failed = False
     for name, issues in checks.items():
         print(f"{'FAIL' if issues else 'PASS'} {name}")
         for issue in issues:
             print(f"  {issue}")
-        failures += len(issues)
-    for name, issues in warnings.items():
-        print(f"INFO {name}: {len(issues)}")
-        for issue in issues:
-            print(f"  {issue}")
-    return 1 if failures else 0
+        failed |= bool(issues)
+    return int(failed)
 
 
 if __name__ == "__main__":

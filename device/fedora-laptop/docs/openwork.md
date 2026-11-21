@@ -65,7 +65,7 @@ openwork                                    # via CLI or App Launcher
 
 ## Install / Update
 
-Handled automatically by `scripts/setup-phase3.sh` (fresh install) and `scripts/update-system.sh` (updates). Run manually:
+Handled by `scripts/setup-user.sh` (initial install) and `scripts/update-system.sh` (updates). Run manually:
 
 ```bash
 update-openwork        # check for updates and install if newer

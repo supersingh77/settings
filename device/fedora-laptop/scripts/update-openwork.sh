@@ -15,6 +15,7 @@ set -euo pipefail
 # =============================================================================
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+
 source "$SCRIPT_DIR/_lib.sh"
 
 INSTALL_DIR="$HOME/.local/lib/openwork"

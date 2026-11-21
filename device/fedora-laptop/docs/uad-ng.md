@@ -4,7 +4,7 @@
 
 UAD-NG removes bloatware from non-rooted Android devices over ADB. On Silverblue the GUI binary lives on the host; ADB is provided by `android-tools` inside `fedora-toolbox-44`.
 
-> Setup is handled automatically by `scripts/bootstrap.sh`. Use the steps below only for manual reinstall.
+> Initial setup is handled by `scripts/setup-user.sh`. Use the steps below only for manual reinstall.
 
 ---
 

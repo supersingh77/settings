@@ -1,0 +1,7 @@
+alias docs='cd "$HOME/Desktop/settings/device/fedora-laptop"'
+alias update='update-system'
+alias update-openwork='update-openwork'
+alias update-uad='update-uad'
+alias update-antigravity='update-antigravity'
+alias cleanup='cleanup-system'
+alias uad='launch-uad'

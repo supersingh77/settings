@@ -6,4 +6,4 @@
 - Keep scripts idempotent where practical, fail clearly, and avoid hidden global state.
 - Add automated checks for behavior that can be tested without modifying the host. Do not run install, cleanup, reboot, or other host-mutating actions as tests.
 - Run the smallest relevant lint/test checks after changes and report anything unavailable.
-- Run `python3 scripts/audit.py` to check Fedora script lint/tests, newly added code comments, dated status claims, and Fedora Markdown links. Existing cleanup debt is reported as informational output until migrated.
+- Run `make audit` for reproducible lint, tests, changed-code comment checks, and repository-wide Markdown checks. Run `make setup-dev` once to create the local Python tool environment.

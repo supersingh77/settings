@@ -6,24 +6,22 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 from unittest.mock import patch
 
-SCRIPT = pathlib.Path(__file__).with_name("parallel-download.py")
+SCRIPT = pathlib.Path(__file__).parents[1] / "scripts" / "parallel-download.py"
 SPEC = importlib.util.spec_from_file_location("parallel_download", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 
-class FormatBytesTests(unittest.TestCase):
-    def test_formats_bytes_and_scaled_units(self):
+class DownloadTests(unittest.TestCase):
+    def test_formats_bytes(self):
         self.assertEqual(MODULE._fmt_bytes(512), "512.0 B")
         self.assertEqual(MODULE._fmt_bytes(1024), "1.0 KB")
         self.assertEqual(MODULE._fmt_bytes(1024**2), "1.0 MB")
 
-    def test_formats_negative_values(self):
+    def test_formats_negative_bytes(self):
         self.assertEqual(MODULE._fmt_bytes(-2048), "-2.0 KB")
 
-
-class DownloadTests(unittest.TestCase):
-    def test_parallel_download_uses_byte_ranges_and_writes_complete_file(self):
+    def test_range_download_writes_complete_payload(self):
         payload = bytes(range(256)) * 4096
 
         class Handler(BaseHTTPRequestHandler):
@@ -49,12 +47,12 @@ class DownloadTests(unittest.TestCase):
                 return
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-        server_thread = Thread(target=server.serve_forever, daemon=True)
-        server_thread.start()
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
         try:
-            url = f"http://127.0.0.1:{server.server_port}/asset"
             with tempfile.TemporaryDirectory() as directory:
-                target = pathlib.Path(directory) / "asset.bin"
+                target = pathlib.Path(directory) / "payload.bin"
+                url = f"http://127.0.0.1:{server.server_port}/payload"
                 with (
                     patch.object(MODULE, "_print_bar", lambda *_args: None),
                     patch.object(MODULE.time, "sleep", lambda *_args: None),
@@ -64,7 +62,7 @@ class DownloadTests(unittest.TestCase):
         finally:
             server.shutdown()
             server.server_close()
-            server_thread.join(timeout=2)
+            thread.join(timeout=2)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 # OpenWork internal
 .opencode/
+.venv/
 
 # Git backup (temporary)
 .git-backup/

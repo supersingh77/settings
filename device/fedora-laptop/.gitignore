@@ -28,6 +28,8 @@ Thumbs.db
 *.tar.xz
 *.zip
 
+# Repository quality tooling environment
+
 # OpenCode workspace config (workspace-specific, never commit)
 .opencode/
 .opencode-router/

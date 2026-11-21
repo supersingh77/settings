@@ -1,6 +1,6 @@
 # Fedora Laptop Recovery
 
-For freezes or unexpected power-offs, first collect evidence from the previous boot before running `cleanup`:
+For freezes or unexpected power-offs, collect evidence from the previous boot before running `cleanup`:
 
 ```bash
 journalctl --list-boots
