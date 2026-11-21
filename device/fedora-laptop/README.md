@@ -11,7 +11,7 @@
 | **Storage** | 480 GB WD Green NVMe (Silverblue/Btrfs); internal 1 TB Seagate HDD is present but not mounted |
 | **OS** | Fedora Silverblue 44; immutable OSTree deployments |
 | **Host packages** | rpm-ostree layers: distrobox, Ghostty, uhubctl; Firefox removed from base |
-| **App model** | Desktop apps via system Flatpak; CLI/media/ADB tools in `fedora-toolbox-44`; selected user apps under `~/.local` |
+| **App model** | GUI apps via system Flatpak; CLI/media/ADB tools in `fedora-toolbox-44`; selected user apps under `~/.local` |
 | **Maintenance** | `update` stages host OS updates (reboot to apply); `cleanup` runs slower filesystem/app maintenance |
 
 ## Documentation Map
@@ -88,7 +88,11 @@ uad
 
 ---
 
-## 🐳 Containers Quick Reference
+## Toolbox boundary
+
+`fedora-toolbox-44` is the intentional CLI/development environment for `adb`/`fastboot`, FFmpeg, 7-Zip, and GitHub CLI. GUI apps remain Flatpaks; Toolbox keeps command-line packages out of the immutable host and avoids host deployment churn. The current phone works with Toolbox ADB; USB rules are only needed if a device is not detected.
+
+## Containers Quick Reference
 
 ```bash
 # General container

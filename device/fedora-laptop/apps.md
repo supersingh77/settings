@@ -1,10 +1,12 @@
 # Fedora Laptop Apps
 
-Application sources are declared by the setup scripts:
+Applications are intentionally split by use, not because Toolbox is a temporary workaround:
 
-- `scripts/setup-host.sh`: rpm-ostree layer packages.
-- `scripts/setup-user.sh`: Toolbox packages and OpenWork setup.
-- `scripts/update-system.sh`: Flatpak, Toolbox, and user-app updates.
+- GUI applications use system Flatpak.
+- Host-specific integrations use rpm-ostree layers (`distrobox`, Ghostty, `uhubctl`).
+- CLI/development utilities (`adb`/`fastboot`, FFmpeg, 7-Zip, `gh`) stay in `fedora-toolbox-44`.
+- `scripts/setup-host.sh` and `scripts/setup-user.sh` declare the host and Toolbox package sets.
+- `scripts/update-system.sh` updates Flatpak, Toolbox, and user-installed apps.
 
 For a live inventory:
 
