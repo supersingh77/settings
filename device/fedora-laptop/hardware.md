@@ -8,7 +8,7 @@
 | OS | Fedora Silverblue 44 |
 | CPU / graphics | Ryzen 5 2500U (4C/8T), Radeon Vega 8 integrated graphics |
 | Memory | 10 GiB visible to Linux; 8 GiB zram. Physical module inventory is listed below with an explicit verification caveat. |
-| Storage | WD Green 480 GB NVMe for Silverblue; internal Seagate 1 TB HDD currently unmounted |
+| Storage | WD Green 480 GB NVMe for Silverblue; Seagate ST1000LM035-1RK172 1 TB HDD at `/var/mnt/data` (Btrfs, label `data`) |
 | Power | Battery reports dead/0 Wh; the laptop is used on AC and has documented UPower mitigations |
 
 ## System Overview
@@ -61,7 +61,8 @@
 - **Capacity**: 1TB (1000GB)
 - **Interface**: SATA 2.5"
 - **Type**: HDD (5400 RPM typical)
-- **Status**: Available for data storage (not currently mounted)
+- **Filesystem**: Btrfs, label `data`
+- **Mount**: `/var/mnt/data` (UUID `b1574f54-626e-47f7-bf93-81ce091beb7a`, persistent via `/etc/fstab`)
 
 ## Network
 ### Wireless
@@ -167,7 +168,7 @@ confirm the active deployment and UPower settings using [`docs/troubleshooting.m
 └─ /dev/sdb3  445GB   btrfs  Main filesystem (root, home, var)
 
 /dev/sda (1TB HDD — ST1000LM035)
-└─ Not currently mounted — available for data/backups
+└─ /dev/sda1  931GB  btrfs  label=data  /var/mnt/data
 ```
 
 **Btrfs subvolumes**: `/root` (read-only via OSTree), `/var`, `/home`
