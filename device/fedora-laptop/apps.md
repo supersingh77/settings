@@ -1,11 +1,6 @@
 # Application Inventory — Fedora Silverblue 44
 
-**Host queried**: Fedora Silverblue 44.20261119.1
-
-**Booted host deployment at verification**: Fedora Silverblue `44.20261119.1`, kernel `7.3.4-200.fc44`
-**Pending deployment**: none (`rpm-ostree status` reported idle and only booted/current plus rollback deployments).
-
-This is a point-in-time inventory, not a record of every package in Fedora's immutable base. The live system was checked with `rpm-ostree status`, `rpm -q`, `flatpak list`, `toolbox list`, and version tracker files. Run this inventory again after system updates or installs.
+Current installed-app inventory. Re-query package managers after updates; this does not describe every package in Fedora's immutable base.
 
 ---
 
@@ -48,8 +43,6 @@ Firefox and Firefox language packs are removed from the base deployment, matchin
 | VLC | `org.videolan.VLC` | 3.0.24 | flathub |
 | LibreOffice | `org.libreoffice.LibreOffice` | _(not reported)_ | fedora |
 
-> Flatpak versions update independently of the booted Silverblue deployment.
-
 ---
 
 ## User Binaries (`~/.local/bin`)
@@ -61,7 +54,7 @@ Firefox and Firefox language packs are removed from the base deployment, matchin
 | `antigravity2` | 2.34.0-5887025308631040 | Launcher for Google Antigravity Hub tarball in `~/.local/lib/antigravity-hub/`; see below |
 | `cursor.AppImage` | **Not verified as an installed application** | File exists, but its contents begin with an HTML Cursor website page, not an AppImage. Do not launch it as an application. Likely a mistaken download; remove only if you confirm you do not need the file. |
 
-The versions above come from updater-managed tracker files, not an independent check of each application's running binary. OpenWork can print a development-server port-in-use error when invoked for a version check while already running; it is not a reliable standalone version probe. LibreOffice's Flatpak was present, but this query did not return a version.
+Versions above come from updater-managed tracker files. LibreOffice was present, but its Flatpak version was not reported.
 
 ---
 
@@ -69,7 +62,7 @@ The versions above come from updater-managed tracker files, not an independent c
 
 ### `fedora-toolbox-44` — general (`fedora-toolbox:44`)
 
-The container exists and was **exited** at inventory time. Its installed packages were queried by running `rpm -q` inside the container.
+Packages are queried inside the container with the command below.
 
 | Package | Installed version | Notes |
 |---------|-------------------|-------|
@@ -82,7 +75,7 @@ The container exists and was **exited** at inventory time. Its installed package
 
 ## Inventory Scope
 
-This is a current host snapshot, not a package-change log. Flatpak remote/version changes are visible directly in the table; the previous inventory is available in Git history. This inventory covers the system Flatpak installation; a separate per-user installation, if any, is not included.
+This inventory covers system Flatpaks; per-user Flatpaks, if installed, are not included.
 
 ---
 

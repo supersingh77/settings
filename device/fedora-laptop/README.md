@@ -24,9 +24,7 @@
 - **[Troubleshooting](docs/troubleshooting.md)** — symptoms and recovery steps
 - **[Lessons learned](docs/lessons.md)** — Silverblue-specific deployment and incident lessons
 
-> Inventory versions are a point-in-time snapshot, not a promise that packages remain at those versions. Historical incident sections retain their original dates; treat those dates as incident context, not current system state.
-
-> Fresh-install instructions are intentionally separate from current-state notes. Review the scripts against the live setup before reusing bootstrap on a fresh system.
+> Current-state notes and fresh-install steps are separate; review setup scripts before reusing them.
 
 ---
 
