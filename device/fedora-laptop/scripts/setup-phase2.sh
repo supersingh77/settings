@@ -14,11 +14,14 @@ CYAN="\e[36m"
 RED="\e[31m"
 RESET="\e[0m"
 
-info()    { echo -e "${CYAN}ℹ️  $*${RESET}"; }
+info() { echo -e "${CYAN}ℹ️  $*${RESET}"; }
 success() { echo -e "${GREEN}✅ $*${RESET}"; }
-warn()    { echo -e "${YELLOW}⚠️  $*${RESET}"; }
-error()   { echo -e "${RED}❌ $*${RESET}"; exit 1; }
-step()    { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
+warn() { echo -e "${YELLOW}⚠️  $*${RESET}"; }
+error() {
+    echo -e "${RED}❌ $*${RESET}"
+    exit 1
+}
+step() { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 
 # ----------------------------------------------------------------------------
 # 0. Sanity checks
@@ -49,11 +52,10 @@ if [ -f "$GHOSTTY_REPO_DEST" ]; then
     warn "Ghostty COPR repo already exists at ${GHOSTTY_REPO_DEST}, skipping."
 else
     info "Downloading repo file from: ${GHOSTTY_REPO_URL}"
-    sudo wget -q "$GHOSTTY_REPO_URL" -O "$GHOSTTY_REPO_DEST" \
-        || error "Failed to download Ghostty COPR repo file."
+    sudo wget -q "$GHOSTTY_REPO_URL" -O "$GHOSTTY_REPO_DEST" ||
+        error "Failed to download Ghostty COPR repo file."
     success "Ghostty COPR repo added."
 fi
-
 
 # ----------------------------------------------------------------------------
 # 2. Remove Firefox (base image package override)
@@ -68,9 +70,9 @@ elif ! rpm -q firefox &>/dev/null; then
     warn "Firefox is not currently installed, skipping override-remove."
 else
     info "Staging Firefox removal..."
-    rpm-ostree override remove firefox firefox-langpacks 2>/dev/null \
-        || rpm-ostree override remove firefox 2>/dev/null \
-        || warn "Could not remove firefox-langpacks separately — trying firefox only."
+    rpm-ostree override remove firefox firefox-langpacks 2>/dev/null ||
+        rpm-ostree override remove firefox 2>/dev/null ||
+        warn "Could not remove firefox-langpacks separately — trying firefox only."
     success "Firefox removal staged."
 fi
 
@@ -94,8 +96,8 @@ if [ ${#PACKAGES_TO_INSTALL[@]} -eq 0 ]; then
     warn "All packages are already installed, skipping rpm-ostree install."
 else
     info "Staging installation of: ${PACKAGES_TO_INSTALL[*]}"
-    rpm-ostree install "${PACKAGES_TO_INSTALL[@]}" \
-        || error "rpm-ostree install failed. Check the output above for details."
+    rpm-ostree install "${PACKAGES_TO_INSTALL[@]}" ||
+        error "rpm-ostree install failed. Check the output above for details."
     success "Packages staged: ${PACKAGES_TO_INSTALL[*]}"
 fi
 

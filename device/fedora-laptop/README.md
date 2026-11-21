@@ -1,6 +1,32 @@
-# Fedora Silverblue — System Setup
+# Fedora Silverblue Laptop — System Setup
 
-**System**: Fedora Silverblue 44 | **Hardware**: ASUS VivoBook X505ZA | **Last Updated**: 2026-10-08
+> **Status:** Active Fedora laptop (this is the current Linux device; `device/laptop*` documents a separate Windows gaming laptop)
+> **Current host:** Fedora Silverblue 44.20261119.1 (kernel 7.3.4-200.fc44)
+
+## Quick Reference
+
+| Area | Current setup |
+|---|---|
+| **Hardware** | ASUS VivoBook X505ZA; Ryzen 5 2500U (4C/8T), Radeon Vega 8 |
+| **Memory** | 10 GiB visible to Linux; 8 GiB zram swap. Physical module inventory is documented separately and remains unverified. |
+| **Storage** | 480 GB WD Green NVMe (Silverblue/Btrfs); internal 1 TB Seagate HDD is present but not mounted |
+| **OS** | Fedora Silverblue 44.20261119.1; kernel 7.3.4-200.fc44; immutable OSTree deployments |
+| **Host packages** | rpm-ostree layers: distrobox, Ghostty, uhubctl; Firefox removed from base |
+| **App model** | Desktop apps via system Flatpak; CLI/media/ADB tools in `fedora-toolbox-44`; selected user apps under `~/.local` |
+| **Maintenance** | `update` stages host OS updates (reboot to apply); `cleanup` runs slower filesystem/app maintenance |
+
+## Documentation Map
+
+- **[Hardware](hardware.md)** — machine details, verified memory caveat, storage and power quirks
+- **[Applications](apps.md)** — current Flatpak, rpm-ostree, toolbox, and user-binary inventory
+- **[Setup and daily workflow](#-fresh-install--start-here)** — bootstrap and phased installation
+- **[Shell reference](docs/shell.md)** — aliases and shell configuration
+- **[Troubleshooting](docs/troubleshooting.md)** — symptoms and recovery steps
+- **[Lessons learned](docs/lessons.md)** — Silverblue-specific deployment and incident lessons
+
+> Inventory versions are a point-in-time snapshot, not a promise that packages remain at those versions. Historical incident sections retain their original dates; treat those dates as incident context, not current system state.
+
+> Fresh-install instructions are intentionally separate from current-state notes. Review the scripts against the live setup before reusing bootstrap on a fresh system.
 
 ---
 
@@ -64,6 +90,9 @@ openwork           # launch OpenWork AI IDE
 ## ⚡ Daily Commands
 
 ```bash
+# Repository quality audit (lint, tests, comments, dates, local links)
+python3 ~/Desktop/settings/scripts/audit.py
+
 # Fast daily update (Flatpaks + OpenWork + UAD-NG + Antigravity + toolbox + rpm-ostree)
 update
 
@@ -171,23 +200,9 @@ Search **UAD-NG** in GNOME Activities to launch from the app grid. See **[`docs/
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
-See **[`docs/troubleshooting.md`](docs/troubleshooting.md)** for all known issues. Quick links:
-
-> 💡 Before debugging anything config- or power-related, read
-> **[`docs/lessons.md`](docs/lessons.md)** — especially the per-deployment `/etc` gotcha.
-
-| Issue | Section |
-|-------|---------|
-| System freezes / battery errors | [Dead Battery Freeze](docs/troubleshooting.md#1-dead-battery-freeze) |
-| Random power-off after update | [Power-Off After Update](docs/troubleshooting.md#5-random-power-off-after-system-update) |
-| Apps show gear icon in launcher | [Missing App Icons](docs/troubleshooting.md#2-missing-app-icons-gear-icon) |
-| GNOME Software shows update loop | [Update Loop](docs/troubleshooting.md#3-gnome-software-update-loop) |
-| EOL Flatpak runtime warnings | [EOL Runtimes](docs/troubleshooting.md#4-eol-flatpak-runtimes) |
-| October 2026 abrupt freezes and update-status checks | [Freeze / Update Follow-up](docs/troubleshooting.md#6-freeze--update-follow-up-2026-10-08) |
-| `systemd-remount-fs` composefs-overlay warning on Silverblue | [Remount Failure](docs/troubleshooting.md#7-systemd-remount-fs-failure-on-silverblue-composefs-root-2026-10-08) |
-| Audio has noise / background hum | [Audio Denoise](docs/audio-denoise.md) |
+Use [`docs/troubleshooting.md`](docs/troubleshooting.md) for current recovery guidance. The longer [`docs/lessons.md`](docs/lessons.md) file is retained for the Silverblue deployment and battery quirks documented there.
 
 ---
 

@@ -50,14 +50,13 @@ fi
 
 # ── Check for connected Android devices ──────────────────────────────────────
 echo "🔍 Checking for connected Android devices..."
-DEVICES=$(toolbox run -c "$CONTAINER" adb devices 2>/dev/null \
-    | grep -v "List of devices" \
-    | grep -E "	(device|unauthorized|offline)$" \
-    | wc -l)
+DEVICES=$(toolbox run -c "$CONTAINER" adb devices 2>/dev/null |
+    grep -v "List of devices" |
+    grep -Ec "	(device|unauthorized|offline)$" || true)
 
-UNAUTHORIZED=$(toolbox run -c "$CONTAINER" adb devices 2>/dev/null \
-    | grep -v "List of devices" \
-    | grep -c "unauthorized" || true)
+UNAUTHORIZED=$(toolbox run -c "$CONTAINER" adb devices 2>/dev/null |
+    grep -v "List of devices" |
+    grep -c "unauthorized" || true)
 
 if [ "$DEVICES" -eq 0 ]; then
     echo ""

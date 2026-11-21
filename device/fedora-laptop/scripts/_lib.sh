@@ -16,11 +16,14 @@ CYAN="\e[36m"
 RED="\e[31m"
 RESET="\e[0m"
 
-info()    { echo -e "${CYAN}ℹ️  $*${RESET}"; }
+info() { echo -e "${CYAN}ℹ️  $*${RESET}"; }
 success() { echo -e "${GREEN}✅ $*${RESET}"; }
-warn()    { echo -e "${YELLOW}⚠️  $*${RESET}"; }
-error()   { echo -e "${RED}❌ $*${RESET}"; exit 1; }
-step()    { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
+warn() { echo -e "${YELLOW}⚠️  $*${RESET}"; }
+error() {
+    echo -e "${RED}❌ $*${RESET}"
+    exit 1
+}
+step() { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 
 # ── Helper: fast parallel download ─────────────────────────────────────────
 # Downloads a file using the parallel downloader if available, otherwise wget.
@@ -33,13 +36,12 @@ download_file() {
     local dest="$2"
     if [ -f "$DOWNLOADER" ]; then
         info "Downloading with parallel downloader (16 connections)…"
-        python3 "$DOWNLOADER" "$url" "$dest" 16 \
-            && return 0 \
-            || { warn "Parallel download failed — trying wget."; }
+        if python3 "$DOWNLOADER" "$url" "$dest" 16; then
+            return 0
+        fi
+        warn "Parallel download failed — trying wget."
     fi
-    wget --show-progress -O "$dest" "$url" \
-        && return 0 \
-        || return 1
+    wget --show-progress -O "$dest" "$url"
 }
 
 # ── Helper: run a command, log result, never abort script ──────────────────

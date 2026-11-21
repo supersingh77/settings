@@ -1,7 +1,7 @@
 # Shell Configuration — ~/.bashrc
 
 **File**: `~/.bashrc` | **Shell**: bash (Fedora Silverblue default)
-**Last verified**: aliases and scripts reviewed against the settings repository on 2026-10-08. The live `~/.bashrc` contents were not re-read in this review.
+This is the documented target configuration, not a live dump of `~/.bashrc`.
 
 The `~/.bashrc` is the user shell configuration loaded for every interactive bash session. On Fedora Silverblue, the host OS is immutable — the shell environment is one of the few things fully under your control.
 

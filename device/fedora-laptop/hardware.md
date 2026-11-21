@@ -1,5 +1,16 @@
 # ASUS VivoBook X505ZA Hardware Profile
 
+## Quick Profile
+
+| Field | Verified detail |
+|---|---|
+| Model | ASUS VivoBook X505ZA |
+| OS at last check | Fedora Silverblue 44.20261119.1, kernel 7.3.4-200.fc44 (2026-11-21) |
+| CPU / graphics | Ryzen 5 2500U (4C/8T), Radeon Vega 8 integrated graphics |
+| Memory | 10 GiB visible to Linux; 8 GiB zram. Physical module inventory is listed below with an explicit verification caveat. |
+| Storage | WD Green 480 GB NVMe for Silverblue; internal Seagate 1 TB HDD currently unmounted |
+| Power | Battery reports dead/0 Wh; the laptop is used on AC and has documented UPower mitigations |
+
 ## System Overview
 - **Model**: ASUS VivoBook X505ZA
 - **Manufacturer**: ASUSTeK COMPUTER INC.
@@ -32,7 +43,7 @@
   - Model: M471A1K43BB1-CRC
   - Speed: 2400 MHz
 - **Documented module total**: 12GB RAM (4GB + 8GB modules; original inventory)
-- **Live OS-visible memory (2026-10-08)**: about 10GiB; `free -h` reported 10GiB total, about 8.0GiB available, and an 8GiB zram swap device. `dmidecode` could not be checked because this review did not enter a sudo password.
+- **Live OS-visible memory (2026-11-21)**: 10GiB total, 6.4GiB available at check time, and an 8GiB zram swap device. Physical module sizes were not re-verified during this check.
 - **Needs verification**: the live OS-visible total is lower than the documented 12GB physical-module total. This is a discrepancy, not proof the RAM changed; verify module sizes in firmware or by running `sudo dmidecode --type memory` locally.
 
 ## Storage Configuration
@@ -103,9 +114,8 @@
 - **Status**: Dead — 0 Wh capacity (~375 cycles); system runs on AC only
 - **Chemistry**: Li-ion (typical)
 - **Management**: AMD PowerNow!
-- **Quirk**: EC oscillates charging ↔ discharging every ~10–20 s; with the wrong UPower
-  config this triggered a clean power-off after boot (see
-  [Troubleshooting §5](docs/troubleshooting.md#5-random-power-off-after-system-update))
+- **Quirk**: EC oscillates charging ↔ discharging; UPower settings were adjusted to avoid
+  critical battery actions. Verify those settings on each booted deployment.
 
 ## Additional Features
 - **Card Reader**: SD card reader (typical for VivoBook series)
@@ -123,114 +133,28 @@
 ### ⚠️ Considerations
 - Mixed RAM configuration (4GB + 8GB) — works but could be improved with matched pairs
 - HDD performance slower than SSD for secondary storage
-- Dead battery (BAT0, 0 Wh) — UPower `-nan` errors every 5 seconds in the Aug deployment
-  (UPower 1.91.3); mitigated via UPower config, **applied in both deployments** (see
-  [Troubleshooting §1](docs/troubleshooting.md#1-dead-battery-freeze))
+- Dead battery (BAT0, 0 Wh) — UPower configuration was adjusted to prevent battery events
+  from triggering power actions; re-check the active deployment after an OS upgrade (see
+  [recovery notes](docs/troubleshooting.md))
 
 ### 🔧 Current Optimizations
 - Btrfs filesystem with SSD optimizations (`discard=async`, `space_cache=v2`) ✅
 - AMDGPU open-source driver for graphics ✅
 - `fstrim.timer` enabled — weekly SSD TRIM runs automatically ✅
 - OSTree immutable base system for reliability ✅
-- UPower dead-battery fix: ✅ **applied (both deployments)** — `CriticalPowerAction=Ignore` +
-  `AllowRiskyCriticalPowerAction=true` (see [Troubleshooting §1](docs/troubleshooting.md#1-dead-battery-freeze))
-- TLP power management: ❌ **not installed** — see [Power Optimization](#power-optimization-tlp) below
+- UPower dead-battery mitigation: configured; verify per active deployment (see
+  [recovery notes](docs/troubleshooting.md))
+- TLP is not installed; keep the platform's default power-management stack unless a measured
+  problem justifies changing it.
 
-## Upgrade Recommendations
-### High Priority
-1. **Memory**: Consider upgrading to 2x8GB matching modules for dual-channel optimization
-2. **SSD Upgrade**: Replace 1TB HDD with 2TB NVMe SSD for significant performance boost
+## Follow-up
 
-### Medium Priority
-1. **Thermal Paste**: CPU repaste for better thermal management
-2. **BIOS Update**: Check for newer BIOS versions if available
-3. **TLP**: Install for CPU frequency management, WiFi power saving, and 1TB HDD spin-down — see [Power Optimization](#power-optimization-tlp) below
-4. **Journal size cap**: Add `SystemMaxUse=64M` to `/etc/systemd/journald.conf` — the
-   dead-battery UPower `-nan` spam (UPower 1.91.3, Aug deployment) inflates logs fast
+The only unresolved hardware inventory item is physical RAM capacity: verify DIMM sizes in firmware
+or with `sudo dmidecode --type memory` before buying replacement memory. The internal 1 TB HDD is
+present but unmounted; decide whether to mount it for a specific use before changing storage setup.
 
----
-
-## Power Optimization (TLP)
-
-TLP provides fine-grained Linux power management beyond what GNOME's default settings offer.
-On this hardware it helps with: CPU frequency idle tuning, Intel WiFi power saving, and spinning
-down the secondary 1TB HDD when idle.
-
-> **Note**: Fedora Silverblue does not ship `power-profiles-daemon` by default in this
-> configuration. Verify before installing TLP:
-> ```bash
-> rpm -q power-profiles-daemon && systemctl is-enabled power-profiles-daemon
-> ```
-> If `power-profiles-daemon` **is** installed and enabled, you must disable it before enabling TLP
-> (they conflict). If it's not installed (as is currently the case here), proceed directly.
-
-### Install TLP (rpm-ostree layer)
-
-```bash
-# Stage TLP and the rfkill/radio device companion
-rpm-ostree install tlp tlp-rdw
-
-# Reboot to activate the layered packages
-sudo systemctl reboot
-```
-
-After reboot:
-
-```bash
-# TLP starts automatically on boot — confirm it's active
-sudo tlp-stat -s
-
-# Check battery (will show "dead/not found" for BAT0 — that's expected)
-sudo tlp-stat -b
-```
-
-### Key TLP Benefits for This Hardware
-
-| Feature | Effect |
-|---------|--------|
-| `CPU_SCALING_GOVERNOR_ON_AC=schedutil` | AMD Ryzen stays responsive on AC |
-| `WIFI_PWR_ON_AC=off` | Disables WiFi power saving on AC (better latency) |
-| `WIFI_PWR_ON_BAT=on` | Saves power when on battery (less relevant with dead battery) |
-| `DISK_APM_LEVEL_ON_AC="254 254"` | Keeps 1TB HDD always spinning when on AC |
-| `DISK_APM_LEVEL_ON_BAT="128 128"` | Allows HDD spin-down on battery |
-
-### Optional: Custom TLP Config
-
-```bash
-# TLP config lives at (create if missing):
-sudo nano /etc/tlp.conf
-
-# Minimal recommended additions for this laptop:
-# CPU_SCALING_GOVERNOR_ON_AC=schedutil
-# CPU_SCALING_GOVERNOR_ON_BAT=powersave
-# WIFI_PWR_ON_AC=off
-# DISK_APM_LEVEL_ON_AC="254 254"
-# NMI_WATCHDOG=0
-```
-
-### Journal Size Cap (Prevent UPower Log Bloat)
-
-The dead-battery `-nan` spam can inflate `/var/log/journal` quickly. Cap it:
-
-```bash
-# Add to /etc/systemd/journald.conf under [Journal]:
-sudo tee -a /etc/systemd/journald.conf > /dev/null << 'EOF'
-
-# Cap journal size — prevents UPower -nan spam from inflating logs
-[Journal]
-SystemMaxUse=64M
-MaxRetentionSec=2week
-EOF
-
-# Apply immediately (no reboot needed):
-sudo systemctl restart systemd-journald
-
-# Verify:
-journalctl --disk-usage
-```
-
-> **Note**: Fix the UPower dead-battery issue ([Troubleshooting §1](docs/troubleshooting.md#1-dead-battery-freeze))
-> first — that eliminates the root cause. The journal cap is a safety net.
+Keep Fedora's default power-management stack unless there is a measured issue. After an OS update,
+confirm the active deployment and UPower settings using [`docs/troubleshooting.md`](docs/troubleshooting.md).
 
 ---
 

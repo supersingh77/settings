@@ -103,4 +103,4 @@ update
 | `scripts/uad-ng.desktop` | Desktop entry source (this repo) |
 | `scripts/launch-uad.sh` | Launcher with ADB checks |
 
-> See [docs/troubleshooting.md §2](troubleshooting.md#2-missing-app-icons-gear-icon) if the icon still shows as a gear.
+If the launcher entry does not appear, verify the generated desktop file under `~/.local/share/applications/` and refresh the GNOME session.

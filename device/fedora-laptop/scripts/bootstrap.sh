@@ -27,11 +27,14 @@ CYAN="\e[36m"
 RED="\e[31m"
 RESET="\e[0m"
 
-info()    { echo -e "${CYAN}ℹ️  $*${RESET}"; }
+info() { echo -e "${CYAN}ℹ️  $*${RESET}"; }
 success() { echo -e "${GREEN}✅ $*${RESET}"; }
-warn()    { echo -e "${YELLOW}⚠️  $*${RESET}"; }
-error()   { echo -e "${RED}❌ $*${RESET}"; exit 1; }
-step()    { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n${BOLD}  $*${RESET}\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"; }
+warn() { echo -e "${YELLOW}⚠️  $*${RESET}"; }
+error() {
+    echo -e "${RED}❌ $*${RESET}"
+    exit 1
+}
+step() { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n${BOLD}  $*${RESET}\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"; }
 
 REPO_DEST="$HOME/Desktop/settings/device/fedora-laptop"
 GITHUB_USER="supersingh77"
@@ -63,7 +66,7 @@ if ! command -v curl &>/dev/null; then
 fi
 
 # Check internet connectivity
-if ! curl -fsSL --max-time 5 https://github.com > /dev/null 2>&1; then
+if ! curl -fsSL --max-time 5 https://github.com >/dev/null 2>&1; then
     error "No internet connection. Connect to WiFi/Ethernet and try again."
 fi
 
@@ -81,8 +84,8 @@ if [ -f "$SSH_KEY" ]; then
 else
     info "Generating Ed25519 SSH key for GitHub..."
     read -rp "  Enter your GitHub email address: " GIT_EMAIL
-    ssh-keygen -t ed25519 -C "$GIT_EMAIL" -f "$SSH_KEY" -N "" \
-        || error "SSH key generation failed."
+    ssh-keygen -t ed25519 -C "$GIT_EMAIL" -f "$SSH_KEY" -N "" ||
+        error "SSH key generation failed."
     success "SSH key generated at ${SSH_KEY}."
 fi
 
@@ -111,7 +114,7 @@ if grep -q "Host github.com$" "$SSH_CONFIG" 2>/dev/null; then
     warn "SSH config for github.com already exists, skipping."
 else
     mkdir -p "$(dirname "$SSH_CONFIG")"
-    cat >> "$SSH_CONFIG" << EOF
+    cat >>"$SSH_CONFIG" <<EOF
 
 # ${GITHUB_USER} GitHub account (default)
 Host github.com
@@ -163,13 +166,15 @@ REPO_ROOT="$HOME/Desktop/settings"
 if [ -d "$REPO_ROOT/.git" ]; then
     warn "Repo already exists at ${REPO_ROOT}."
     info "Pulling latest changes..."
-    git -C "$REPO_ROOT" pull --rebase \
-        && success "Repo updated." \
-        || warn "git pull failed — continuing with existing files."
+    if git -C "$REPO_ROOT" pull --rebase; then
+        success "Repo updated."
+    else
+        warn "git pull failed — continuing with existing files."
+    fi
 else
     info "Cloning ${GITHUB_USER}/${REPO_NAME}..."
-    git clone "git@github.com:${GITHUB_USER}/${REPO_NAME}.git" "$REPO_ROOT" \
-        || error "Clone failed. Check your SSH key and repo access."
+    git clone "git@github.com:${GITHUB_USER}/${REPO_NAME}.git" "$REPO_ROOT" ||
+        error "Clone failed. Check your SSH key and repo access."
     success "Repo cloned to ${REPO_ROOT}."
 fi
 
@@ -193,7 +198,7 @@ step "Step 5 — Install runtime script symlinks"
 
 # Ensure ~/.local/bin is on PATH (add to bashrc if missing)
 if ! grep -q '\.local/bin' "$HOME/.bashrc" 2>/dev/null; then
-    cat >> "$HOME/.bashrc" << 'PATHBLOCK'
+    cat >>"$HOME/.bashrc" <<'PATHBLOCK'
 
 # Add ~/.local/bin to PATH
 export PATH="$HOME/.local/bin:$PATH"
@@ -211,9 +216,9 @@ fi
 step "Step 6 — Phase 1: Install Flatpak Apps (no reboot needed)"
 
 info "Adding Flathub remote if not present..."
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo --user 2>/dev/null \
-    || flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 2>/dev/null \
-    || warn "Could not add Flathub remote (may already exist system-wide)."
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo --user 2>/dev/null ||
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 2>/dev/null ||
+    warn "Could not add Flathub remote (may already exist system-wide)."
 
 info "Installing Flatpak apps..."
 flatpak install flathub \
@@ -226,8 +231,8 @@ flatpak install flathub \
     org.videolan.VLC \
     org.gnome.Characters \
     org.gnome.baobab \
-    -y \
-    || warn "Some Flatpaks may have failed — check output above."
+    -y ||
+    warn "Some Flatpaks may have failed — check output above."
 
 success "Phase 1 Flatpak apps installed."
 
@@ -249,13 +254,13 @@ UAD_ICON_URL="https://raw.githubusercontent.com/Universal-Debloater-Alliance/uni
 if [ -f "$UAD_BIN" ] && [ -x "$UAD_BIN" ]; then
     warn "UAD-NG binary already exists at ${UAD_BIN}, skipping download."
     if [ ! -f "$HOME/.local/bin/uad-ng.version" ]; then
-        echo "${UAD_VERSION#v}" > "$HOME/.local/bin/uad-ng.version"
+        echo "${UAD_VERSION#v}" >"$HOME/.local/bin/uad-ng.version"
     fi
 else
     info "Downloading UAD-NG ${UAD_VERSION} (~29 MB, may take a moment)..."
     if curl -L --retry 3 "$UAD_URL" -o "$UAD_BIN" 2>/dev/null; then
         chmod +x "$UAD_BIN"
-        echo "${UAD_VERSION#v}" > "$HOME/.local/bin/uad-ng.version"
+        echo "${UAD_VERSION#v}" >"$HOME/.local/bin/uad-ng.version"
         success "UAD-NG downloaded and made executable."
     else
         warn "UAD-NG download failed. You can retry later with:"
@@ -266,17 +271,17 @@ fi
 # Icon
 if [ ! -f "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" ]; then
     curl -fsSL "$UAD_ICON_URL" \
-        -o "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" 2>/dev/null \
-        || warn "Could not download UAD-NG icon."
+        -o "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" 2>/dev/null ||
+        warn "Could not download UAD-NG icon."
 fi
 
 # Desktop entry
-if [ ! -f "$HOME/.local/share/applications/uad-ng.desktop" ] && \
-   [ -f "$REPO_DEST/scripts/uad-ng.desktop" ]; then
+if [ ! -f "$HOME/.local/share/applications/uad-ng.desktop" ] &&
+    [ -f "$REPO_DEST/scripts/uad-ng.desktop" ]; then
     sed -e "s|__HOME__|${HOME}|g" \
         -e "s|__FEDORA_VERSION__|$(rpm -E %fedora)|g" \
         "$REPO_DEST/scripts/uad-ng.desktop" \
-        > "$HOME/.local/share/applications/uad-ng.desktop"
+        >"$HOME/.local/share/applications/uad-ng.desktop"
     update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
     success "UAD-NG desktop entry installed."
 fi
@@ -292,7 +297,7 @@ ALIAS_MARKER="# settings aliases"
 if grep -q "$ALIAS_MARKER" "$BASHRC" 2>/dev/null; then
     warn "Aliases already in ${BASHRC}, skipping."
 else
-    cat >> "$BASHRC" << 'ALIASES'
+    cat >>"$BASHRC" <<'ALIASES'
 
 # settings aliases
 alias docs='cd ~/Desktop/settings/device/fedora-laptop'

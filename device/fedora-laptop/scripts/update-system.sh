@@ -128,7 +128,7 @@ step "Updating system and layered packages (rpm-ostree upgrade)"
 
 OSTREE_LOG=$(mktemp)
 rpm-ostree upgrade | tee "$OSTREE_LOG"
-if [ ${PIPESTATUS[0]} -ne 0 ]; then
+if [ "${PIPESTATUS[0]}" -ne 0 ]; then
     warn "rpm-ostree upgrade had issues"
 fi
 

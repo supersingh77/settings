@@ -20,16 +20,17 @@ CYAN="\e[36m"
 RED="\e[31m"
 RESET="\e[0m"
 
-info()    { echo -e "${CYAN}ℹ️  $*${RESET}"; }
+info() { echo -e "${CYAN}ℹ️  $*${RESET}"; }
 success() { echo -e "${GREEN}✅ $*${RESET}"; }
-warn()    { echo -e "${YELLOW}⚠️  $*${RESET}"; }
-error()   { echo -e "${RED}❌ $*${RESET}"; exit 1; }
-step()    { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
+warn() { echo -e "${YELLOW}⚠️  $*${RESET}"; }
+error() {
+    echo -e "${RED}❌ $*${RESET}"
+    exit 1
+}
+step() { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 
 INSTALL_DIR="$HOME/.local/lib/antigravity-hub"
 VERSION_FILE="$INSTALL_DIR/version"
-DOWNLOAD_PAGE="https://antigravity.google/download"
-
 # ── Check installed version ─────────────────────────────────────────────────
 step "Checking installed version"
 
@@ -83,8 +84,8 @@ step "Downloading Antigravity 2.0 v${LATEST_VERSION}"
 TARBALL_TMP="/tmp/antigravity-hub-${LATEST_VERSION}.tar.gz"
 
 info "Downloading from: ${LATEST_URL}"
-curl -fSL --retry 3 --retry-delay 2 -o "$TARBALL_TMP" "$LATEST_URL" \
-    || error "Failed to download Antigravity 2.0 v${LATEST_VERSION}."
+curl -fSL --retry 3 --retry-delay 2 -o "$TARBALL_TMP" "$LATEST_URL" ||
+    error "Failed to download Antigravity 2.0 v${LATEST_VERSION}."
 
 info "Download complete ($(du -h "$TARBALL_TMP" | cut -f1))."
 
@@ -96,8 +97,8 @@ mkdir -p "$INSTALL_DIR"
 # Remove old Antigravity-x64 directory, keep version file
 rm -rf "$INSTALL_DIR/Antigravity-x64"
 
-tar -xzf "$TARBALL_TMP" -C "$INSTALL_DIR" \
-    || error "Failed to extract tarball."
+tar -xzf "$TARBALL_TMP" -C "$INSTALL_DIR" ||
+    error "Failed to extract tarball."
 
 rm -f "$TARBALL_TMP"
 
@@ -110,7 +111,7 @@ fi
 if [ ! -f "$HOME/.local/bin/antigravity2" ]; then
     info "Creating launcher at ~/.local/bin/antigravity2"
     mkdir -p "$HOME/.local/bin"
-    cat << 'EOF' > "$HOME/.local/bin/antigravity2"
+    cat <<'EOF' >"$HOME/.local/bin/antigravity2"
 #!/bin/bash
 exec ~/.local/lib/antigravity-hub/Antigravity-x64/antigravity --no-sandbox "$@"
 EOF
@@ -121,7 +122,7 @@ fi
 step "Updating desktop integration"
 
 # Extract icon from the app.asar to get the freshest icon
-python3 << 'PYEXTRACT' 2>/dev/null || warn "Icon extraction skipped (Pillow not installed or asar parse failed)."
+python3 <<'PYEXTRACT' 2>/dev/null || warn "Icon extraction skipped (Pillow not installed or asar parse failed)."
 import struct, json, os, sys
 
 asar_path = os.path.expanduser("~/.local/lib/antigravity-hub/Antigravity-x64/resources/app.asar")
@@ -178,7 +179,7 @@ PYEXTRACT
 DESKTOP_ENTRY="$HOME/.local/share/applications/antigravity2.desktop"
 if [ ! -f "$DESKTOP_ENTRY" ]; then
     mkdir -p "$HOME/.local/share/applications"
-    cat << EOF > "$DESKTOP_ENTRY"
+    cat <<EOF >"$DESKTOP_ENTRY"
 [Desktop Entry]
 Name=Antigravity 2.0
 Comment=Google Antigravity AI Agent Platform
@@ -197,7 +198,7 @@ update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor/" 2>/dev/null || true
 
 # ── Write version file ───────────────────────────────────────────────────────
-echo "$LATEST_VERSION" > "$VERSION_FILE"
+echo "$LATEST_VERSION" >"$VERSION_FILE"
 
 # ── Summary ──────────────────────────────────────────────────────────────────
 step "Done"

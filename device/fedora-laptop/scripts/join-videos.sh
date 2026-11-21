@@ -46,8 +46,8 @@ fi
 
 # ── Find video files, ordered by name ─────────────────────────────────────────
 mapfile -t CLIPS < <(find "$FOLDER" -maxdepth 1 -type f \
-    \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.webm" -o -iname "*.ts" \) \
-    | sort)
+    \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.webm" -o -iname "*.ts" \) |
+    sort)
 
 if [ "${#CLIPS[@]}" -lt 2 ]; then
     error "Need at least 2 video files in $FOLDER (found ${#CLIPS[@]})."
@@ -64,7 +64,7 @@ LIST_FILE="$(mktemp)"
 trap 'rm -f "$LIST_FILE"' EXIT
 
 for clip in "${CLIPS[@]}"; do
-    echo "file '$clip'" >> "$LIST_FILE"
+    echo "file '$clip'" >>"$LIST_FILE"
 done
 
 OUT_PATH="$FOLDER/$OUTPUT"

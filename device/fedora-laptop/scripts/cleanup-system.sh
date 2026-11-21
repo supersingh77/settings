@@ -71,16 +71,13 @@ fi
 # ── 3. rpm-ostree cleanup ─────────────────────────────────────────────────────
 step "Cleaning up old rpm-ostree deployments"
 
-# Remove pending/rollback deployments to free Btrfs snapshot space.
-# Keeps the current deployment and its rollback.
-# Report freed space: rpm-ostree cleanup prints "Freed: X MB" when it removes.
-OSTREE_OUT=$(rpm-ostree cleanup -m 2>&1)
+OSTREE_OUT=$(rpm-ostree cleanup -b 2>&1)
 OSTREE_RC=$?
 if [ $OSTREE_RC -ne 0 ]; then
     warn "rpm-ostree cleanup had issues — continuing anyway."
 else
     echo "$OSTREE_OUT" | grep -iE "freed|removed|deployment" | head -3 || true
-    success "rpm-ostree cleanup complete."
+    success "rpm-ostree cache cleanup complete."
 fi
 
 # ── 4. Journal vacuum ─────────────────────────────────────────────────────────

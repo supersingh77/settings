@@ -76,13 +76,13 @@ info "Latest version  : v${LATEST_VERSION}"
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ] && [ -f "$UAD_BIN" ]; then
     step "Update check"
     success "UAD-NG is already up to date (v${LATEST_VERSION})."
-    
+
     # Re-verify desktop entry and icon anyway
     VERIFY_REQUIRED=false
     if [ ! -f "$HOME/.local/share/applications/uad-ng.desktop" ] || [ ! -f "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" ]; then
         VERIFY_REQUIRED=true
     fi
-    
+
     if [ "$VERIFY_REQUIRED" = false ]; then
         exit 0
     fi
@@ -96,29 +96,29 @@ UAD_TMP="$HOME/.local/bin/uad-ng.tmp"
 if download_file "$LATEST_URL" "$UAD_TMP"; then
     mv "$UAD_TMP" "$UAD_BIN"
     chmod +x "$UAD_BIN"
-    
+
     info "Installing desktop entry and icon..."
     mkdir -p "$HOME/.local/share/icons/hicolor/128x128/apps"
     mkdir -p "$HOME/.local/share/applications"
-    
+
     # Download icon if missing
     if [ ! -f "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" ]; then
         curl -fsSL "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/main/resources/assets/logo-light.png" \
             -o "$HOME/.local/share/icons/hicolor/128x128/apps/uad-ng.png" 2>/dev/null || warn "Could not download UAD-NG icon."
     fi
-    
+
     # Copy desktop entry from scripts (replace placeholders with actual paths)
     if [ -f "$SCRIPT_DIR/uad-ng.desktop" ]; then
         sed -e "s|__HOME__|${HOME}|g" \
             -e "s|__FEDORA_VERSION__|$(rpm -E %fedora)|g" \
             "$SCRIPT_DIR/uad-ng.desktop" \
-            > "$HOME/.local/share/applications/uad-ng.desktop"
+            >"$HOME/.local/share/applications/uad-ng.desktop"
     fi
-    
+
     update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
     gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor/" 2>/dev/null || true
-    
-    echo "$LATEST_VERSION" > "$VERSION_FILE"
+
+    echo "$LATEST_VERSION" >"$VERSION_FILE"
     success "UAD-NG v${LATEST_VERSION} installed successfully."
 else
     rm -f "$UAD_TMP"

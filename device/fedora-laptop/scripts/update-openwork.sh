@@ -79,7 +79,7 @@ info "Latest version  : v${LATEST_VERSION}"
 create_wrapper() {
     info "Setting up wrapper script..."
     mkdir -p "$HOME/.local/bin"
-    cat << 'EOF' > "$HOME/.local/bin/openwork"
+    cat <<'EOF' >"$HOME/.local/bin/openwork"
 #!/bin/bash
 export APPDIR=~/.local/lib/openwork
 export PATH="${APPDIR}:${APPDIR}/usr/sbin:${PATH}"
@@ -88,12 +88,12 @@ export XDG_DATA_DIRS="${APPDIR}/usr/share/:${XDG_DATA_DIRS}:/usr/share/gnome/:/u
 exec ~/.local/lib/openwork/openwork --no-sandbox "$@"
 EOF
     chmod +x "$HOME/.local/bin/openwork"
-    
+
     info "Installing desktop entry and icon..."
     mkdir -p "$HOME/.local/share/icons/hicolor/512x512/apps/"
     cp "$INSTALL_DIR/.DirIcon" "$HOME/.local/share/icons/hicolor/512x512/apps/openwork.png" 2>/dev/null || true
-    
-    cat << EOF > "$HOME/.local/share/applications/openwork.desktop"
+
+    cat <<EOF >"$HOME/.local/share/applications/openwork.desktop"
 [Desktop Entry]
 Name=OpenWork
 Comment=AI IDE
@@ -138,16 +138,16 @@ if download_file "$LATEST_URL" "$APPIMAGE_TMP"; then
     cd /tmp
     rm -rf squashfs-root
     "$APPIMAGE_TMP" --appimage-extract >/dev/null 2>&1
-    
+
     if [ -d "squashfs-root" ]; then
         rm -rf "$INSTALL_DIR"
         mkdir -p "$HOME/.local/lib"
         mv squashfs-root "$INSTALL_DIR"
         rm -f "$APPIMAGE_TMP"
-        
+
         create_wrapper
-        
-        echo "$LATEST_VERSION" > "$VERSION_FILE"
+
+        echo "$LATEST_VERSION" >"$VERSION_FILE"
         success "OpenWork v${LATEST_VERSION} installed (extracted to ${INSTALL_DIR})."
     else
         rm -f "$APPIMAGE_TMP"

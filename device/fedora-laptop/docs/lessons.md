@@ -171,4 +171,4 @@ systemctl --failed --no-pager
 journalctl -b -u systemd-remount-fs.service --no-pager
 ```
 
-Do not try to repair this by changing `/` mount flags, remounting the immutable root, or masking core remount/OSTree units. Check Fedora's supported Silverblue/bootc guidance first; this warning does not explain the unrelated freeze without additional evidence. See [Troubleshooting §7](troubleshooting.md#7-systemd-remount-fs-failure-on-silverblue-composefs-root-2026-10-08).
+Do not try to repair this by changing `/` mount flags, remounting the immutable root, or masking core remount/OSTree units. Check Fedora's supported Silverblue/bootc guidance first; this warning does not explain the unrelated freeze without additional evidence.

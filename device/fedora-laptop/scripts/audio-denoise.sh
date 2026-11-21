@@ -1,7 +1,5 @@
 #!/bin/bash
-
-# audio-denoise.sh - Automate audio extraction and merging for noise reduction workflows.
-# Recommended for use with Adobe Podcast (https://podcast.adobe.com/enhance)
+set -euo pipefail
 
 function show_help() {
     echo "Usage:"
@@ -43,10 +41,9 @@ case $COMMAND in
             echo "Error: Audio file '$AUDIO_FILE' not found."
             exit 1
         fi
-        
+
         OUTPUT_VIDEO="${INPUT_FILE%.*}_denoised.mp4"
         echo "Merging $INPUT_FILE and $AUDIO_FILE into $OUTPUT_VIDEO..."
-        # Stream copy video, encode PCM/WAV audio to high-quality AAC for MP4 container compatibility
         ffmpeg -y -i "$INPUT_FILE" -i "$AUDIO_FILE" -c:v copy -c:a aac -b:a 256k -map 0:v:0 -map 1:a:0 "$OUTPUT_VIDEO"
         echo "Done! Final video: $OUTPUT_VIDEO"
         ;;

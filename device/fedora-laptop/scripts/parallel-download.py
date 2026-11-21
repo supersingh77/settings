@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-"""
-parallel-download.py — Fast parallel HTTP downloader using range requests.
-
-Uses multiple simultaneous connections with HTTP Range headers to maximise
-download throughput from servers that support byte-range requests (e.g.
-GitHub release assets via Azure CDN, direct CDN URLs, etc.).
-
-Falls back to a single-connection streaming download if the server does not
-advertise Accept-Ranges: bytes.
-
-Usage:
-    python3 parallel-download.py <url> <destination> [connections]
-
-Arguments:
-    url          Direct or redirect URL to download
-    destination  Output file path (created or overwritten)
-    connections  Number of parallel connections  (default: 16, max: 32)
-
-Example:
-    python3 parallel-download.py \\
-        https://github.com/org/repo/releases/download/v1.0/app.rpm \\
-        /tmp/app.rpm 16
-"""
-
 from __future__ import annotations
 
 import os
@@ -31,23 +7,32 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from typing import List, Tuple
-
 
 # ── ANSI colours ─────────────────────────────────────────────────────────────
 
-BOLD  = "\033[1m"
+BOLD = "\033[1m"
 GREEN = "\033[32m"
-YELL  = "\033[33m"
-CYAN  = "\033[36m"
-RED   = "\033[31m"
-DIM   = "\033[2m"
-RST   = "\033[0m"
+YELL = "\033[33m"
+CYAN = "\033[36m"
+RED = "\033[31m"
+DIM = "\033[2m"
+RST = "\033[0m"
 
-def _info(msg: str)    -> None: print(f"{CYAN}ℹ  {msg}{RST}", flush=True)
-def _ok(msg: str)      -> None: print(f"{GREEN}✔  {msg}{RST}", flush=True)
-def _warn(msg: str)    -> None: print(f"{YELL}⚠  {msg}{RST}", flush=True)
-def _err(msg: str)     -> None: print(f"{RED}✖  {msg}{RST}", file=sys.stderr, flush=True)
+
+def _info(msg: str) -> None:
+    print(f"{CYAN}ℹ  {msg}{RST}", flush=True)
+
+
+def _ok(msg: str) -> None:
+    print(f"{GREEN}✔  {msg}{RST}", flush=True)
+
+
+def _warn(msg: str) -> None:
+    print(f"{YELL}⚠  {msg}{RST}", flush=True)
+
+
+def _err(msg: str) -> None:
+    print(f"{RED}✖  {msg}{RST}", file=sys.stderr, flush=True)
 
 
 # ── Shared HTTP headers ───────────────────────────────────────────────────────
@@ -62,7 +47,8 @@ _BASE_HEADERS = {"User-Agent": _UA}
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _fmt_bytes(n: int | float) -> str:
+
+def _fmt_bytes(n: float) -> str:
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if abs(n) < 1024.0:
             return f"{n:.1f} {unit}"
@@ -76,12 +62,12 @@ def _fmt_speed(bps: float) -> str:
 
 def _print_bar(done: int, total: int, t0: float) -> None:
     elapsed = max(time.monotonic() - t0, 1e-6)
-    speed   = done / elapsed
-    pct     = (done / total * 100.0) if total else 0.0
-    eta_s   = int((total - done) / speed) if (speed > 1 and total > done) else 0
+    speed = done / elapsed
+    pct = (done / total * 100.0) if total else 0.0
+    eta_s = int((total - done) / speed) if (speed > 1 and total > done) else 0
 
-    filled  = int(30 * pct / 100)
-    bar     = f"{CYAN}{'█' * filled}{'░' * (30 - filled)}{RST}"
+    filled = int(30 * pct / 100)
+    bar = f"{CYAN}{'█' * filled}{'░' * (30 - filled)}{RST}"
 
     print(
         f"\r  {BOLD}{pct:5.1f}%{RST}  [{bar}]  "
@@ -95,7 +81,8 @@ def _print_bar(done: int, total: int, t0: float) -> None:
 
 # ── URL resolution ────────────────────────────────────────────────────────────
 
-def _resolve(url: str) -> Tuple[str, int, bool]:
+
+def _resolve(url: str) -> tuple[str, int, bool]:
     """
     Follow all redirects, probe range-request support, and return:
         (final_url, total_bytes, supports_ranges)
@@ -113,7 +100,7 @@ def _resolve(url: str) -> Tuple[str, int, bool]:
     try:
         with urllib.request.urlopen(probe_req, timeout=30) as resp:
             final_url = resp.url
-            status    = resp.status
+            status = resp.status
 
             # Content-Range: bytes 0-0/TOTAL  →  extract TOTAL
             cr = resp.headers.get("Content-Range", "")
@@ -136,12 +123,15 @@ def _resolve(url: str) -> Tuple[str, int, bool]:
 
     _info(f"Final URL  : {final_url[:80]}{'…' if len(final_url) > 80 else ''}")
     _info(f"File size  : {_fmt_bytes(total)}" if total else "File size  : unknown")
-    _info(f"Range reqs : {'yes ✔' if supports_ranges else 'no — will use single connection'}")
+    _info(
+        f"Range reqs : {'yes ✔' if supports_ranges else 'no — will use single connection'}"
+    )
 
     return final_url, total, supports_ranges
 
 
 # ── Single-connection fallback ────────────────────────────────────────────────
+
 
 def _download_single(url: str, dest: str) -> None:
     _warn("Falling back to single-connection download…")
@@ -149,11 +139,11 @@ def _download_single(url: str, dest: str) -> None:
 
     with urllib.request.urlopen(req, timeout=60) as resp:
         total = int(resp.headers.get("Content-Length") or 0)
-        done  = 0
-        t0    = time.monotonic()
+        done = 0
+        t0 = time.monotonic()
         with open(dest, "wb") as fh:
             while True:
-                chunk = resp.read(1 << 17)   # 128 KiB
+                chunk = resp.read(1 << 17)  # 128 KiB
                 if not chunk:
                     break
                 fh.write(chunk)
@@ -165,6 +155,7 @@ def _download_single(url: str, dest: str) -> None:
 
 
 # ── Parallel downloader ───────────────────────────────────────────────────────
+
 
 def _download_parallel(url: str, dest: str, n_conn: int) -> None:
     """
@@ -191,21 +182,24 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
         fh.write(b"\x00")
 
     # ── Shared state ──────────────────────────────────────────────────────────
-    lock        = threading.Lock()
-    downloaded  = [0]          # bytes written so far (updated per chunk)
-    errors: List[str] = []
+    lock = threading.Lock()
+    downloaded = [0]  # bytes written so far (updated per chunk)
+    errors: list[str] = []
 
     # ── Worker ────────────────────────────────────────────────────────────────
     def worker(tid: int, byte_start: int, byte_end: int) -> None:
         """Download bytes [byte_start, byte_end] and write them to *dest*."""
         max_retries = 5
-        backoff     = 1.0
+        backoff = 1.0
 
         for attempt in range(1, max_retries + 1):
             try:
                 req = urllib.request.Request(
                     final_url,
-                    headers={**_BASE_HEADERS, "Range": f"bytes={byte_start}-{byte_end}"},
+                    headers={
+                        **_BASE_HEADERS,
+                        "Range": f"bytes={byte_start}-{byte_end}",
+                    },
                 )
                 with urllib.request.urlopen(req, timeout=90) as resp:
                     # Stream in 256 KiB increments; update progress after each write.
@@ -213,16 +207,16 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
                     with open(dest, "r+b") as fh:
                         fh.seek(write_pos)
                         while True:
-                            chunk = resp.read(1 << 18)   # 256 KiB
+                            chunk = resp.read(1 << 18)  # 256 KiB
                             if not chunk:
                                 break
                             fh.write(chunk)
                             write_pos += len(chunk)
                             with lock:
                                 downloaded[0] += len(chunk)
-                return   # success
+                return  # success
 
-            except Exception as exc:
+            except (urllib.error.URLError, OSError, ValueError) as exc:
                 if attempt == max_retries:
                     with lock:
                         errors.append(f"[thread {tid}] {type(exc).__name__}: {exc}")
@@ -232,11 +226,11 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
 
     # ── Dispatch threads ──────────────────────────────────────────────────────
     chunk_size = total // n_conn
-    threads: List[threading.Thread] = []
+    threads: list[threading.Thread] = []
 
     for i in range(n_conn):
         start = i * chunk_size
-        end   = (total - 1) if (i == n_conn - 1) else ((i + 1) * chunk_size - 1)
+        end = (total - 1) if (i == n_conn - 1) else ((i + 1) * chunk_size - 1)
         t = threading.Thread(target=worker, args=(i, start, end), daemon=True)
         threads.append(t)
 
@@ -258,7 +252,7 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
     with lock:
         done = downloaded[0]
     _print_bar(done, total, t0)
-    print()   # newline after progress bar
+    print()  # newline after progress bar
 
     # ── Error check ───────────────────────────────────────────────────────────
     if errors:
@@ -270,7 +264,7 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
             pass
         sys.exit(1)
 
-    elapsed   = time.monotonic() - t0
+    elapsed = time.monotonic() - t0
     avg_speed = total / max(elapsed, 1e-6)
     _ok(
         f"Downloaded {_fmt_bytes(total)} in {elapsed:.1f}s "
@@ -280,14 +274,15 @@ def _download_parallel(url: str, dest: str, n_conn: int) -> None:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+
 def main() -> None:
     if len(sys.argv) < 3:
         print(__doc__)
         sys.exit(1)
 
-    url         = sys.argv[1]
-    dest        = sys.argv[2]
-    n_conn      = int(sys.argv[3]) if len(sys.argv) > 3 else 16
+    url = sys.argv[1]
+    dest = sys.argv[2]
+    n_conn = int(sys.argv[3]) if len(sys.argv) > 3 else 16
 
     _info(f"URL         : {url}")
     _info(f"Destination : {dest}")

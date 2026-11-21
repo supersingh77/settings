@@ -37,8 +37,8 @@ if toolbox list --containers 2>/dev/null | grep -q "$CONTAINER"; then
     warn "Container '${CONTAINER}' already exists, skipping creation."
 else
     info "Creating ${CONTAINER}..."
-    toolbox create --assumeyes --container "$CONTAINER" --image "registry.fedoraproject.org/fedora-toolbox:${FEDORA_VERSION}" \
-        || error "Failed to create ${CONTAINER} container."
+    toolbox create --assumeyes --container "$CONTAINER" --image "registry.fedoraproject.org/fedora-toolbox:${FEDORA_VERSION}" ||
+        error "Failed to create ${CONTAINER} container."
     success "${CONTAINER} container created."
 fi
 
@@ -60,8 +60,8 @@ toolbox run --container "$CONTAINER" sudo dnf install -y \
     7zip-standalone \
     ffmpeg-free \
     android-tools \
-    gh \
-    || error "Failed to install packages in ${CONTAINER}."
+    gh ||
+    error "Failed to install packages in ${CONTAINER}."
 
 success "Packages installed in ${CONTAINER}."
 
@@ -90,7 +90,7 @@ ALIAS_MARKER="# settings repo aliases"
 if grep -q "$ALIAS_MARKER" "$BASHRC" 2>/dev/null; then
     warn "Aliases already present in ${BASHRC}, skipping."
 else
-    cat >> "$BASHRC" << 'ALIASES'
+    cat >>"$BASHRC" <<'ALIASES'
 
 # settings repo aliases (commands live in ~/.local/bin via install-links.sh)
 alias docs='cd ~/Desktop/settings/device/fedora-laptop'
@@ -107,7 +107,7 @@ fi
 # Also add to .bash_profile if it sources .bashrc (common on Fedora)
 BASH_PROFILE="$HOME/.bash_profile"
 if [ -f "$BASH_PROFILE" ] && ! grep -q "\.bashrc" "$BASH_PROFILE" 2>/dev/null; then
-    echo -e '\n[ -f ~/.bashrc ] && source ~/.bashrc' >> "$BASH_PROFILE"
+    echo -e '\n[ -f ~/.bashrc ] && source ~/.bashrc' >>"$BASH_PROFILE"
     info "Added .bashrc source to .bash_profile."
 fi
 
