@@ -1,33 +1,12 @@
-# Phone — Hardware
+# Redmi Note 11 — Shared Model
 
-> Captured via adb on 2026-09-01.
+| Property | Model baseline |
+|---|---|
+| Model family | Xiaomi Redmi Note 11, model `2201117TI` |
+| Device/product | `spes` / `spes_in` |
+| SoC | Qualcomm SM6225 (Snapdragon 680) |
+| Display | 6.43-inch AMOLED, 1080 × 2400 |
+| Battery | 5000 mAh typical |
+| Storage interface | USB-C |
 
-## Device
-
-| Field | Value |
-|-------|-------|
-| Brand | Redmi |
-| Model | 2201117TI |
-| Model number | spes |
-| Codename | spes_in |
-| Serial | 6cbccfac |
-
-## Software
-
-| Field | Value |
-|-------|-------|
-| Android version | 13 |
-| API level (SDK) | 33 |
-| MIUI version | V816 |
-| Build | TKQ1.221114.001 test-keys |
-| Security patch | 2025-02-01 |
-
-## Hardware
-
-| Field | Value |
-|-------|-------|
-| CPU | arm64-v8a |
-| RAM | 5789436 kB |
-| Screen | 1080x2400 |
-| Density | 440 |
-| Battery | Li-poly |
+Physical RAM differs by unit and is recorded in [`work/`](work/) and [`personal/`](personal/). Software/build state is also per-device; do not assume both phones run the same ROM.

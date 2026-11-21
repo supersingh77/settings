@@ -1,47 +1,22 @@
 # Phone — Redmi Note 11
 
-> Status: Tracked (hardware + app inventory via adb)
+> Two physical units: work (4 GB) and personal (6 GB). Shared model facts live here; differences are under [`work/`](work/) and [`personal/`](personal/).
 
 ## Overview
 
-- **Device:** Redmi Note 11 (`spes`/`spes_in`, model `2201117TI`)
-- **OS:** Android 13, MIUI V816
-- **Full specs:** [`hardware.md`](hardware.md)
+- **Model:** Redmi Note 11 (`2201117TI`, device `spes`, product `spes_in`)
+- **Shared hardware:** Qualcomm SM6225/Snapdragon 680; 6.43-inch AMOLED, 1080×2400; 5000 mAh battery; USB-C charging
+- **Work:** 4 GB RAM; stock India MIUI `V816.0.6.0.TGCINXM`; see [`work/`](work/)
+- **Personal:** 6 GB RAM; same model and current MIUI build; see [`personal/`](personal/)
+- **Per-device snapshots:** [`work/`](work/) and [`personal/`](personal/)
+- **Shared model facts:** [`hardware.md`](hardware.md)
+- **Historical app snapshot:** [`archive/2026-09-01/`](archive/2026-09-01/) — role was not recorded; do not treat as current.
 - **No root** — root would break banking apps.
-- **USB debugging normally OFF** (banking-app security); enabled only for the monthly capture/debloat step.
+- **USB debugging normally OFF** (banking-app security); enable only when capturing or managing a phone.
 
-## App inventory
+## Capture
 
-Captured via adb on 2026-09-01. See [`apps/`](apps/):
-
-| File | Contents | Count |
-|------|----------|-------|
-| [`apps/all-packages.txt`](apps/all-packages.txt) | Every installed package (system + user) | 289 |
-| [`apps/user-installed.txt`](apps/user-installed.txt) | User-installed (3rd-party) apps | 61 |
-| [`apps/debloated.txt`](apps/debloated.txt) | Packages removed via `pm uninstall --user 0` | 108 |
-| [`apps/uad-selection.txt`](apps/uad-selection.txt) | UAD-NG selection export (planned debloat) | 168 |
-
-### Understanding the two debloat lists
-
-- **`debloated.txt`** = what is **actually removed** (uninstalled for user 0). This is the real state.
-- **`uad-selection.txt`** = what you've **selected** in UAD-NG. As of the 2026-09-01 capture, this list has **zero overlap** with `debloated.txt` — the selection is a *planned* list that hasn't been applied (or was applied via a different method). Reconcile these before your next debloat pass.
-
-## Monthly refresh routine
-
-USB debugging is off most of the time, so this is a deliberate ~once-a-month step:
-
-1. **Enable USB debugging** on the phone (Developer options → USB debugging), connect via USB.
-2. Run the capture:
-   ```bash
-   bash device/phone/scripts/capture-phone.sh
-   ```
-   This refreshes `hardware.md`, `all-packages.txt`, `user-installed.txt`, and `debloated.txt`.
-3. **Re-export the UAD selection** from UAD-NG (File → Export selection) and copy it to `device/phone/apps/uad-selection.txt`.
-4. Commit and push:
-   ```bash
-   git add device/phone && git commit -m "phone: refresh capture" && git push
-   ```
-5. **Turn USB debugging back off** when done.
+Run `bash device/phone/scripts/capture-phone.sh <work|personal> <adb-serial>`; the script targets that serial, validates Redmi Note 11 `spes`, and never saves the serial. Review the generated role folder before committing. Package lists cover Android user 0; `not-installed-user-0.txt` is a package-state difference, not an authoritative list of apps intentionally removed by the owner.
 
 ## Debloating (UAD-NG)
 
@@ -49,6 +24,6 @@ USB debugging is off most of the time, so this is a deliberate ~once-a-month ste
 - Method: `pm uninstall --user 0` — no root needed, safe for banking apps.
 - After debloating, re-run the capture to record the new state.
 
-## Known quirks
+## ROM safety
 
-- (Add as you find them)
+The work phone remains on stock MIUI with a locked bootloader. Do not flash a ROM unless its maintainer explicitly supports this variant and provides verified device-specific installation and recovery instructions.

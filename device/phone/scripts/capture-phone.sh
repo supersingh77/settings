@@ -1,101 +1,69 @@
 #!/bin/bash
-# =============================================================================
-# capture-phone.sh — Capture phone device + app state via adb
-#
-# Re-captures the phone's hardware details and app lists into device/phone/.
-# Run this monthly (or whenever you enable USB debugging) to keep the
-# tracking current.
-#
-# Prerequisites:
-#   - Phone connected via USB with USB debugging enabled
-#   - adb available (on this machine it lives inside fedora-toolbox-44)
-#
-# Usage:
-#   bash device/phone/scripts/capture-phone.sh
-# =============================================================================
-
 set -euo pipefail
 
-# Self-locate so this works from anywhere (repo may move)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PHONE_DIR="$(dirname "$SCRIPT_DIR")"
-APPS_DIR="$PHONE_DIR/apps"
 
-# adb wrapper — prefer host adb, fall back to toolbox
-if command -v adb &>/dev/null; then
-    ADB="adb"
-elif command -v toolbox &>/dev/null && toolbox list 2>/dev/null | grep -q fedora-toolbox-44; then
-    ADB="toolbox run -c fedora-toolbox-44 adb"
+usage() {
+    printf '%s\n' "Usage: $0 <work|personal> <adb-serial>" >&2
+}
+
+if [ "$#" -ne 2 ] || [[ "$1" != "work" && "$1" != "personal" ]]; then
+    usage
+    exit 2
+fi
+
+ROLE="$1"
+SERIAL="$2"
+DEVICE_DIR="$PHONE_DIR/$ROLE"
+mkdir -p "$DEVICE_DIR"
+
+if command -v adb >/dev/null 2>&1; then
+    ADB=(adb)
+elif command -v toolbox >/dev/null 2>&1; then
+    ADB=(toolbox run -c "fedora-toolbox-$(rpm -E %fedora)" adb)
 else
-    echo "❌ adb not found (checked host and fedora-toolbox-44)." >&2
+    printf '%s\n' "adb/toolbox not found" >&2
     exit 1
 fi
 
-info()  { echo -e "\e[36mℹ️  $*\e[0m"; }
-success(){ echo -e "\e[32m✅ $*\e[0m"; }
-error() { echo -e "\e[31m❌ $*\e[0m"; exit 1; }
+if ! "${ADB[@]}" devices | awk -v serial="$SERIAL" '$1 == serial && $2 == "device" { found=1 } END { exit !found }'; then
+    printf 'Device %s is not connected and authorized.\n' "$SERIAL" >&2
+    exit 1
+fi
 
-# ── Check device ──────────────────────────────────────────────────────────────
-info "Checking for connected device..."
-$ADB devices | grep -q "device$" || error "No device connected. Enable USB debugging and connect the phone."
+getprop() {
+    "${ADB[@]}" -s "$SERIAL" shell getprop "$1" | tr -d '\r'
+}
 
-# ── Capture hardware details ──────────────────────────────────────────────────
-info "Capturing hardware details..."
+DEVICE="$(getprop ro.product.device)"
+MODEL="$(getprop ro.product.model)"
+if [[ "$DEVICE" != "spes" || "$MODEL" != "2201117TI" ]]; then
+    printf 'Unexpected device for Redmi Note 11 capture: model=%s device=%s\n' "$MODEL" "$DEVICE" >&2
+    exit 1
+fi
+
+RAM_KB=$("${ADB[@]}" -s "$SERIAL" shell cat /proc/meminfo | awk '/^MemTotal:/ {print $2}')
+RAM_GB=$(awk -v kb="$RAM_KB" 'BEGIN {printf "%.1f", kb / 1048576}')
+
 {
-    echo "# Phone — Hardware"
-    echo ""
-    echo "> Captured via adb on $(date +%Y-%m-%d)."
-    echo ""
-    echo "## Device"
-    echo ""
-    echo "| Field | Value |"
-    echo "|-------|-------|"
-    echo "| Brand | $($ADB shell getprop ro.product.brand) |"
-    echo "| Model | $($ADB shell getprop ro.product.model) |"
-    echo "| Model number | $($ADB shell getprop ro.product.device) |"
-    echo "| Codename | $($ADB shell getprop ro.product.name) |"
-    echo "| Serial | $($ADB shell getprop ro.serialno) |"
-    echo ""
-    echo "## Software"
-    echo ""
-    echo "| Field | Value |"
-    echo "|-------|-------|"
-    echo "| Android version | $($ADB shell getprop ro.build.version.release) |"
-    echo "| API level (SDK) | $($ADB shell getprop ro.build.version.sdk) |"
-    echo "| MIUI version | $($ADB shell getprop ro.miui.ui.version.name) |"
-    echo "| Build | $($ADB shell getprop ro.build.display.id) |"
-    echo "| Security patch | $($ADB shell getprop ro.build.version.security_patch) |"
-    echo ""
-    echo "## Hardware"
-    echo ""
-    echo "| Field | Value |"
-    echo "|-------|-------|"
-    echo "| CPU | $($ADB shell getprop ro.product.cpu.abi) |"
-    echo "| RAM | $($ADB shell cat /proc/meminfo | grep MemTotal | awk '{print $2 " kB"}') |"
-    echo "| Screen | $($ADB shell wm size | awk '{print $3}') |"
-    echo "| Density | $($ADB shell wm density | awk '{print $3}') |"
-    echo "| Battery | $($ADB shell dumpsys battery | grep technology | awk '{print $2}') |"
-} > "$PHONE_DIR/hardware.md"
-success "Hardware saved to hardware.md"
+    printf '# Redmi Note 11 — %s\n\n' "$ROLE"
+    printf '| Property | Value |\n|---|---|\n'
+    printf '| Model | %s |\n' "$MODEL"
+    printf '| Device | %s (%s) |\n' "$DEVICE" "$(getprop ro.product.name)"
+    printf '| RAM visible to Android | %s GiB |\n' "$RAM_GB"
+    printf '| Android | %s (API %s) |\n' "$(getprop ro.build.version.release)" "$(getprop ro.build.version.sdk)"
+    printf '| ROM/build | %s |\n' "$(getprop ro.build.display.id)"
+    printf '| Build fingerprint | %s |\n' "$(getprop ro.build.fingerprint)"
+    printf '| Security patch | %s |\n' "$(getprop ro.build.version.security_patch)"
+    printf '| MIUI version | %s |\n' "$(getprop ro.miui.ui.version.name)"
+    printf '| Bootloader | %s |\n' "$(getprop ro.boot.vbmeta.device_state)"
+    printf '| Verified boot | %s |\n' "$(getprop ro.boot.verifiedbootstate)"
+} > "$DEVICE_DIR/README.md"
 
-# ── Capture app lists ─────────────────────────────────────────────────────────
-info "Capturing app lists..."
-$ADB shell pm list packages 2>/dev/null | sed 's/^package://' | sort > "$APPS_DIR/all-packages.txt"
-$ADB shell pm list packages -3 2>/dev/null | sed 's/^package://' | sort > "$APPS_DIR/user-installed.txt"
+"${ADB[@]}" -s "$SERIAL" shell pm list packages --user 0 | sed 's/^package://' | sort > "$DEVICE_DIR/installed-user-0.txt"
+"${ADB[@]}" -s "$SERIAL" shell pm list packages -3 --user 0 | sed 's/^package://' | sort > "$DEVICE_DIR/third-party-user-0.txt"
+"${ADB[@]}" -s "$SERIAL" shell pm list packages -u --user 0 | sed 's/^package://' | sort > "$DEVICE_DIR/all-user-0-including-uninstalled.txt"
+comm -13 "$DEVICE_DIR/installed-user-0.txt" "$DEVICE_DIR/all-user-0-including-uninstalled.txt" > "$DEVICE_DIR/not-installed-user-0.txt"
 
-# Debloated = packages uninstalled for user 0 (present in -u but not in normal list)
-$ADB shell pm list packages -u 2>/dev/null | sed 's/^package://' | sort > /tmp/phone-all-with-uninstalled.txt
-comm -13 "$APPS_DIR/all-packages.txt" /tmp/phone-all-with-uninstalled.txt > "$APPS_DIR/debloated.txt"
-rm -f /tmp/phone-all-with-uninstalled.txt
-
-success "App lists saved:"
-echo "  all-packages.txt   ($(wc -l < "$APPS_DIR/all-packages.txt") packages)"
-echo "  user-installed.txt ($(wc -l < "$APPS_DIR/user-installed.txt") user apps)"
-echo "  debloated.txt      ($(wc -l < "$APPS_DIR/debloated.txt") debloated)"
-
-echo ""
-info "Note: uad-selection.txt is NOT auto-captured — re-export it from UAD-NG"
-info "      (File → Export selection) and copy it into device/phone/apps/."
-echo ""
-success "Done. Review the changes, then commit:"
-echo "  git add device/phone && git commit -m 'phone: refresh capture' && git push"
+printf 'Captured %s (%s, %s GiB RAM) to %s\n' "$ROLE" "$MODEL" "$RAM_GB" "$DEVICE_DIR"
