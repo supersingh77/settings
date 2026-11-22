@@ -16,5 +16,5 @@
 ## Caveats
 
 - The firmware reports installed memory separately from memory usable by Linux. Review live `MemTotal` and zram values with installed DIMM details before purchasing memory.
-- Battery capacity is read from the kernel power-supply interface. This does not establish that the battery can safely sustain the laptop; consult [`docs/troubleshooting.md`](docs/troubleshooting.md) for the known power behavior.
+- Battery capacity is read from the kernel power-supply interface. This does not establish that the battery can safely sustain the laptop; consult [`troubleshooting.md`](troubleshooting.md) for the known power behavior.
 - The data drive’s persistent mount is configured by UUID in `/etc/fstab`. Capacity and mount state change over time and are intentionally not included in this stable hardware inventory.
