@@ -1,0 +1,110 @@
+{
+  "antigravity": {
+    "source": {
+      "kind": "antigravity",
+      "api": "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/releases",
+      "download": "https://storage.googleapis.com/antigravity-public/antigravity-hub/{version}-{execution}/linux-x64/Antigravity.tar.gz"
+    },
+    "paths": {
+      "install": "{home}/.local/lib/antigravity-hub",
+      "version": "{home}/.local/lib/antigravity-hub/version",
+      "launcher": "{home}/.local/bin/antigravity2",
+      "desktop": "{home}/.local/share/applications/antigravity2.desktop",
+      "icon": "{home}/.local/share/icons/hicolor/512x512/apps/antigravity2.png"
+    },
+    "install": {
+      "kind": "tarball",
+      "replace": "Antigravity-x64",
+      "verify": "Antigravity-x64/antigravity"
+    },
+    "launcher": {
+      "env": [],
+      "command": "{install}/Antigravity-x64/antigravity --no-sandbox"
+    },
+    "icon": {
+      "kind": "asar",
+      "asar": "{install}/Antigravity-x64/resources/app.asar",
+      "entry": "icon.png"
+    },
+    "desktop": [
+      ["Name", "Antigravity 2.0"],
+      ["Comment", "Google Antigravity AI Agent Platform"],
+      ["Exec", "{home}/.local/bin/antigravity2 %U"],
+      ["Icon", "antigravity2"],
+      ["Type", "Application"],
+      ["Categories", "Development;IDE;X-AI;"],
+      ["StartupWMClass", "Antigravity"],
+      ["Terminal", "false"],
+      ["StartupNotify", "true"]
+    ]
+  },
+  "openwork": {
+    "source": {
+      "kind": "github",
+      "repo": "different-ai/openwork",
+      "asset": {"prefix": "openwork-linux-x86_64", "suffix": ".AppImage"}
+    },
+    "paths": {
+      "install": "{home}/.local/lib/openwork",
+      "version": "{home}/.local/bin/openwork.version",
+      "launcher": "{home}/.local/bin/openwork",
+      "desktop": "{home}/.local/share/applications/openwork.desktop",
+      "icon": "{home}/.local/share/icons/hicolor/512x512/apps/openwork.png"
+    },
+    "install": {"kind": "appimage"},
+    "launcher": {
+      "env": [
+        ["APPDIR", "{install}"],
+        ["PATH", "\"${APPDIR}:${APPDIR}/usr/sbin:${PATH}\""],
+        ["LD_LIBRARY_PATH", "\"${APPDIR}/usr/lib:${LD_LIBRARY_PATH}\""],
+        [
+          "XDG_DATA_DIRS",
+          "\"${APPDIR}/usr/share/:${XDG_DATA_DIRS}:/usr/share/gnome/:/usr/local/share/:/usr/share/\""
+        ]
+      ],
+      "command": "{install}/openwork --no-sandbox"
+    },
+    "icon": {"kind": "file", "source": "{install}/.DirIcon"},
+    "desktop": [
+      ["Name", "OpenWork"],
+      ["Comment", "AI IDE"],
+      ["Exec", "{home}/.local/bin/openwork %U"],
+      ["Icon", "openwork"],
+      ["Terminal", "false"],
+      ["Type", "Application"],
+      ["Categories", "Development;IDE;"],
+      ["MimeType", "x-scheme-handler/openwork;"]
+    ]
+  },
+  "uad-ng": {
+    "source": {
+      "kind": "github",
+      "repo": "Universal-Debloater-Alliance/universal-android-debloater-next-generation",
+      "asset": {"name": "uad-ng-linux"}
+    },
+    "paths": {
+      "install": "{home}/.local/bin/uad-ng",
+      "version": "{home}/.local/bin/uad-ng.version",
+      "desktop": "{home}/.local/share/applications/uad-ng.desktop",
+      "icon": "{home}/.local/share/icons/hicolor/128x128/apps/uad-ng.png"
+    },
+    "install": {"kind": "binary"},
+    "icon": {
+      "kind": "url",
+      "url": "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/main/resources/assets/logo-light.png"
+    },
+    "desktop": [
+      ["Version", "1.0"],
+      ["Type", "Application"],
+      ["Name", "UAD-NG"],
+      ["Comment", "Universal Android Debloater Next Generation"],
+      ["Exec", "toolbox run -c {toolbox} {install}"],
+      ["Icon", "uad-ng"],
+      ["Terminal", "false"],
+      ["Categories", "System;Utility;"],
+      ["Keywords", "android;debloat;adb;phone;bloatware;"],
+      ["StartupNotify", "true"],
+      ["StartupWMClass", "uad-ng"]
+    ]
+  }
+}

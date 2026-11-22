@@ -1,23 +1,11 @@
-# OpenWork internal
 .opencode/
+.opencode-router/
 .venv/
 __pycache__/
 *.py[cod]
-
-# Git backup (temporary)
-.git-backup/
-
-# OS junk
 Thumbs.db
 Desktop.ini
-
-# Logs
 *.log
-
-# Game config backups
-*Backup_Original/
-
-# Binary / document files
 *.xlsx
 *.xls
 *.ods

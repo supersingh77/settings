@@ -1,38 +1,29 @@
-# Fedora Silverblue Laptop — System Setup
+# Fedora Silverblue laptop
 
-> Active Fedora laptop. `device/laptop*` covers a separate Windows gaming laptop.
+The `laptop` command captures live hardware and software state into the tracked
+[`hardware.md`](hardware.md) and [`software.md`](software.md) snapshots. It also
+reconciles declared software, runs maintenance tasks, and provides device
+utilities. Run commands from the repository root with `make` or from this
+directory with `PYTHONPATH=. python3 -m laptop`.
 
-## Quick Reference
+## Capture and restore
 
-The tracked [`hardware.md`](hardware.md) and [`software.md`](software.md) files are the canonical inventories. `## Detected *` sections are machine-generated; edit them only by running the inventory script. Human caveats live in the sections below and are never overwritten.
+On the Fedora laptop, run `make drift` to check the snapshots and `make capture`
+to update them. Review the resulting diff before committing. `make restore
+ARGS=--dry-run` previews software changes needed to match the committed
+snapshot; run `make capture` first so the snapshot reflects the intended state.
+Restore does not revert hardware or arbitrary `/etc` settings.
 
-## Documentation Map
+## Checks and setup
 
-- **[Hardware](hardware.md)** — canonical hardware inventory and human caveats
-- **[Software](software.md)** — canonical installed-software inventory and human caveats
-- **[Inventory script](scripts/update-inventory.py)** — `python3 device/fedora-laptop/scripts/update-inventory.py` prints a diff and exits nonzero on drift; `--apply` writes the generated sections directly to the Markdown files
-- **[Setup](#-setup)** — fresh setup or rebuild only
-- **[Troubleshooting](troubleshooting.md)** — symptoms and recovery steps
-- **[Lessons learned](lessons.md)** — Silverblue-specific deployment and incident lessons
+On Fedora, run `make setup-dev` once and then `make audit`. The audit checks
+code, docs, tests, and live device state. Tests use fixtures and do not change
+the host. The inventory is specific to this laptop and must not be used as a
+Windows check.
 
-## Setup
+## Procedures
 
-Daily checks: `make linux` from the repository root. The audit fails when live system readings differ from committed Markdown. To regenerate inventory sections from the live machine:
-
-```
-python3 device/fedora-laptop/scripts/update-inventory.py --apply
-git diff device/fedora-laptop/hardware.md device/fedora-laptop/software.md
-git add -p   # stage wanted changes, revert unwanted ones
-```
-
-To rebuild, preview with `make setup-host ARGS=--check` and `make setup-user ARGS=--check`. The host setup can remove Firefox and stage a deployment; inspect it before running. Reboot if a deployment is staged before running user setup.
-
----
-
-## Toolbox boundary
-
-`fedora-toolbox-44` is the intentional CLI/development environment for `adb`/`fastboot`, FFmpeg, 7-Zip, and GitHub CLI. GUI apps remain Flatpaks; Toolbox keeps command-line packages out of the immutable host and avoids host deployment churn. The current phone works with Toolbox ADB; USB rules are only needed if a device is not detected.
-
-See [`../phone/README.md`](../phone/README.md) for phone-specific steps and [`troubleshooting.md`](troubleshooting.md) for recovery guidance.
-
----
+- [Workflows](docs/workflows.md) — phone connection and audio denoising
+- [Troubleshooting](troubleshooting.md) — recovery guidance
+- [Lessons learned](lessons.md) — durable Silverblue-specific lessons
+- [Phone](../phone/README.md) — shared phone procedures

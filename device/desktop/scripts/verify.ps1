@@ -24,6 +24,12 @@ function Get-RepoProse([string]$Root) {
     ($files | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 }
 
+function Get-PythonSource([string]$Root) {
+    $files = Get-ChildItem -Path $Root -Recurse -File -Include '*.py' |
+        Where-Object { $_.FullName -notmatch '\\\.git\\' }
+    ($files | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
+}
+
 function Get-ScriptFacts([System.IO.FileInfo]$File) {
     $tokens = $null
     $errors = $null
@@ -70,6 +76,7 @@ $results = [System.Collections.Generic.List[object]]::new()
 $scripts = @(Get-ScriptFiles $RepoRoot)
 $json = @(Get-DeclaredJson $RepoRoot)
 $prose = Get-RepoProse $RepoRoot
+$pythonSource = Get-PythonSource $RepoRoot
 
 foreach ($file in $scripts) {
     $relative = $file.FullName.Substring($RepoRoot.Length).TrimStart('\')
@@ -100,7 +107,11 @@ foreach ($file in $json) {
     $relative = $file.FullName.Substring($RepoRoot.Length).TrimStart('\')
     $jsonProblem = Test-JsonFile $file
     if ($jsonProblem) { $results.Add((New-Result 'json-valid' $relative $jsonProblem 'FAIL')) }
-    if ($prose -notmatch [regex]::Escape($file.Name)) {
+    $doubleQuotedLoader = 'load("' + $file.BaseName + '")'
+    $singleQuotedLoader = "load('$($file.BaseName)')"
+    if ($prose -notmatch [regex]::Escape($file.Name) -and
+        -not $pythonSource.Contains($doubleQuotedLoader) -and
+        -not $pythonSource.Contains($singleQuotedLoader)) {
         $results.Add((New-Result 'declared-referenced' $relative 'no script or document names this file' 'FAIL'))
     }
 }

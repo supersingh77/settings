@@ -1,21 +1,34 @@
-.PHONY: linux setup-dev audit test setup-host setup-user
+LAPTOP = PYTHONPATH=device/fedora-laptop python3 -m laptop
+RUFF_VERSION = 0.17.4
 
-linux:
-	$(MAKE) setup-dev
-	$(MAKE) audit
+.PHONY: linux setup-dev audit test capture drift restore shell phone
 
-setup-dev:
+linux: setup-dev audit
+
+setup-dev: .venv/bin/ruff
+
+.venv/bin/ruff:
 	python3 -m venv .venv
-	.venv/bin/pip install ruff==0.17.4
+	.venv/bin/pip install ruff==$(RUFF_VERSION)
 
-audit:
+audit: .venv/bin/ruff
 	.venv/bin/python scripts/audit.py
 
 test:
-	.venv/bin/python -m unittest discover -s device/fedora-laptop/tests -v
+	.venv/bin/python -m unittest discover -s tests -t .
+	cd device/fedora-laptop && ../../.venv/bin/python -m unittest discover -s tests -t .
 
-setup-host:
-	bash device/fedora-laptop/scripts/setup-host.sh $(ARGS)
+capture:
+	$(LAPTOP) capture
 
-setup-user:
-	bash device/fedora-laptop/scripts/setup-user.sh $(ARGS)
+drift:
+	$(LAPTOP) capture --check
+
+restore:
+	$(LAPTOP) restore $(ARGS)
+
+shell:
+	$(LAPTOP) shell $(ARGS)
+
+phone:
+	$(LAPTOP) phone $(ARGS)

@@ -4,3 +4,9 @@
 *.py text eol=lf
 *.desktop text eol=lf
 *.rules text eol=lf
+
+Makefile text eol=lf
+scripts/** text eol=lf
+tests/** text eol=lf
+device/fedora-laptop/** text eol=lf
+device/phone/** text eol=lf

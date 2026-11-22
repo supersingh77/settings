@@ -1,8 +1,6 @@
 SETTINGS_ROOT="${SETTINGS_ROOT:-$(git -C "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../../.." rev-parse --show-toplevel 2>/dev/null)}"
+laptop() { PYTHONPATH="$SETTINGS_ROOT/device/fedora-laptop" python3 -m laptop "$@"; }
 alias docs="cd '$SETTINGS_ROOT/device/fedora-laptop'"
-alias update='update-system'
-alias update-openwork='update-openwork'
-alias update-uad='update-uad'
-alias update-antigravity='update-antigravity'
-alias cleanup='cleanup-system'
-alias uad='launch-uad'
+alias update='laptop update'
+alias cleanup='laptop cleanup'
+alias uad='laptop uad'

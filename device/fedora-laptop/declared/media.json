@@ -1,0 +1,5 @@
+{
+  "video_extensions": [".mp4", ".mkv", ".mov", ".avi", ".webm", ".ts"],
+  "default_join_output": "joined.mp4",
+  "audio_bitrate": "256k"
+}
