@@ -55,7 +55,7 @@ None.
 
 | Drive | Label | Type | Capacity | Free |
 |---|---|---|---|---|
-| **C:** | _ | Fixed | 126.1 GB | 59.2 GB free |
+| **C:** | _ | Fixed | 126.1 GB | 58.5 GB free |
 | **V:** | Vacuum Drive | Fixed | 350.0 GB | 133.0 GB free |
 | **Z:** | Mass Storage | Fixed | 931.5 GB | 477.8 GB free |
 

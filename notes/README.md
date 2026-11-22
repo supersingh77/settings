@@ -6,7 +6,7 @@ Long-term reference guides that outlive a single task. One topic per file, dated
 
 | Note | Covers |
 |------|--------|
-| [obs-recording-setup.md](obs-recording-setup.md) | OBS as configured 16 Nov 2026: AMF, CQP 23, 1080p60, `Z:\Recordings`; the record-vs-stream split, audio gotchas, streaming bitrates per platform |
+| [obs-recording-setup.md](obs-recording-setup.md) | Desktop OBS recording settings, separate audio tracks, and extraction from MKV |
 | [ffmpeg-video-workflow.md](ffmpeg-video-workflow.md) | Lossless trim/concat of recordings; when to re-encode, when to remux |
 | [windows-shell-repair.md](windows-shell-repair.md) | ReviOS 26H2 shell failure: default-verb launches and the app picker fail while explicit "Open with ▸" works. What is broken, what not to do, three-step repair path. Unresolved |
 

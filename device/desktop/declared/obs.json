@@ -1,7 +1,7 @@
 {
   "_note": "Desired OBS state. Settings only - no stream key, no tokens. Secrets stay out of this repo.",
-  "_applied": "2026-11-16, via obs-websocket + direct scene-collection edits; re-apply by hand or with a websocket script",
-  "_why": "Recording for YouTube is quality-bound; streaming is bandwidth-bound. They were collapsed into one 6000 kbps software-encoded 720p30 recording before this.",
+  "_applied": "2026-11-23, verified in OBS 33.0.3; output mode Advanced; current device settings are not imported from this file",
+  "_why": "Local recording uses hardware AV1 constant-quality encoding; audio sources are isolated on two MKV tracks.",
 
   "video": {
     "baseWidth": 1920,
@@ -16,15 +16,20 @@
   },
 
   "output": {
-    "mode": "Simple",
-    "streamEncoder": "amd",
-    "recEncoder": "amd",
-    "recQuality": "HighQuality",
-    "videoBitrateKbps": 6000,
-    "audioBitrateKbps": 160,
-    "recordFormat": "hybrid_mp4",
+    "mode": "Advanced",
+    "recordingType": "Standard",
+    "streamEncoder": "x264",
+    "recEncoder": "AMD HW AV1",
+    "rateControl": "CQP",
+    "cqLevel": 23,
+    "recPreset": "High Quality",
+    "streamBitrateKbps": 6000,
+    "audioBitrateKbps": 192,
+    "recordTracks": [1, 2],
+    "trackLayout": { "1": "Desktop Audio", "2": "Mic/Aux" },
+    "recordFormat": "mkv",
     "recordPath": "Z:\\Recordings",
-    "_encoders": "amd = AMD HW H.264. The accepted tokens are 'amd' and 'HighQuality'; 'h264_texture_amf' and 'HQ' are silently ignored and fall back to x264."
+    "_why": "CQP quality is variable bitrate; the 40 Mbps internet plan does not constrain local recording."
   },
 
   "audio": {
@@ -63,6 +68,6 @@
       "youtube": { "max": 9000, "note": "8000-9000 for 1080p60" },
       "kick": { "max": 8000, "note": "1080p60 at ~8000" }
     },
-    "_uplink": "40 Mbps Airtel FTTH. 6000 kbps uses ~15% of it."
+    "_uplink": "40 Mbps Airtel FTTH; stream bitrate is irrelevant to local recording. Streaming is not used."
   }
 }

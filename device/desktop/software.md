@@ -18,10 +18,10 @@
 | **Focusrite Control 2 1.1210.0.0** | 1.1210.0.0 |
 | **GameSir Connect 1.17.4** | 1.17.4 |
 | **GenOffice 0.13.615** | 0.13.615 |
-| **Git** | 2.56.0.4 |
+| **Git** | 2.56.1 |
 | **Google Chrome** | 157.0.8103.79 |
 | **GTA San Andreas** | 1.00.00001 |
-| **HWiNFO® 64** | 8.54 |
+| **HWiNFO® 64** | 8.60 |
 | **Microsoft Edge WebView2 Runtime** | 158.0.4370.33 |
 | **Microsoft Visual C++ 2012 Redistributable (x64) - 11.0.61030** | 11.0.61030.0 |
 | **Microsoft Visual C++ 2012 Redistributable (x86) - 11.0.61030** | 11.0.61030.0 |
@@ -33,7 +33,7 @@
 | **Microsoft Windows Desktop Runtime - 8.0.34 (x64)** | 8.0.34.36622 |
 | **Mozilla Firefox (x64 en-US)** | 160.0.1 |
 | **Mozilla Maintenance Service** | 158.0.1 |
-| **OBS Studio** | 33.0.1 |
+| **OBS Studio** | 33.0.3 |
 | **PotPlayer-64 bit** | 26.10.21.0 |
 | **PXN SimRacing** | 1.2.0.0 |
 | **Realtek Audio Driver** | 6.0.9231.1 |
@@ -55,7 +55,7 @@
 | Application | Version |
 |---|---|
 | **Microsoft.WindowsTerminal** | 1.25.3131.0 |
-| **com.notion.app.desktop.notion** | 7.44.0.0 |
+| **com.notion.app.desktop.notion** | 7.44.1.0 |
 
 ### Steam libraries
 
