@@ -151,12 +151,46 @@ def lint_issues(shell_files, python_files):
 
 
 def tests():
-    test_files = sorted((ROOT / "device/fedora-laptop/tests").glob("test_*.py"))
+    test_files = sorted(
+        path
+        for directory in (ROOT / "device/fedora-laptop/tests", ROOT / "device/phone/tests")
+        for path in directory.glob("test_*.py")
+    )
     issues = []
     for path in test_files:
         result = run([sys.executable, "-m", "unittest", str(path.relative_to(ROOT))])
         if result.returncode:
             issues.append((result.stdout + result.stderr).strip())
+    return issues
+
+
+def live_inventory_issues():
+    script = ROOT / "device/fedora-laptop/scripts/check-inventory.py"
+    result = run([sys.executable, str(script)])
+    issues = [] if result.returncode == 0 else (result.stdout + result.stderr).splitlines()
+    phone_script = ROOT / "device/phone/scripts/check-phone-inventory.py"
+    phone_serial = subprocess.run(
+        ["toolbox", "run", "--container", "fedora-toolbox-44", "adb", "devices"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    personal_serials = [
+        line.split()[0]
+        for line in phone_serial.stdout.splitlines()[1:]
+        if len(line.split()) > 1
+        and line.split()[1] == "device"
+        and "model:2201117TI" in line
+    ]
+    if len(personal_serials) == 1:
+        phone_result = run(
+            [sys.executable, str(phone_script), "personal", personal_serials[0]]
+        )
+        if phone_result.returncode:
+            issues.extend(
+                phone_result.stdout.splitlines() or phone_result.stderr.splitlines()
+            )
     return issues
 
 
@@ -175,7 +209,11 @@ def main():
         path
         for path in source_paths("*.py")
         if ("scripts" in path.parts or "tests" in path.parts)
-        and ("device/fedora-laptop" in path.parts or path == ROOT / "scripts/audit.py")
+        and (
+            "device/fedora-laptop" in path.parts
+            or "device/phone" in path.parts
+            or path == ROOT / "scripts/audit.py"
+        )
     ]
     changed, changed_errors = changed_code_paths()
     checks = {
@@ -189,6 +227,7 @@ def main():
             if "fedora-laptop" in path.parts
             or path in {ROOT / "README.md", ROOT / "device/README.md"}
         ),
+        "live inventory": live_inventory_issues(),
     }
     for issue in changed_errors:
         checks["new code comments"].append(issue)
