@@ -1,66 +1,68 @@
 # PC Hardware Documentation
 
-> Updated: 17 Nov 2026 — volumes, drives and driver versions re-verified live (registry `Enum`/`Class` + `DriveInfo`).
-> CPU/RAM/VRAM/refresh/problem-devices re-verified 16 Nov 2026 **without WMI** — via SMBIOS types 4+17, `EnumDisplaySettings`, the driver key's `qwMemorySize`, and `pnputil`.
-> Still unverified: **S.M.A.R.T. health** and the **CPU cooler** (both need WMI/admin sensor access). Those two remain from the 23 Oct 2026 pass.
-> The volumes are **V:** (games) and **Z:** (archive). Those letters are a deliberate choice, not the first free ones — do not renumber them.
+> Detected hardware is generated from live desktop readings. The sections below cover details the audit does not yet collect.
+> S.M.A.R.T. health and the CPU cooler remain unverified by the inventory collector.
 
-## System Overview
+## Detected hardware
 
-| Component | Detail |
-|-----------|--------|
-| **OS** | Microsoft Windows 11 Pro 26H2 — build **26300.9457** (ReviOS) |
-| **OS (registry caveat)** | `HKLM\…\CurrentVersion` → **ProductName = "Windows 10 Pro"**, DisplayVersion 26H2, UBR 9457. ReviOS left `ProductName` stale; trust `DisplayVersion` + `CurrentBuild.UBR`, never `ProductName` |
-| **Form Factor** | Desktop — custom build, ASRock B450M-HDV R4.0 |
-| **BIOS** | American Megatrends P10.60 (2026-04-17) |
+> Generated from live desktop readings by `update-inventory.ps1`. Run it with `-Apply` to refresh this section.
 
-## CPU
+### OS
 
-| Property | Value |
-|----------|-------|
-| **Model** | AMD Ryzen 7 5700X |
-| **Cores / Threads** | 8 / 16 — re-verified 16 Nov 2026 from SMBIOS type 4 |
-| **Base Clock** | 3.4 GHz (3401 MHz) |
-| **L2 / L3** | 4 MB / 32 MB |
-| **Cooling** | _needs-review — not detected_ |
-| **Notes** | 8C/16T handles gaming + AMF streaming comfortably. |
+```text
+| OS | Windows 26H2 build 26300.9457 |
+| ⚠ ProductName | reads 'Windows 10 Pro' - stale on ReviOS images; trust DisplayVersion + build |
+```
 
-## GPU & Display
+### Firmware / CPU
 
-| Property | Value |
-|----------|-------|
-| **Model** | AMD Radeon RX 7600 |
-| **VRAM** | 8 GB GDDR6 — **7.98 GB** confirmed via `HardwareInformation.qwMemorySize` (8573157376 B) |
-| **Driver** | Adrenalin **26.10.1** — driver **32.0.32015.7029** (2026-10-18) |
-| **Primary monitor** | MSI MAG 255XF — 1920×1080 @ **300 Hz**, active mode re-verified 16 Nov (`EnumDisplaySettings`) |
-| **Secondary monitor** | BenQ RL2240H — 1920×1080 @ 60 Hz (measured 16 Nov) |
-| **Monitor driver** | MSI MAG 255XF INF **1.0.0.0** (WHQL, 2024-07-29) + `MSI MAG 255XF.icm` |
-| **Notes** | AMF hardware encoding for OBS. WMI `AdapterRAM` reports ~4 GB due to the 32-bit field; the `MemorySize` value in the driver key is also 4 GB for the same reason. The QWORD field is the truthful one. |
+```text
+| Board | ASRock B450M-HDV R4.0 |
+| BIOS | American Megatrends Inc. P10.60 04/17/2026 |
+| CPU | AMD Ryzen 7 5700X 8-Core Processor @ 3394 MHz |
+| Cores / threads | 8C / 16T |
+| DIMM | 8192 MB DDR4 | rated 3000 / configured 3000 MT/s | Unknown | F4-3000C15-8GVRB |
+| DIMM | 8192 MB DDR4 | rated 3000 / configured 3000 MT/s | Kingston | KF3200C16D4/8GX |
+| RAM total | 16 GB |
+```
 
-## Memory (RAM)
+### GPU / monitor
 
-| Property | Value |
-|----------|-------|
-| **Total** | 16 GB (15.9 GB usable) |
-| **Configuration** | 2 × 8 GB DDR4 — Kingston KF3200C16D4/8GX + G.Skill F4-3000C15-8GVRB (both verified from SMBIOS type 17, 16 Nov 2026) |
-| **Speed** | **3000 MT/s configured** on both sticks. The Kingston part is rated 3200 but runs 3000 — the pair settles on the slower SPD profile; don't chase "missing" 200 MT/s |
-| **Notes** | Adequate for 1080p gaming + OBS; close browser tabs before streaming. |
+```text
+| GPU | AMD Radeon RX 7600 - 32.0.32029.2010 (11-18-2026) |
+| VRAM | 7.98 GB (qwMemorySize; the 32-bit MemorySize field under-reports) |
+| Monitor INF | oem30.inf |
+| Monitor ICM | MSI MAG 255XF.icm |
+| Display | @monitor.inf,%nonpnpmonitor.devicedesc%;Generic Non-PnP Monitor |
+| Display | @monitor.inf,%pnpmonitor.devicedesc%;Generic PnP Monitor |
+| Display | @oem30.inf,%4bc2_dp1%;MSI MAG 255XF |
+```
 
-## Storage
+### Display modes
 
-Measured 16 Nov 2026 (`[System.IO.DriveInfo]` + `Get-Volume`-free fallback):
+```text
+| \\.\DISPLAY1 | 1920x1080 @ 300 Hz, 32 bpp |
+| \\.\DISPLAY2 | 1920x1080 @ 60 Hz, 32 bpp |
+```
 
-| Drive | Label | Type | Capacity | Free | Purpose |
-|-------|-------|------|----------|------|---------|
-| **C:** | _(System)_ | NVMe — XPG GAMMIX S11 Pro | 126.1 GB | **65.5 GB** | OS + core apps |
-| **V:** | Vacuum Drive | NVMe — XPG GAMMIX S11 Pro | 350.0 GB | 133.0 GB | Games/streaming |
-| **Z:** | Mass Storage | HDD — Seagate ST1000DM010 | 931.5 GB | 478.4 GB | Recordings/archive |
+### Problem devices
 
-- Free space was re-measured **18 Nov 2026**. Between the 17 and 18 Nov passes C: fell 1.5 GB and V: gained 56.6 GB; the Steam library still reports the same 6 apps, so the change on V: was not game content. Treat free space as volatile — capacity and labels are the stable part of this table.
-- C: was at **98.8 GB free** on 23 Oct. The 98.8 figure never reconciled against used space (an 11 GB pagefile alone plus the app set put it far lower) — treat this table as the reference.
-- Growth since then is ordinary app install and cache (Chrome/Discord/Python/.NET/OBS). The 1.87 GB of Nov 12–14 recordings that used to sit in `C:\Users\amar\Videos` was moved to `Z:\Recordings` on 17 Nov; `audit-state.ps1` now reports that folder as empty of recordings.
-- Steam: **`V:` is registered** in `libraryfolders.vdf` with 6 apps. **`Z:` is not registered** despite holding Celeste + Hollow Knight — add it in Steam → Settings → Storage.
-- "Both disks report Healthy" is from the 23 Oct SMART check; not re-verifiable from an agent session.
+```text
+None.
+```
+
+### Volumes
+
+| Drive | Label | Type | Capacity | Free |
+|---|---|---|---|---|
+| **C:** | _ | Fixed | 126.1 GB | 59.2 GB free |
+| **V:** | Vacuum Drive | Fixed | 350.0 GB | 133.0 GB free |
+| **Z:** | Mass Storage | Fixed | 931.5 GB | 477.8 GB free |
+
+## Additional notes
+
+- CPU base clock: 3.4 GHz. CPU cooler: needs review.
+- RAM modules: Kingston KF3200C16D4/8GX and G.Skill F4-3000C15-8GVRB. Both run at 3000 MT/s; the Kingston module is rated for 3200 MT/s.
 
 ## Network
 
@@ -90,8 +92,6 @@ For streaming, capture game audio from the Focusrite/Razer endpoint and mic sepa
 
 | Device | Notes |
 |--------|-------|
-| Monitor (primary) | MSI MAG 255XF — 1080p, 300 Hz |
-| Monitor (secondary) | BenQ RL2240H — 1080p, 60 Hz |
 | Audio interface | Focusrite Scarlett Solo 4th gen |
 | Headset | Razer Barracuda X 2.4 |
 | Wheel + pedals | PXN V10 Pro (`VID_36E6&PID_400B`) — PXN SimRacing reads base/pedal/keymap data |

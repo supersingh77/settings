@@ -83,7 +83,7 @@ Section 'OS'
 
 $cv = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
 $build = if ($cv.CurrentBuild) { "$($cv.CurrentBuild).$($cv.UBR)" } else { 'needs-review' }
-Out-Line "| OS | $($cv.ProductName) $($cv.DisplayVersion) build $build |"
+Out-Line "| OS | Windows $($cv.DisplayVersion) build $build |"
 if ($cv.ProductName -notmatch '11') {
     Out-Line "| ⚠ ProductName | reads '$($cv.ProductName)' - stale on ReviOS images; trust DisplayVersion + build |"
 }
@@ -203,6 +203,24 @@ foreach ($k in 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
 $arp = $arp | Sort-Object DisplayName -Unique
 Out-Line "$($arp.Count) ARP entries."
 foreach ($a in $arp) { Out-Line "- $($a.DisplayName) $($a.DisplayVersion)" }
+
+Section 'Additional applications (path inventory)'
+foreach ($application in @($targets.additionalApplications)) {
+    $path = $application.path
+    if (-not (Test-Path -LiteralPath $path)) {
+        $version = 'not found'
+    }
+    elseif ($application.versionArguments) {
+        $output = Try-Get { & $path @($application.versionArguments) 2>$null }
+        $versionLine = [string]@($output)[0]
+        $version = if ($versionLine -match $application.versionPattern) { $Matches[1] } else { 'unreported' }
+    }
+    else {
+        $version = Try-Get { (Get-Item -LiteralPath $path -ErrorAction Stop).VersionInfo.FileVersion }
+        if (-not $version) { $version = 'unreported' }
+    }
+    Out-Line "| $($application.name) | $version | $path |"
+}
 
 if ($Since) {
     Section "Installed since $($Since.ToString('yyyy-MM-dd'))"

@@ -44,7 +44,7 @@ $findings = [System.Collections.Generic.List[object]]::new()
 $docs = @(Get-ChildItem -Path $RepoRoot -Recurse -Filter '*.md' -File |
     Where-Object { $_.FullName -notmatch '\\\.git\\' } | Sort-Object FullName)
 $desktopRoot = Join-Path $RepoRoot 'device\desktop'
-$machineDocs = @($docs | Where-Object { $_.FullName.StartsWith($desktopRoot) })
+$machineDocs = @($docs | Where-Object { $_.FullName.StartsWith($desktopRoot, [System.StringComparison]::OrdinalIgnoreCase) })
 $liveDrives = Get-LiveDrives
 $liveBuild = Get-LiveBuild
 $liveLetters = @($liveDrives | ForEach-Object { $_.Name.Substring(0, 2) } | Sort-Object -Unique)
@@ -68,7 +68,7 @@ foreach ($doc in $docs) {
     $outsideFences = [regex]::Replace($text, '(?ms)^\s*```.*?^\s*```\s*$', '')
     foreach ($match in [regex]::Matches($outsideFences, '`([^`]+)`')) {
         $claim = $match.Groups[1].Value.Trim().TrimEnd('/')
-        if ($claim -notmatch '^(device|notes|inbox|outbox)/' -and $claim -notin @('README.md', 'CONTEXT.md', 'STYLE.md')) { continue }
+        if ($claim -notmatch '^(device|notes|inbox|outbox)/' -and $claim -notin @('README.md', 'CONTEXT.md')) { continue }
         if ($claim -notmatch '^[\w./\-]+$') { continue }
         $candidate = $null
         try { $candidate = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $claim)) } catch { $candidate = $null }

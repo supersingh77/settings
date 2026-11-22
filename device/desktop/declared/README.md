@@ -8,26 +8,25 @@ It is deliberately not a backup. Snapshots — `.reg` exports of `FileExts` and 
 
 | File | Describes | Applied by |
 |---|---|---|
-| `winget-export.json` | 40 installed packages with pinned versions | `winget import -i winget-export.json` |
+| `winget-export.json` | Selected packages and requested versions | `winget import -i winget-export.json` |
 | `obs.json` | OBS recording/audio settings that were deliberately chosen | manual, or `obs-websocket` (scripted in this repo's history) |
 | `associations.json` | which handler each extension should fall back to, and which media types expose one in "Open with" | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
-| `audit-targets.json` | what `audit-state.ps1` looks for: absent drive letters, the monitor model, Steam library paths, the not-an-install trap folders, the recordings policy and taskbar name aliases | `pwsh scripts/audit-state.ps1` (read-only) |
+| `audit-targets.json` | Paths and labels used by the live audit | `pwsh scripts/audit-state.ps1` (read-only) |
 | `tweaks.ps1` | the algorithm that walks `associations.json` — contains no lists of its own | `pwsh tweaks.ps1` (needs admin), `-DryRun` to preview |
 
-`tweaks.ps1` exits **1** if any write failed. A refused HKCR write used to print an error and still exit 0, which made a half-applied machine look converged; the summary now reports `change(s)` and `failure(s)` separately.
+`tweaks.ps1` exits **1** if any write fails and reports proposed changes separately from failures.
 
-## Verify against reality
+## Compare intent and inventory
 
-Intent rots the moment nothing checks it — this repo already lost three weeks to docs that said `E:`/`D:` on a machine with only `V:`/`Z:`.
+`tweaks.ps1 -DryRun` shows how declared registry intent differs from the desktop. A difference is a reviewable proposal; it does not mean the machine should be changed automatically.
 
 ```powershell
-pwsh device/desktop/scripts/audit-state.ps1     # what the machine actually is
-pwsh device/desktop/declared/tweaks.ps1 -DryRun # what this folder wants it to be
-pwsh device/desktop/scripts/check-docs.ps1      # do the docs still say the same thing
-pwsh device/desktop/tests/run-tests.ps1         # asserts the dry run reports 0 changes
+pwsh device/desktop/declared/tweaks.ps1 -DryRun
+pwsh device/desktop/scripts/update-inventory.ps1 -DryRun
+pwsh device/desktop/scripts/check-docs.ps1
 ```
 
-There is still no `-Compare`. The test suite is a one-sided substitute: it fails when this folder and the machine disagree, but it cannot tell you *which* entry differs. Until a real comparison exists, treat these files as a checklist, not as enforcement.
+`update-inventory.ps1 -Apply` refreshes generated sections in `hardware.md`, `software.md`, and `startmenu-taskbar.md`. Review `git diff` and keep or revert the documentation changes.
 
 ## Deliberately not declared
 
@@ -39,13 +38,13 @@ There is still no `-Compare`. The test suite is a one-sided substitute: it fails
 | **ReviOS playbook state** | The `.apbx` is password-protected and opaque; its changes are documented in prose, not code |
 | **Per-user GUI state** (window positions, recent files) | Noise, changes constantly, no value after a rebuild |
 
-## Scope of reproducibility
+## Scope
 
-Realistically this covers **packages and a handful of registry choices** — call it 60–70% of a rebuild. Everything else lives in `device/desktop/*.md` as instructions, which is what the rest of this repo is for.
+Declared files hold deliberate rebuild intent. Live hardware and software readings are generated in the device inventory docs; those observations are not settings to apply.
 
 ## The rules
 
-1. **Hand-curated only.** If a machine can write it, it belongs in a snapshot, not here.
+1. **Intent only.** Use this folder for choices the owner wants applied, not observations from the current machine.
 2. **Every entry is a decision.** If nobody chose it, don't declare it.
 3. **No secrets, ever.** Redact before writing.
 4. **Idempotent scripts.** Running twice must change nothing the second time; `-DryRun` must be safe.

@@ -53,6 +53,7 @@ function Test-AuditReadsItsDeclaredTargets {
     Assert-Equal 0 $result.ExitCode ("the audit must run without arguments; output:`n" + $result.Output)
     Assert-True ($result.Output -match 'Monitor INF \| oem\d+\.inf') 'the audit must resolve the monitor model from declared/audit-targets.json'
     Assert-True ($result.Output -match 'C:\\Program Files\\DroidCam') 'the audit must walk the not-an-install paths from declared/audit-targets.json'
+    Assert-True ($result.Output -match '\| FFmpeg \|') 'the audit must read explicit non-ARP application targets from declared data'
     Assert-True ($result.Output -match 'Packaged \| Microsoft\.WindowsTerminal \| \d') 'the audit must resolve packaged app versions from the AppX registry rather than from memory'
 }
 
@@ -72,10 +73,11 @@ function Test-JoinVideosDryRunWritesNothing {
     }
 }
 
-function Test-DeclaredTweaksAreConverged {
+function Test-DeclaredTweaksDryRunReportsWithoutApplying {
     $result = Invoke-Script -Path $TweaksScript -Arguments @('-DryRun')
     Assert-Equal 0 $result.ExitCode ("the declared dry run must succeed; output:`n" + $result.Output)
-    Assert-True ($result.Output -match 'summary: 0 change\(s\)') ("the machine is not at declared state - run tweaks.ps1 -DryRun to see the diff. output:`n" + $result.Output)
+    Assert-True ($result.Output -match 'DRY RUN') 'the command must remain in preview mode'
+    Assert-True ($result.Output -match 'summary: \d+ change\(s\), 0 failure\(s\)') 'the command must report drift separately from failures'
 }
 
 function Test-CheckDocsPassesOnThisRepo {

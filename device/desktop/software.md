@@ -1,106 +1,93 @@
-# Software Documentation — Installed Apps
+# Desktop software
 
-> Updated: 17 Nov 2026 — full re-inventory from registry ARP + on-disk paths + file versions + the per-user AppModel repository for packaged apps.
-> Managers: **winget** (primary) · **scoop** not installed · Chocolatey 2.7.4 present but unused
-> System runtimes (VC++, .NET) are listed only where they affect the setup.
+## Detected software
 
-## Install Policy
+> Generated from live desktop readings by `update-inventory.ps1`. Run it with `-Apply` to refresh this section.
+> Sources: uninstall and per-user package registries plus executable targets in `declared/audit-targets.json`. Portable apps outside those targets are not included.
 
-Order of preference, no exceptions without a note in the table:
+### Registry applications
 
-1. **winget** package
-2. **Vendor installer** (when winget has no usable manifest)
-3. **scoop** — last resort; not installed today
+| Application | Version |
+|---|---|
+| **7-Zip 26.06 (x64)** | 26.06 |
+| **ActivityWatch** | 0.14.3 |
+| **AMD Chipset Software** | 8.09.28.1124 |
+| **AMD Software** | 26.11.2 |
+| **ExitLag version 5.23.3** | 5.23.3 |
+| **Focusrite Audio Drivers 4.150.0.432** | 4.150.0.432 |
+| **Focusrite Control 2 1.1210.0.0** | 1.1210.0.0 |
+| **GameSir Connect 1.17.4** | 1.17.4 |
+| **GenOffice 0.13.615** | 0.13.615 |
+| **Git** | 2.56.0.4 |
+| **Google Chrome** | 157.0.8103.79 |
+| **GTA San Andreas** | 1.00.00001 |
+| **HWiNFO® 64** | 8.54 |
+| **Microsoft Edge WebView2 Runtime** | 158.0.4370.33 |
+| **Microsoft Visual C++ 2012 Redistributable (x64) - 11.0.61030** | 11.0.61030.0 |
+| **Microsoft Visual C++ 2012 Redistributable (x86) - 11.0.61030** | 11.0.61030.0 |
+| **Microsoft Visual C++ 2013 Redistributable (x64) - 12.0.40664** | 12.0.40664.0 |
+| **Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.40664** | 12.0.40664.0 |
+| **Microsoft Visual C++ v14 Redistributable (x64) - 14.52.37029** | 14.52.37029.0 |
+| **Microsoft Visual C++ v14 Redistributable (x86) - 14.52.37029** | 14.52.37029.0 |
+| **Microsoft Windows Application Compatibility Fix Database** | unreported |
+| **Microsoft Windows Desktop Runtime - 8.0.34 (x64)** | 8.0.34.36622 |
+| **Mozilla Firefox (x64 en-US)** | 160.0.1 |
+| **Mozilla Maintenance Service** | 158.0.1 |
+| **OBS Studio** | 33.0.1 |
+| **PotPlayer-64 bit** | 26.10.21.0 |
+| **PXN SimRacing** | 1.2.0.0 |
+| **Realtek Audio Driver** | 6.0.9231.1 |
+| **Realtek Ethernet Controller Driver** | 10.50.511.2021 |
+| **Revision Tool version 2.15.1** | 2.15.1 |
+| **Riot Vanguard** | unreported |
+| **Steam** | 2.10.91.91 |
+| **TP-Link UB500 Bluetooth 5.3 Driver** | 1051.1038.1040.230912 |
+| **VLC media player** | 3.0.24 |
 
-Scope: **all users / machine-wide first**. Per-user only when the vendor requires it.
+### Additional applications
 
-- **Per-user exceptions:** Discord, Twinkle Tray, LocalSend, DeepSeek Harness, T3 Code, Roblox, Windows Terminal / Realtek Audio Control (MSIX), Notion (AppX).
-- **Excluded by request:** Razer Synapse, MCHOSE Hub, vJoy. PXN SimRacing is installed, but its bundled vJoy driver is not.
-- **Removal:** `winget uninstall --id <id> --exact` from an **elevated** shell (machine-wide packages need UAC).
+| Application | Version | Location |
+|---|---|---|
+| **FFmpeg** | 9.0.2-full_build-www.gyan.dev | C:\Program Files\FFmpeg\bin\ffmpeg.exe |
 
-## Machine-wide (Program Files)
+### Packaged applications
 
-| Software | Version | Location | Notes |
-|----------|---------|----------|-------|
-| **Git** | 2.56.0.4 | `C:\Program Files\Git` | `cmd` on machine PATH |
-| **7-Zip** | 26.06 | `C:\Program Files\7-Zip` | Archive utility |
-| **PowerShell 7** | 7.6.10 | `C:\Program Files\PowerShell\7` | Official all-users MSI; never upgrade from inside `update` |
-| **Python 3.14** | 3.14.10 | `C:\Program Files\Python314` | Official all-users installer; PATH set |
-| **GitHub CLI** | 2.104.0 | `C:\Program Files\GitHub CLI` | `gh` on machine PATH |
-| **FFmpeg** | 9.0.2 | `C:\Program Files\FFmpeg\bin` | Manual (gyan.dev build), no ARP entry; PATH set. `ffmpeg -version` reports `9.0.2-full_build-www.gyan.dev`, re-checked 17 Nov 2026 |
-| **Steam** | 2.10.91.91 | `C:\Program Files (x86)\Steam` | `V:` library registered; `Z:` library still unregistered (see Notes) |
-| **PotPlayer** | 26.10.21.0 | `C:\Program Files\DAUM\PotPlayer` | 64-bit; signed Kakao build |
-| **HWiNFO** | 8.54 | `C:\Program Files\HWiNFO64` | Hardware monitoring |
-| **Radmin VPN** | 2.1.4952.2 | `C:\Program Files (x86)\Radmin VPN` | LAN emulation for gaming |
-| **PXN SimRacing** | 1.6.8.0 app (ARP shows 1.2.0.0) | `C:\Program Files (x86)\PXNSimRacing` | V10 Pro base/pedal config; unsigned vendor app; the ARP version comes from `uninst.exe`, the app itself is 1.6.8.0 |
-| **Focusrite Control 2** | 1.1210.0.0 | `C:\Program Files\Focusrite\Focusrite Control 2` | Includes Focusrite Audio Drivers 4.150.0.432 |
-| **AMD Software: Adrenalin** | 26.10.1 | `C:\Program Files\AMD` | RX 7600 driver 32.0.32015.7029; also installs AMD Settings, DVR, WVR, RyzenMasterSDK, Install Manager |
-| **AMD Chipset Software** | 8.09.28.1124 | DriverStore | B450 chipset, GPIO, SMBus, PCI, PSP, Ryzen power plan. ARP still points at the old `C:\AMD\Chipset_Software` installer path |
-| **Realtek Audio Driver** | 6.0.9231.1 | `C:\Program Files (x86)\Realtek\Audio` | Includes Realtek Audio Control |
-| **Realtek Ethernet Driver** | 10.50.511.2021 | `C:\Program Files (x86)\Realtek\NICDRV_8169` | RTL8168 1 Gbps |
-| **Revision Tool** | 2.15.1 | `C:\Program Files\Revision Tool` | ReviOS control panel |
-| **Google Chrome** | 157.0.8103.79 | `C:\Program Files\Google\Chrome` | Primary browser; auto-updates on its own schedule, so this version rots fastest |
-| **Mozilla Firefox** | 160.0 | `C:\Program Files\Mozilla Firefox` | Backup browser |
-| **OBS Studio** | 33.0.1 | `C:\Program Files\obs-studio` | Profile `Untitled`: Display Capture (MAG 255XF) + Video Capture Device → **Owl Lite Camera**. **1080p60, AMD AMF H.264 (CQP 23), records to `Z:\Recordings`**. No stream destination yet — see [obs-recording-setup.md](../../notes/obs-recording-setup.md) |
-| **ExitLag** | 5.23.3 | `C:\Program Files\ExitLag` | Route optimizer |
-| **GenOffice** | 0.13.18 | `C:\Program Files\GenOffice` | Office-suite shell; self-updater in `%LOCALAPPDATA%` |
-| **GameSir Connect** | 1.17.4 | `C:\Program Files (x86)\GameSir Connect` | Controller firmware + remapping; installed 17 Nov to update the pad, which fixed the phantom Task View input |
-| **ActivityWatch** | 0.14.3 | `C:\Program Files (x86)\ActivityWatch` | Time tracker; auto-starts from the user Startup folder |
-| **Riot Vanguard** | 1.19.2-23 | `C:\Program Files\Riot Vanguard` | VALORANT anti-cheat; kernel driver, auto-starts. Its ARP entry carries **no** version — this number comes from `vgc.exe` (`1.19.2-23+20261112.144447`, read 17 Nov 2026) |
-| **Microsoft Visual C++ 2015–2022** | 14.52.37029 | x64 + x86 | Runtime dependency; older 2010/2012/2013 runtimes also present |
-| **Microsoft .NET 8 (Host + Desktop Runtime)** | 8.0.34 | — | Runtime dependency; pulled in by OBS/ExitLag |
+| Application | Version |
+|---|---|
+| **Microsoft.WindowsTerminal** | 1.25.3131.0 |
+| **com.notion.app.desktop.notion** | 7.44.0.0 |
 
-## Per-user / MSIX
+### Steam libraries
 
-| Software | Version | Location | Notes |
-|----------|---------|----------|-------|
-| **Discord** | 1.0.9265 | `%LOCALAPPDATA%\Discord` | Squirrel; per-user only |
-| **Twinkle Tray** | 1.17.2 | `%LOCALAPPDATA%\Programs\twinkle-tray` | Electron; per-user only; needs MPRT off |
-| **LocalSend** | 1.18.2 | `%LOCALAPPDATA%\Programs\LocalSend` | LAN file transfer |
-| **DeepSeek Harness** | 0.2.2-rc.3 | `%LOCALAPPDATA%\Programs\DeepSeek Harness` | Current AI coding harness |
-| **T3 Code (Beta)** | 0.1.9 | `%LOCALAPPDATA%\Programs\t3code` | Pinned on the taskbar |
-| **Roblox Player** | — | `%LOCALAPPDATA%\Roblox` | Auto-starts to tray; Studio also present |
-| **Notion** | 7.44.0.0 | AppX | Installed 16 Nov; package identity `com.notion.app.desktop.notion`. Version read 17 Nov from the per-user AppModel repository — `Get-AppxPackage` is blocked in an agent session |
-| **Windows Terminal** | 1.25.3131.0 | MSIX | Store package; pinned. Read 17 Nov from the AppModel repository |
-| **Realtek Audio Control** | 1.1.137.0 | MSIX | Installed with the Realtek audio driver (last verified 23 Oct) |
-| **Microsoft Edge WebView2** | 157.0.4341.60 | `C:\Program Files (x86)\Microsoft\EdgeWebView` | Runtime dependency |
-| **Store apps** | — | MSIX | Paint, Notepad, Calculator, Photos, Snipping Tool, Xbox/Game Bar, Phone Link |
+```text
+| registered | C:\Program Files (x86)\Steam | 1 apps |
+| registered | V:\Games\SteamLibrary | 6 apps |
+| on disk | V:\Games\SteamLibrary | 6 manifests | registered: True |
+| on disk | Z:\Games\SteamLibrary | 2 manifests | registered: False |
+```
 
-## Drivers
+### Folders that are not installed apps
 
-| Component | Version | Notes |
-|-----------|---------|-------|
-| AMD Chipset | 8.09.28.1124 | Fixes `ACPI\AMDIF030` (AMD GPIO) |
-| AMD GPU | 32.0.32015.7029 (Adrenalin 26.10.1) | RX 7600; 1080p @ 300 Hz |
-| MSI MAG 255XF monitor | 1.0.0.0 (2024-07-29) | WHQL `oem30.inf` + `MSI MAG 255XF.icm`; 300 Hz DP mode |
-| Realtek Audio (ALC897) | 6.0.9231.1 | No analog endpoint currently active |
-| Realtek LAN (RTL8168) | 10.50.511.2021 | 1 Gbps, link up |
-| Focusrite Scarlett Solo | 4.150.0.432 | With Control 2 1.1210 |
+```text
+| C:\Program Files\DroidCam | 0 files | 0.00 MB | EMPTY - not an install |
+| C:\tools\php84 | 1 files | 0.07 MB | STUB - config/log only, not an install |
+| C:\AMD\Chipset_Software | 1 files | 0.00 MB | STUB - config/log only, not an install |
 
-**No problem devices** — re-verified 17 Nov 2026 with `pnputil /enum-devices /problem` (returns "No devices were found"), which works when `Get-PnpDevice`'s WMI path is blocked.
+⚠ 0.00 GB of recordings sit in C:\Users\amar\Videos - out of policy, they belong on Z:\Recordings.
+| OBS profile 'Untitled' | records to Z:\Recordings | ok |
+```
 
-## Deliberately Not Installed
+## Install policy
 
-- **Old 23H2 app set:** not reinstalled. The previous inventory remains in Git history.
-- **Excluded by request:** Razer Synapse, MCHOSE Hub, vJoy.
-- **Not reinstalled since the rebuild:** ShareX, input-overlay. **DroidCam is retired** — the phone-webcam route was replaced by a Kreo Owl Lite webcam (16 Nov 2026); `C:\Program Files\DroidCam` is an empty leftover folder, not an install. OBS still carries a stale `droidcam-obs` entry in `plugin_manager\modules.json` although no module file exists.
-- **Steam games** stay on `V:\Games\SteamLibrary` and `Z:\Games\SteamLibrary`.
+- Prefer winget, then the vendor installer when winget has no usable package. Use Scoop only as a last resort.
+- Prefer machine-wide installs. Per-user installs are reserved for applications that require them, including Discord, Twinkle Tray, LocalSend, DeepSeek Harness, T3 Code, Roblox, and MSIX/AppX applications.
+- Excluded by request: Razer Synapse, MCHOSE Hub, and vJoy.
+- Remove a machine-wide package from an elevated shell with `winget uninstall --id <id> --exact`.
 
-## Removed
+## Setup notes
 
-| Software | Removed | How |
-|----------|---------|-----|
-| **Notepad++ 8.9.9.1** | 16 Nov 2026 | `winget uninstall` (elevated) — was only installed while troubleshooting the shell bug |
-| **Obsidian 1.15.1** | 16 Nov 2026 | `winget uninstall` (elevated), NSIS uninstaller finished the job; the `Documents\Obsidian Vault` folder was left in place |
-
-## Notes
-
-- **winget machine scope is broken on this build:** `winget install --scope machine` returns `0x80070005`. Default-scope installs were verified to land in `Program Files`; PowerShell and Python were normalized with official all-users MSIs, and FFmpeg was moved manually.
-- **`winget source update`** fixes `Failed to open the predefined source`.
-- **winget dies inside a sandboxed agent session** with `0x8A150001` (every verb, including `--info`). Run winget from a normal elevated shell.
-- **Steam libraries:** `V:\Games\SteamLibrary` is registered in `libraryfolders.vdf` (6 apps). `Z:\Games\SteamLibrary` has 2 app manifests on disk but is **not** registered — add it from Steam → Settings → Storage.
-- **PXN:** installer is unsigned (official PXN domain); app reports 1.6.8.0; vJoy not installed.
-- **MPRT:** no DDC/CI VCP on this monitor; Twinkle Tray brightness requires MPRT off.
-- **Disk:** C: 65.5 GB free of 126.1 GB; V: 133.0 GB; Z: 478.4 GB (measured 18 Nov 2026).
-- **`ProductName` lies:** the registry reports **Windows 10 Pro** on this 26H2 image. ReviOS left it stale — trust `DisplayVersion` + `CurrentBuild.UBR`, not `ProductName`.
-- **Not installs, despite looking like it:** `C:\tools\php84` holds only a `php.ini` (no binary, no `php` on PATH) and `C:\AMD\Chipset_Software` holds a single log file. An empty folder or stray config is not an install.
+- OBS recording and audio choices are declared in [`declared/obs.json`](declared/obs.json); keep stream keys out of the repository.
+- PXN SimRacing reports app version 1.6.8.0; its uninstall entry reports 1.2.0.0. Its bundled vJoy driver is not installed.
+- `winget install --scope machine` fails with `0x80070005` on this Windows image. Default-scope installs landed in Program Files; PowerShell and Python were installed with their official all-users installers.
+- `winget source update` resolves `Failed to open the predefined source`.
+- winget fails with `0x8A150001` inside sandboxed agent sessions. Run it from a normal elevated shell.

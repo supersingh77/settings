@@ -5,8 +5,9 @@
 - Prefer small, composable functions and explicit inputs/outputs. Use functional patterns where they clarify behavior; do not force pure-functional designs onto OS/package-manager side effects.
 - Keep scripts idempotent where practical, fail clearly, and avoid hidden global state.
 - Add automated checks for behavior that can be tested without modifying the host. Do not run install, cleanup, reboot, or other host-mutating actions as tests.
-- Run the smallest relevant lint/test checks after changes and report anything unavailable.
-- Run `make audit` for reproducible lint, tests, changed-code comment checks, and repository-wide Markdown checks. Run `make setup-dev` once to create the local Python tool environment.
+- Run the smallest relevant checks after changes and report anything unavailable.
+- On the Windows desktop, run `pwsh device/desktop/scripts/verify.ps1`, `pwsh device/desktop/scripts/check-docs.ps1`, and `pwsh device/desktop/tests/run-tests.ps1`.
+- On the Fedora laptop, run `make setup-dev` once and then `make audit`. This audit reads live Fedora and optional phone state; do not use it as a Windows check.
 
 ## Editing workflow
 

@@ -1,9 +1,6 @@
-# Desktop Audit Playbook
+# Desktop audit fallbacks
 
-> Device: desktop | Updated: 16 Nov 2026
-> Verified on Windows 11 26H2 (build 26300.9457) — `ProductName` lies and says "Windows 10 Pro".
-> Read this before editing `startmenu-taskbar.md`, `software.md`, `hardware.md`, or `disk-cleanup.md`.
-> **Fastest path:** run `pwsh device/desktop/scripts/audit-state.ps1` — it prints every fact these docs claim, in one shot. Use the sections below when you need to go deeper.
+Generated current hardware and software readings live in [`hardware.md`](hardware.md) and [`software.md`](software.md). Use this guide only when a reading needs manual investigation or a Windows API is unavailable in an agent session.
 
 ## 0. Environment limits (why some checks "fail")
 
@@ -26,7 +23,7 @@ Inside a sandboxed agent session (DeepSeek Harness, etc.) the following are **bl
 
 So: **never record "0 problem devices" or a refresh rate you measured with WMI inside an agent session** — you cannot measure it there.
 
-## 1. Taskbar Pins — Set and Order
+## 1. Taskbar pins — set and order
 
 **Set** (authoritative for desktop-app pins):
 
@@ -48,14 +45,13 @@ function Find-Off([string]$n, [bool]$utf16) {
   }
   return [int]::MaxValue
 }
-# 'X.lnk' names are single-byte; 'Microsoft.X_8wekyb3d8bbwe' AppIds are UTF-16
 ```
 
 - The blob is written UTF-8/single-byte for `.lnk` entries and UTF-16 for packaged AppIds — you must search both encodings.
 - UI Automation is the "correct" method but needs an interactive desktop; it returns **nothing** under DSH.
 - Removing a pin = delete its `.lnk` from `User Pinned\TaskBar` (takes effect on next Explorer start). Uninstalling an app removes its pin automatically.
 
-## 2. Start Menu Pins
+## 2. Start menu pins
 
 ```powershell
 $layout = "$env:TEMP\start.json"
@@ -64,13 +60,12 @@ Get-Content $layout -Raw
 ```
 
 - `pinnedList[]` is ordered; entries are `packagedAppId` or `desktopAppLink`.
-- **Caveat on 26H2:** the export returned only **Settings** and **File Explorer** on 2026-10-23, and inside an agent session it fails with `0x80070490`. If the Start UI shows more pins, the export is incomplete — verify visually.
+- If export results differ from the Start UI, verify the pins visually.
 - **Dead end:** `...\StartMenuExperienceHost_...\LocalState\start2.bin` is compressed; don't decode it.
 
-## 3. Installed Apps
+## 3. Installed apps
 
 ```powershell
-# authoritative when WMI/AppX are blocked
 Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
   'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
   'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*' |
@@ -79,11 +74,10 @@ Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
 ```
 
 - `winget list` misses manually installed tools (FFmpeg) and vendor payloads; ARP misses portable installs. Cross-check both, then confirm on disk.
-- **Version traps:** PXN SimRacing's ARP version (1.2.0.0) comes from `uninst.exe`, not the app (1.6.8.0). Discord's `InstallDate` is garbage (`20262123`). Verify with `(Get-Item app.exe).VersionInfo.FileVersion`.
-- **Known winget bug on this build:** `winget install --scope machine` returns `0x80070005`. Use default-scope installs and verify the target landed in `Program Files`; use official all-users MSIs for PowerShell/Python.
+- Some uninstallers report their own version rather than the application's version. Verify the app executable's file version when the inventory needs clarification.
 - If winget says `Failed to open the predefined source`, run `winget source update`.
 
-## 4. Device & Driver Health
+## 4. Device and driver health
 
 ```powershell
 pnputil /enum-devices /problem     # works even in a sandbox; "No devices were found" == healthy
@@ -95,7 +89,6 @@ Live display mode without WMI (this is how "300 Hz" is actually verified):
 
 ```powershell
 Add-Type -TypeDefinition '<DEVMODE + EnumDisplaySettings signature>'
-# then EnumDisplaySettings('\\.\DISPLAY1', -1, [ref]$dm) -> dmDisplayFrequency
 ```
 
 `audit-state.ps1` already does this and prints every attached display's current mode. Use `ENUM_CURRENT_SETTINGS` (`-1`) — passing mode indexes enumerates the capability list instead.
@@ -111,21 +104,19 @@ Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Enum\DISPLAY' -Recurse |
   Where-Object { $_ }
 ```
 
-- Expected: **no problem devices** (last verified 17 Nov 2026).
-- Monitor should resolve through `oem30.inf` → `MSI MAG 255XF`, with `MSI MAG 255XF.icm` in `System32\spool\drivers\color`. A `Generic PnP Monitor` entry means the INF did not take.
+- The live audit reports problem devices, monitor INF matches, and active display modes.
 - MPRT is not exposed as a DDC/CI VCP on this monitor; don't chase software toggles.
 
-## 5. "Is It Really Installed?"
+## 5. Check whether a folder is an install
 
 ```powershell
 Test-Path 'C:\Program Files\<App>'
 Get-ChildItem 'C:\Program Files\<App>' -Recurse -File | Measure-Object Length -Sum
 ```
 
-- An empty folder or a stray config is **not** an install. Live examples: `C:\Program Files\DroidCam` (empty), `C:\tools\php84` (only a `php.ini`), `C:\AMD\Chipset_Software` (one log).
-- Uninstalled/removed apps belong in `software.md` under "Deliberately not installed" or "Removed", never in the active inventory.
+- An empty folder or a stray config is **not** an install. The live audit checks configured trap paths.
 
-## 6. Steam Libraries
+## 6. Steam libraries
 
 ```powershell
 Get-Content 'C:\Program Files (x86)\Steam\steamapps\libraryfolders.vdf' -Raw   # registered libraries
@@ -133,31 +124,5 @@ Get-ChildItem 'V:\Games\SteamLibrary\steamapps\common' -Directory
 Get-ChildItem 'Z:\Games\SteamLibrary\steamapps\common' -Directory
 ```
 
-- Libraries live on **V:** and **Z:**.
-- `libraryfolders.vdf` is the truth for **registered** libraries; `appmanifest_*.acf` count is the truth for **installed** apps. They disagree right now: `V:` is registered with 6 apps, `Z:` has 2 manifests but is not registered.
+- `libraryfolders.vdf` is the source for **registered** libraries; `appmanifest_*.acf` files are the source for **installed** apps. The live audit compares both.
 - A folder under `common\` with no appmanifest is a leftover, not an install.
-
-## 7. Doc Conventions
-
-| Doc | Holds |
-|-----|-------|
-| `README.md` | Hub, quick reference, setup rules |
-| `hardware.md` | Components, drivers, storage, quirks |
-| `software.md` | Active app inventory + install scope + drivers + removals |
-| `startmenu-taskbar.md` | Current pins only, in order |
-| `desktop.md` | Actual desktop contents |
-| `disk-cleanup.md` | Drive map + measured cleanup targets |
-
-Rules: bump the `Updated:` date · **verify live, never recall** · mark unverified values `needs-review` · tables over prose · cut historical waffle.
-
-> Run `audit-state.ps1` first: it prints the measured value for every fact these docs claim, and `check-docs.ps1` fails when a doc disagrees with it.
-
-## 8. Machine-checked claims
-
-`pwsh device/desktop/scripts/check-docs.ps1` verifies what this playbook produces: every relative Markdown link resolves, every repo path written in backticks exists, every `build **x.y**` claim equals the live build, every drive letter in a desktop table is mounted, and every free-space claim dated on the same line is within tolerance of the measurement. It exits 1 when a doc wins.
-
-Three limits worth knowing:
-
-- An **undated** free-space number is treated as history, not a claim — that is why the 23 Oct figures in `disk-cleanup.md` survive.
-- App versions are only compared when the doc name matches an ARP entry **exactly**, or with a vendor-style suffix (`PotPlayer` → `PotPlayer-64 bit`). Packaged apps have no ARP entry, so their versions stay a prose claim backed by the audit's `Packaged apps` section, not a checked one.
-- A path is only checked when it starts with `device/`, `notes/`, `inbox/`, `outbox/` or names a root file. A folder relative to somewhere else — `accounts/` on the desktop, `%LOCALAPPDATA%\…` — cannot be resolved from here and is not checked.
