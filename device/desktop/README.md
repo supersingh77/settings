@@ -23,4 +23,4 @@ Run `pwsh device/desktop/tests/run-tests.ps1` to check desktop script behavior.
 3. **Display:** keep 300 Hz for desktop/gaming. MPRT must be **off** for Twinkle Tray brightness; MPRT has no DDC/CI control.
 4. **Controllers:** the third-party Xbox 360 receiver opens Task View when the controller is off — unplug it or keep the controller on. PXN A7 shifter enumerates separately from the V10 Pro wheel.
 5. **Inventory:** run `pwsh device/desktop/scripts/update-inventory.ps1 -DryRun` to inspect drift, then `-Apply` to update generated sections. Review `git diff`; keep or revert the reported changes. Run `verify.ps1`, `check-docs.ps1` and `tests/run-tests.ps1` before committing.
-6. **Maintenance:** in PowerShell 7, `update` and `cleanup` run the scripts in [`scripts/`](scripts/README.md). Both accept `-DryRun`.
+6. **Maintenance:** use the PowerShell 7 commands in [`scripts/README.md`](scripts/README.md); preview updates and cleanup with `-DryRun` first.

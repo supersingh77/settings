@@ -60,6 +60,6 @@ $results = foreach ($device in $devices) {
 
 Write-Host ''
 $results | Format-Table -AutoSize
-Write-Host 'Thresholds and how to read this: scripts/README.md'
+Write-Host 'Verdict thresholds: device/desktop/lib/audio-levels.ps1'
 
 exit 0
