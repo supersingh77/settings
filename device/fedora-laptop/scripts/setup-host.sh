@@ -12,7 +12,7 @@ fi
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-source "$SCRIPT_DIR/_lib.sh"
+source "$SCRIPT_DIR/../lib/_lib.sh"
 
 step "Pre-flight checks"
 

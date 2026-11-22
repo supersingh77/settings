@@ -8,7 +8,7 @@
 | Layered packages | distrobox, ghostty, uhubctl |
 | Base package removals | firefox, firefox-langpacks |
 | Toolboxes | d6b26d197146 fedora-toolbox-44 5 months ago running registry.fedoraproject.org/fedora-toolbox:44 |
-| System Flatpaks | 46 applications and runtimes detected |
+| System Flatpaks | 47 applications and runtimes detected |
 
 ## System Flatpak applications
 
@@ -34,6 +34,7 @@
 | org.freedesktop.Platform.GL.default | 26.2.7 — flathub |
 | org.freedesktop.Platform.GL.default | 26.2.7 — flathub |
 | org.freedesktop.Platform.amd.amf | flathub |
+| org.freedesktop.Platform.codecs-extra | flathub |
 | org.freedesktop.Platform.codecs-extra | flathub |
 | org.freedesktop.Platform.openh264 | 2.4.1 — flathub |
 | org.freedesktop.Sdk | freedesktop-sdk-25.08.20 — flathub |
@@ -65,3 +66,18 @@
 
 - Detected software is the installed state at collection time. Declared setup intent and maintenance procedures remain documented in [`README.md`](README.md) and the setup scripts.
 - Toolbox package collection is opt-in because the container package query requires entering the container.
+
+## Favorite applications (GNOME Dash)
+
+| # | Application ID |
+|---|---|
+| 1 | io.missioncenter.MissionCenter.desktop |
+| 2 | org.gnome.Nautilus.desktop |
+| 3 | com.mitchellh.ghostty.desktop |
+| 4 | com.google.Chrome.desktop |
+| 5 | org.gnome.Snapshot.desktop |
+| 6 | org.localsend.localsend_app.desktop |
+| 7 | com.obsproject.Studio.desktop |
+| 8 | openwork.desktop |
+| 9 | uad-ng.desktop |
+| 10 | antigravity2.desktop |

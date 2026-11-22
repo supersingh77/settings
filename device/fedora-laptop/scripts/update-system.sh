@@ -24,7 +24,7 @@
 # set -e
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/_lib.sh"
+source "$SCRIPT_DIR/../lib/_lib.sh"
 
 # ── 1. Flatpak ────────────────────────────────────────────────────────────────
 step "Updating Flatpak applications"

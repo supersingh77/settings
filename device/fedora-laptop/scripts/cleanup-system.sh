@@ -25,7 +25,7 @@
 # set -e
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/_lib.sh"
+source "$SCRIPT_DIR/../lib/_lib.sh"
 
 echo -e "${YELLOW}ℹ️  This is a slow maintenance task — it may take several minutes.${RESET}"
 

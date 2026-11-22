@@ -10,7 +10,7 @@ The tracked [`hardware.md`](hardware.md) and [`software.md`](software.md) files 
 
 - **[Hardware](hardware.md)** — canonical hardware inventory and human caveats
 - **[Software](software.md)** — canonical installed-software inventory and human caveats
-- **[Inventory script](scripts/check-inventory.py)** — `python3 device/fedora-laptop/scripts/check-inventory.py` prints a diff and exits nonzero on drift; `--apply` writes the generated sections directly to the Markdown files
+- **[Inventory script](scripts/update-inventory.py)** — `python3 device/fedora-laptop/scripts/update-inventory.py` prints a diff and exits nonzero on drift; `--apply` writes the generated sections directly to the Markdown files
 - **[Setup](#-setup)** — fresh setup or rebuild only
 - **[Troubleshooting](troubleshooting.md)** — symptoms and recovery steps
 - **[Lessons learned](lessons.md)** — Silverblue-specific deployment and incident lessons
@@ -20,7 +20,7 @@ The tracked [`hardware.md`](hardware.md) and [`software.md`](software.md) files 
 Daily checks: `make linux` from the repository root. The audit fails when live system readings differ from committed Markdown. To regenerate inventory sections from the live machine:
 
 ```
-python3 device/fedora-laptop/scripts/check-inventory.py --apply
+python3 device/fedora-laptop/scripts/update-inventory.py --apply
 git diff device/fedora-laptop/hardware.md device/fedora-laptop/software.md
 git add -p   # stage wanted changes, revert unwanted ones
 ```

@@ -1,5 +1,5 @@
+#!/usr/bin/env python3
 import argparse
-import difflib
 import json
 import pathlib
 import re
@@ -9,6 +9,14 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 DEVICE = ROOT / "device/fedora-laptop"
+sys.path.insert(0, str(DEVICE / "lib"))
+
+from inventory_docs import (
+    changes,
+    kibibytes,
+    pci_description,
+    proposed_documents,
+)
 
 
 def run(command):
@@ -25,12 +33,12 @@ def read_text(path):
         return None
 
 
-def kibibytes(value):
-    return f"{int(value) / 1024**2:.1f} GiB"
-
-
-def pci_description(line):
-    return re.sub(r"^\S+\s+[^:]+:\s+", "", line)
+def detect_gnome_favorites():
+    try:
+        raw = run(["gsettings", "get", "org.gnome.shell", "favorite-apps"])
+        return re.findall(r"'([^']+)'", raw)
+    except (RuntimeError, OSError):
+        return []
 
 
 def detect_hardware():
@@ -126,6 +134,7 @@ def detect_software():
             ["flatpak", "list", "--system", "--columns=application,version,origin"]
         ),
         "toolboxes": toolboxes,
+        "favorites": detect_gnome_favorites(),
         "user_local_apps": sorted(
             str(path.relative_to(pathlib.Path.home()))
             for directory in (
@@ -139,100 +148,6 @@ def detect_software():
     }
 
 
-def disk_description(disk):
-    model = (disk.get("model") or "").strip()
-    size = f"{int(disk['size']) / 10**9:.0f} GB" if disk.get("size") else "unknown capacity"
-    return f"{model} ({size})".strip()
-
-
-def flatpak_rows(flatpaks):
-    rows = sorted(line.split("\t") for line in flatpaks.splitlines() if line)
-    return [f"| {row[0]} | {' — '.join(part for part in row[1:] if part)} |" for row in rows]
-
-
-def table(title, headers, rows):
-    return [
-        f"## {title}",
-        "",
-        f"| {' | '.join(headers)} |",
-        f"|{'|'.join('---' for _ in headers)}|",
-        *rows,
-        "",
-    ]
-
-
-def replace_section(document, title, replacement):
-    lines = document.splitlines()
-    start = next(
-        (index for index, line in enumerate(lines) if line == f"## {title}"), None
-    )
-    if start is None:
-        return "\n".join([*lines, "", *replacement]).rstrip() + "\n"
-    end = next(
-        (index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")),
-        len(lines),
-    )
-    return "\n".join([*lines[:start], *replacement, *lines[end:]]).rstrip() + "\n"
-
-
-def hardware_sections(data):
-    disks = [
-        disk
-        for disk in data["disks"]
-        if disk.get("type") == "disk" and not disk["name"].startswith("zram")
-    ]
-    facts = [
-        ("Model", data["model"]),
-        ("OS", data["os"].replace("'", "")),
-        ("CPU", f"{data['cpu']} ({data['cpu_cores_threads']})"),
-        ("Memory", f"{data['memory']} visible to Linux; {data['swap']} swap"),
-        ("Storage devices", "; ".join(disk_description(disk) for disk in disks)),
-        ("Graphics", "; ".join(data["graphics"]) or "not detected"),
-        ("Network", "; ".join(data["network"]) or "not detected"),
-        ("Firmware", data["firmware"]),
-    ]
-    return table("Detected system", ["Property", "Value"], [f"| {name} | {value} |" for name, value in facts])
-
-
-def software_sections(data):
-    host = data["host"]
-    flatpaks = [line for line in data["flatpaks"].splitlines() if line]
-    toolboxes = [" ".join(line.split()) for line in data["toolboxes"].splitlines()[1:] if line.strip()]
-    facts = [
-        ("Booted deployment", host["version"]),
-        ("Layered packages", ", ".join(host["packages"]) or "none reported"),
-        ("Base package removals", ", ".join(host["base_removals"]) or "none reported"),
-        ("Toolboxes", "; ".join(toolboxes) or "none detected"),
-        ("System Flatpaks", f"{len(flatpaks)} applications and runtimes detected"),
-    ]
-    sections = [
-        ("Detected software", table("Detected software", ["Property", "Value"], [f"| {name} | {value} |" for name, value in facts])),
-        ("System Flatpak applications", table("System Flatpak applications", ["Application", "Version / origin"], flatpak_rows(data["flatpaks"]))),
-    ]
-    return sections
-
-
-def proposed_documents(hardware, software, documents):
-    hardware_doc = replace_section(
-        documents["hardware"], "Detected system", hardware_sections(hardware)
-    )
-    software_doc = documents["software"]
-    for title, replacement in software_sections(software):
-        software_doc = replace_section(software_doc, title, replacement)
-    return {"hardware.md": hardware_doc, "software.md": software_doc}
-
-
-def unified_diff(path, before, after):
-    return list(
-        difflib.unified_diff(
-            before.splitlines(keepends=True),
-            after.splitlines(keepends=True),
-            fromfile=f"a/{path}",
-            tofile=f"b/{path} (proposed)",
-        )
-    )
-
-
 def collect(device):
     hardware = detect_hardware()
     software = detect_software()
@@ -241,16 +156,6 @@ def collect(device):
         "software": (device / "software.md").read_text(),
     }
     return proposed_documents(hardware, software, documents), documents
-
-
-def changes(proposed, documents, device_rel):
-    return [
-        line
-        for name in ("hardware.md", "software.md")
-        for line in unified_diff(
-            f"{device_rel}/{name}", documents[name.removesuffix(".md")], proposed[name]
-        )
-    ]
 
 
 def apply_changes(proposed, device):
@@ -265,6 +170,11 @@ def main():
         action="store_true",
         help="Write proposed inventory directly to hardware.md and software.md.",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview proposed changes without writing to repository files.",
+    )
     args = parser.parse_args()
     try:
         proposed, documents = collect(DEVICE)
@@ -275,7 +185,7 @@ def main():
     if not diff:
         print("Live inventory matches Markdown.")
         return 0
-    if args.apply:
+    if args.apply and not args.dry_run:
         apply_changes(proposed, DEVICE)
         print("Applied. Review with: git diff device/fedora-laptop/hardware.md device/fedora-laptop/software.md")
         return 0

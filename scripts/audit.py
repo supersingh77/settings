@@ -165,7 +165,7 @@ def tests():
 
 
 def live_inventory_issues():
-    script = ROOT / "device/fedora-laptop/scripts/check-inventory.py"
+    script = ROOT / "device/fedora-laptop/scripts/update-inventory.py"
     result = run([sys.executable, str(script)])
     issues = [] if result.returncode == 0 else (result.stdout + result.stderr).splitlines()
     phone_script = ROOT / "device/phone/scripts/check-phone-inventory.py"

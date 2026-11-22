@@ -1,11 +1,17 @@
 import importlib.util
 import pathlib
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 
-SCRIPT = pathlib.Path(__file__).parents[1] / "scripts" / "check-inventory.py"
-SPEC = importlib.util.spec_from_file_location("generate_inventory", SCRIPT)
+ROOT = pathlib.Path(__file__).parents[3]
+DEVICE = ROOT / "device/fedora-laptop"
+sys.path.insert(0, str(DEVICE / "lib"))
+import inventory_docs as DOCS
+
+SCRIPT = DEVICE / "scripts" / "update-inventory.py"
+SPEC = importlib.util.spec_from_file_location("update_inventory", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
@@ -59,6 +65,7 @@ class InventoryTests(unittest.TestCase):
             "rpm-ostree": '{"deployments":[{"booted":true,"version":"44.1","packages":["ghostty"],"requested-base-removals":["firefox"]}]}',
             "flatpak": "org.example.App\t1.0\tflathub\n",
             "toolbox": "CONTAINER ID  CONTAINER NAME\n123  fedora-toolbox-44\n",
+            "gsettings": "['org.example.App.desktop']",
         }
 
         def command_output(command):
@@ -66,6 +73,8 @@ class InventoryTests(unittest.TestCase):
             if executable == "rpm-ostree":
                 return outputs[executable]
             if executable == "flatpak":
+                return outputs[executable]
+            if executable == "gsettings":
                 return outputs[executable]
             if command[:2] == ["toolbox", "list"]:
                 return outputs["toolbox"]
@@ -80,6 +89,7 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(observed["host"]["base_removals"], ["firefox"])
         self.assertIn("org.example.App", observed["flatpaks"])
         self.assertIn("fedora-toolbox-44", observed["toolboxes"])
+        self.assertEqual(observed["favorites"], ["org.example.App.desktop"])
 
     def test_proposal_replaces_inventory_without_mutating_input(self):
         original = "# Hardware\n\n## Detected system\n\nold\n\n## Caveats\n\nKeep this.\n"
@@ -95,7 +105,7 @@ class InventoryTests(unittest.TestCase):
             "network": [],
             "firmware": "BIOS 1",
         }
-        proposed = MODULE.replace_section(original, "Detected system", MODULE.hardware_sections(data))
+        proposed = DOCS.replace_section(original, "Detected system", DOCS.hardware_sections(data))
         self.assertIn("| Model | New laptop |", proposed)
         self.assertIn("## Caveats\n\nKeep this.", proposed)
         self.assertEqual(original, "# Hardware\n\n## Detected system\n\nold\n\n## Caveats\n\nKeep this.\n")
@@ -117,22 +127,25 @@ class InventoryTests(unittest.TestCase):
             "host": {"version": "44.1", "packages": [], "base_removals": []},
             "flatpaks": "org.example.App\t1.0\tflathub",
             "toolboxes": "CONTAINER ID NAME\n123 fedora-toolbox-44",
+            "favorites": ["org.example.App.desktop"],
             "user_local_apps": [],
         }
         documents = {
             "hardware": "# Hardware\n\n## Detected system\n\nold\n\n## Caveats\n\nKeep hardware note.\n",
             "software": "# Software\n\n## Detected software\n\nold\n\n## Caveats\n\nKeep software note.\n",
         }
-        proposed = MODULE.proposed_documents(hardware, software, documents)
+        proposed = DOCS.proposed_documents(hardware, software, documents)
         self.assertIn("Keep hardware note.", proposed["hardware.md"])
         self.assertIn("Keep software note.", proposed["software.md"])
         self.assertIn("org.example.App", proposed["software.md"])
+        self.assertIn("Favorite applications (GNOME Dash)", proposed["software.md"])
+        self.assertIn("org.example.App.desktop", proposed["software.md"])
 
     def test_proposal_diff_is_repeatable(self):
         before = "# Inventory\n"
         after = "# Inventory\n\n## Detected system\n"
-        first = MODULE.unified_diff("inventory.md", before, after)
-        self.assertEqual(first, MODULE.unified_diff("inventory.md", before, after))
+        first = DOCS.unified_diff("inventory.md", before, after)
+        self.assertEqual(first, DOCS.unified_diff("inventory.md", before, after))
 
     def test_section_replacement_preserves_explanatory_prose(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -142,10 +155,10 @@ class InventoryTests(unittest.TestCase):
                 "## Caveats\n\n| Model | prose-only duplicate |\n"
             )
             document = path.read_text()
-            proposal = MODULE.replace_section(
+            proposal = DOCS.replace_section(
                 document,
                 "Detected system",
-                MODULE.table("Detected system", ["Property", "Value"], ["| Model | Updated laptop |"]),
+                DOCS.table("Detected system", ["Property", "Value"], ["| Model | Updated laptop |"]),
             )
             self.assertIn("| Model | Updated laptop |", proposal)
             self.assertIn("| Model | prose-only duplicate |", proposal)

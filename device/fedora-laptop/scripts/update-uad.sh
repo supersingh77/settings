@@ -13,7 +13,7 @@ set -euo pipefail
 # =============================================================================
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/_lib.sh"
+source "$SCRIPT_DIR/../lib/_lib.sh"
 
 UAD_BIN="$HOME/.local/bin/uad-ng"
 VERSION_FILE="$HOME/.local/bin/uad-ng.version"
