@@ -35,58 +35,10 @@ success "Flatpak step complete."
 # ── 2. OpenWork ────────────────────────────────────────────────────────────────
 step "Checking for OpenWork updates"
 
-INSTALL_DIR="$HOME/.local/lib/openwork"
-VERSION_FILE="$HOME/.local/bin/openwork.version"
-
-# Read installed version from version file
-CURRENT_VERSION=""
-if [ -f "$VERSION_FILE" ]; then
-    CURRENT_VERSION=$(cat "$VERSION_FILE" 2>/dev/null | tr -d '[:space:]')
-fi
-
-info "Installed version : ${CURRENT_VERSION:-not installed}"
-
-# Fetch latest release from GitHub API
-info "Fetching latest release info from GitHub…"
-RELEASE_JSON=$(curl -fsSL \
-    --retry 3 --retry-delay 2 \
-    "https://api.github.com/repos/different-ai/openwork/releases/latest" 2>/dev/null)
-
-if [ -z "$RELEASE_JSON" ]; then
-    warn "Could not reach GitHub API. Skipping OpenWork update check."
+if [ -f "$SCRIPT_DIR/update-openwork.sh" ]; then
+    run_or_warn "OpenWork update had issues" bash "$SCRIPT_DIR/update-openwork.sh"
 else
-    LATEST_VERSION=$(echo "$RELEASE_JSON" | python3 -c "
-import sys, json
-try:
-    data = json.load(sys.stdin)
-    print(data.get('tag_name', '').lstrip('v'))
-except: pass
-" 2>/dev/null || echo "")
-
-    LATEST_URL=$(echo "$RELEASE_JSON" | python3 -c "
-import sys, json
-try:
-    data = json.load(sys.stdin)
-    for a in data.get('assets', []):
-        n = a['name']
-        if n.startswith('openwork-linux-x86_64') and n.endswith('.AppImage'):
-            print(a['browser_download_url'])
-            break
-except: pass
-" 2>/dev/null || echo "")
-
-    if [ -z "$LATEST_VERSION" ] || [ -z "$LATEST_URL" ]; then
-        warn "Could not parse latest OpenWork release. Skipping update."
-    else
-        info "Latest version  : v${LATEST_VERSION}"
-
-        if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ] && [ -d "$INSTALL_DIR" ]; then
-            success "OpenWork is already up to date (v${LATEST_VERSION})."
-        else
-            info "Update available: ${CURRENT_VERSION:-none} → v${LATEST_VERSION}"
-            bash "$SCRIPT_DIR/update-openwork.sh"
-        fi
-    fi
+    warn "update-openwork.sh script not found."
 fi
 
 # ── 3. UAD-NG ─────────────────────────────────────────────────────────────────

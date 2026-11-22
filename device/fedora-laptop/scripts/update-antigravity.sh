@@ -1,33 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-# =============================================================================
-# update-antigravity.sh — Update Antigravity 2.0 Hub
-#
-# Downloads the latest Antigravity 2.0 Hub tarball from Google's CDN and
-# extracts it to ~/.local/lib/antigravity-hub/.
-#
-# Version tracking: ~/.local/lib/antigravity-hub/version
-# Idempotent: running consecutively only downloads if a new version exists.
-#
-# Usage:
-#   bash scripts/update-antigravity.sh
-# =============================================================================
 
-BOLD="\e[1m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-CYAN="\e[36m"
-RED="\e[31m"
-RESET="\e[0m"
-
-info() { echo -e "${CYAN}ℹ️  $*${RESET}"; }
-success() { echo -e "${GREEN}✅ $*${RESET}"; }
-warn() { echo -e "${YELLOW}⚠️  $*${RESET}"; }
-error() {
-    echo -e "${RED}❌ $*${RESET}"
-    exit 1
-}
-step() { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPT_DIR/_lib.sh"
 
 INSTALL_DIR="$HOME/.local/lib/antigravity-hub"
 VERSION_FILE="$INSTALL_DIR/version"

@@ -16,16 +16,16 @@ error() {
 }
 step() { echo -e "\n${BOLD}━━━ $* ━━━${RESET}"; }
 
-SCRIPT_DIR_FOR_DL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 download_file() {
     local url="$1"
     local destination="$2"
-    if python3 "$SCRIPT_DIR_FOR_DL/parallel-download.py" "$url" "$destination" 16; then
-        return 0
+    if command -v curl &>/dev/null; then
+        curl -fL --progress-bar -o "$destination" "$url"
+    elif command -v wget &>/dev/null; then
+        wget --show-progress -O "$destination" "$url"
+    else
+        error "Neither curl nor wget is available."
     fi
-    warn "Parallel download failed; retrying with wget."
-    wget --show-progress -O "$destination" "$url"
 }
 
 run_or_warn() {
