@@ -23,6 +23,6 @@ Desktop shortcut files: Antigravity.lnk, DeepSeek Harness.lnk, File Explorer.lnk
 
 ## Start menu
 
-Start menu pin order is not included in the generated inventory. Verify it visually before documenting a change. `Export-StartLayout` is unreliable in agent sessions; see [`audit-playbook.md`](audit-playbook.md) for the manual fallback.
+Start menu pin order is not included in the generated inventory. Verify it visually before documenting a change. `Export-StartLayout` is unreliable in agent sessions.
 
 No pin backup is stored in the repository. Re-pin through Start or taskbar settings after a rebuild.

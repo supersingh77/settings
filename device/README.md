@@ -6,7 +6,7 @@ This folder is the home for device-specific knowledge: setup, installed essentia
 
 | Device | Status | Reference |
 |---|---|---|
-| Desktop PC | Active | [`desktop/README.md`](desktop/README.md) — [`hardware.md`](desktop/hardware.md), [`software.md`](desktop/software.md), [`startmenu-taskbar.md`](desktop/startmenu-taskbar.md), [`desktop.md`](desktop/desktop.md), [`disk-cleanup.md`](desktop/disk-cleanup.md), [`audit-playbook.md`](desktop/audit-playbook.md) |
+| Desktop PC | Active | [`desktop/README.md`](desktop/README.md) |
 | Laptop (Windows) | Active | [`laptop/`](laptop/) — [`hardware.md`](laptop/hardware.md), [`software.md`](laptop/software.md), [`scripts/`](laptop/scripts/) |
 | Fedora Laptop | Active | [`fedora-laptop/README.md`](fedora-laptop/README.md) |
 | Phone — Redmi Note 11 | Active | [`phone/README.md`](phone/README.md), [`phone/hardware.md`](phone/hardware.md), [`phone/work/`](phone/work/), [`phone/personal/`](phone/personal/) |

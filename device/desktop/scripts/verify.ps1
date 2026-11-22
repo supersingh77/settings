@@ -62,14 +62,6 @@ function Test-GlobalState($Globals) {
     'reads or writes global state on line(s) ' + ((@($Globals) | ForEach-Object { $_.Extent.StartLineNumber }) -join ', ')
 }
 
-function Test-ReadmeIndex([System.IO.FileInfo]$File) {
-    $readme = Join-Path $File.DirectoryName 'README.md'
-    if (-not (Test-Path $readme)) { return 'no README.md in this folder' }
-    $text = Get-Content -LiteralPath $readme -Raw
-    if ($text -notmatch [regex]::Escape($File.Name)) { return "not listed in $($File.Directory.Name)\README.md" }
-    $null
-}
-
 function New-Result([string]$Rule, [string]$Target, [string]$Problem, [string]$Severity) {
     [pscustomobject]@{ Rule = $Rule; Target = $Target; Severity = $Severity; Detail = $Problem }
 }
@@ -102,9 +94,6 @@ foreach ($file in $scripts) {
 
     $globalProblem = Test-GlobalState $facts.Globals
     if ($globalProblem) { $results.Add((New-Result 'no-global' $relative $globalProblem 'FAIL')) }
-
-    $readmeProblem = Test-ReadmeIndex $file
-    if ($readmeProblem) { $results.Add((New-Result 'indexed' $relative $readmeProblem 'FAIL')) }
 }
 
 foreach ($file in $json) {

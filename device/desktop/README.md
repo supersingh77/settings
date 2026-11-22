@@ -11,11 +11,10 @@
 | [Taskbar & Start](startmenu-taskbar.md) | Generated taskbar pins and Start menu verification note |
 | [Desktop Layout](desktop.md) | Placement rules for files and shortcuts |
 | [Disk Cleanup](disk-cleanup.md) | Recurring cleanup procedures |
-| [Audit Playbook](audit-playbook.md) | Manual fallbacks for readings the collector does not cover |
 | [Scripts](scripts/README.md) | Maintenance, video tools, inventory generation and checks |
-| [Tests](tests/README.md) | Behavioural invariants and non-mutating previews |
-| [Library](lib/README.md) | Pure functions the scripts and tests share |
 | [Declared state](declared/README.md) | Rebuildable intent: package manifest, OBS settings, registry tweaks |
+
+Run `pwsh device/desktop/tests/run-tests.ps1` to check desktop script behavior.
 
 ## Setup Rules
 
