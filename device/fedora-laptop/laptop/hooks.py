@@ -3,7 +3,7 @@ PROFILE_LINE = "[ -f ~/.bashrc ] && source ~/.bashrc"
 
 
 def bashrc_hook(repo_root):
-    repo_root = repo_root.replace("'", "'\\''")
+    repo_root = str(repo_root).replace("'", "'\\''")
     return (
         f"export SETTINGS_ROOT='{repo_root}'\n"
         f'if [ -f "$SETTINGS_ROOT/{MARKER}" ]; then . "$SETTINGS_ROOT/{MARKER}"; fi\n'
