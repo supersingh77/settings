@@ -62,7 +62,8 @@ def parse_rpm_ostree(text):
     missing = required - requested.keys()
     if missing:
         raise ValueError(
-            "rpm-ostree status is missing requested state: " + ", ".join(sorted(missing))
+            "rpm-ostree status is missing requested state: "
+            + ", ".join(sorted(missing))
         )
     return (
         booted["version"],

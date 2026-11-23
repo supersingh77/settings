@@ -46,9 +46,7 @@ class ParseTests(unittest.TestCase):
 
     def test_rpm_ostree_rejects_an_unrecognized_state_shape(self):
         with self.assertRaisesRegex(ValueError, "missing requested state"):
-            parse.parse_rpm_ostree(
-                '{"deployments":[{"booted":true,"version":"44.1"}]}'
-            )
+            parse.parse_rpm_ostree('{"deployments":[{"booted":true,"version":"44.1"}]}')
 
     def test_flatpaks_ignore_headers_and_keep_empty_versions(self):
         text = "Application ID\tVersion\tBranch\tOrigin\n" + support.FLATPAKS

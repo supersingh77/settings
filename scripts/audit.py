@@ -203,7 +203,9 @@ def test_issues():
 def live_inventory_issues():
     directory = ROOT / FEDORA
     result = run([sys.executable, "-m", "laptop", "capture", "--check"], cwd=directory)
-    issues = [] if result.returncode == 0 else (result.stdout + result.stderr).splitlines()
+    issues = (
+        [] if result.returncode == 0 else (result.stdout + result.stderr).splitlines()
+    )
     release = run(["rpm", "-E", "%fedora"])
     if release.returncode:
         return issues

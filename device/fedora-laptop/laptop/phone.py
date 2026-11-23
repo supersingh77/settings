@@ -56,7 +56,11 @@ def replace_section(document, title, replacement):
     if start is None:
         return "\n".join([*lines, "", *replacement]).rstrip() + "\n"
     end = next(
-        (index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")),
+        (
+            index
+            for index in range(start + 1, len(lines))
+            if lines[index].startswith("## ")
+        ),
         len(lines),
     )
     return "\n".join([*lines[:start], *replacement, *lines[end:]]).rstrip() + "\n"
