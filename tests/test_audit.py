@@ -116,6 +116,22 @@ class DocTests(unittest.TestCase):
         self.assertEqual(len(AUDIT.doc_issues([source])), 1)
 
 
+class LiveInventoryTests(unittest.TestCase):
+    def test_only_the_laptop_is_checked_unless_a_phone_is_named(self):
+        self.assertEqual(AUDIT.live_commands({}), [["capture", "--check"]])
+
+    def test_a_named_phone_is_checked_with_its_role_and_serial(self):
+        environ = {"AUDIT_PHONE": "work:ABC123"}
+        self.assertEqual(
+            AUDIT.live_commands(environ),
+            [["capture", "--check"], ["phone", "work", "ABC123", "--check"]],
+        )
+
+    def test_incomplete_phone_settings_are_ignored(self):
+        for value in ("", "work", "work:", ":ABC123"):
+            self.assertIsNone(AUDIT.phone_target({"AUDIT_PHONE": value}), value)
+
+
 class LintTests(unittest.TestCase):
     def test_a_missing_tool_is_a_failure_not_a_skip(self):
         original = AUDIT.tool_command

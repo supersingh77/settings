@@ -1,5 +1,6 @@
 import ast
 import io
+import os
 import pathlib
 import re
 import shutil
@@ -211,47 +212,26 @@ def test_issues():
     return issues
 
 
-def live_inventory_issues():
+def phone_target(environ):
+    role, _, serial = environ.get("AUDIT_PHONE", "").partition(":")
+    return (role, serial) if role and serial else None
+
+
+def live_commands(environ):
+    commands = [["capture", "--check"]]
+    target = phone_target(environ)
+    if target:
+        commands.append(["phone", *target, "--check"])
+    return commands
+
+
+def live_inventory_issues(environ=None):
     directory = ROOT / FEDORA
-    result = run([sys.executable, "-m", "laptop", "capture", "--check"], cwd=directory)
-    issues = (
-        [] if result.returncode == 0 else (result.stdout + result.stderr).splitlines()
-    )
-    release = run(["rpm", "-E", "%fedora"])
-    if release.returncode:
-        return issues
-    phone_serial = run(
-        [
-            "toolbox",
-            "run",
-            "--container",
-            f"fedora-toolbox-{release.stdout.strip()}",
-            "adb",
-            "devices",
-        ]
-    )
-    personal_serials = [
-        line.split()[0]
-        for line in phone_serial.stdout.splitlines()[1:]
-        if len(line.split()) > 1
-        and line.split()[1] == "device"
-        and "model:2201117TI" in line
-    ]
-    if phone_serial.returncode == 0 and len(personal_serials) == 1:
-        phone_result = run(
-            [
-                sys.executable,
-                "-m",
-                "laptop",
-                "phone",
-                "personal",
-                personal_serials[0],
-                "--check",
-            ],
-            cwd=directory,
-        )
-        if phone_result.returncode:
-            issues.extend((phone_result.stdout + phone_result.stderr).splitlines())
+    issues = []
+    for arguments in live_commands(os.environ if environ is None else environ):
+        result = run([sys.executable, "-m", "laptop", *arguments], cwd=directory)
+        if result.returncode:
+            issues.extend((result.stdout + result.stderr).splitlines())
     return issues
 
 

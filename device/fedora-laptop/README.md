@@ -17,8 +17,9 @@ Restore does not revert hardware or arbitrary `/etc` settings.
 ## Checks and setup
 
 On Fedora, run `make setup-dev` once and then `make audit`. The audit checks
-code, docs, tests, and live device state. Tests use fixtures and do not change
-the host. The inventory is specific to this laptop and must not be used as a
+code, docs, tests, and live device state. Both phones share one model, so the
+audit cannot infer a phone's role: set `AUDIT_PHONE=<role>:<serial>` to include a
+connected phone. Tests use fixtures and do not change the host. The inventory is specific to this laptop and must not be used as a
 Windows check.
 
 ## Procedures
