@@ -59,6 +59,12 @@ class CaptureTests(unittest.TestCase):
         self.assertIn("wrong machine", other.text)
         self.assertEqual(list(other.device_dir.iterdir()), [])
 
+    def test_capture_handles_battery_capacity_unreported(self):
+        (self.system.root / "sys/class/power_supply/BAT0/energy_full").unlink()
+        self.assertEqual(self.capture(), 0)
+        hardware = (self.system.device_dir / "hardware.md").read_text()
+        self.assertIn("| Battery | BAT0 capacity unreported |", hardware)
+
     def test_failing_probe_command_aborts_capture(self):
         original = self.system.run
 

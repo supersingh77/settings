@@ -9,7 +9,12 @@ MICRO = 1_000_000
 def read(root, relative, required=False):
     path = root / relative
     if path.is_file():
-        return path.read_text().strip()
+        try:
+            return path.read_text().strip()
+        except OSError as err:
+            if required:
+                raise ProbeError(f"unreadable {path}") from err
+            return ""
     if required:
         raise ProbeError(f"missing {path}")
     return ""
@@ -47,18 +52,19 @@ def zram(root):
 def battery(root):
     found = []
     for path in sorted((root / "sys/class/power_supply").glob("*")):
-        if (path / "type").is_file() and (
-            path / "type"
-        ).read_text().strip() == "Battery":
+        if read(root, f"sys/class/power_supply/{path.name}/type") == "Battery":
             design = read(
                 root, f"sys/class/power_supply/{path.name}/energy_full_design"
             )
             full = read(root, f"sys/class/power_supply/{path.name}/energy_full")
             if design and full:
-                found.append(
-                    f"{path.name} {int(design) / MICRO:.1f} Wh design, "
-                    f"{int(full) / MICRO:.1f} Wh full"
-                )
+                try:
+                    found.append(
+                        f"{path.name} {int(design) / MICRO:.1f} Wh design, "
+                        f"{int(full) / MICRO:.1f} Wh full"
+                    )
+                except ValueError:
+                    found.append(f"{path.name} capacity unreported")
             else:
                 found.append(f"{path.name} capacity unreported")
     return ", ".join(found) or "none"
