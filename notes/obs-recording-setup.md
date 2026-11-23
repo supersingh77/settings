@@ -13,22 +13,39 @@ Current recording choices are tracked in [`device/desktop/declared/obs.json`](..
 
 ## Separate desktop and microphone audio
 
-OBS puts both tracks in **one MKV file**. In **Advanced Audio Properties**, assign:
+OBS puts these tracks in **one MKV file**. For the microphone comparison recording, the sources were assigned:
 
-| Source | Track 1 | Track 2 |
-|---|---:|---:|
-| Desktop Audio | ✓ | |
-| Mic/Aux (Owl Lite) | | ✓ |
+| Source | Track |
+|---|---:|
+| Desktop Audio | 1 |
+| Mic/Aux (Owl Lite webcam mic) | 2 |
+| Razer Barracuda X headphone mic | 3 |
 
-Then in **Settings → Output → Recording → Audio Track**, enable only 1 and 2. Muted candidate microphone sources remain muted. To compare them, unmute one and explicitly route it to the track you want.
+In **Settings → Output → Recording → Audio Track**, enable the tracks being recorded. Keep each mic on its own track so an editor can select one mic and mix it with desktop audio.
 
-Extract AAC tracks into separate files with FFmpeg:
+Extract timestamp-preserving M4A copies from a three-track recording with FFmpeg:
 
 ```powershell
-ffmpeg -i "Z:\Recordings\recording.mkv" -map 0:a:0 -c copy "desktop.aac"
-ffmpeg -i "Z:\Recordings\recording.mkv" -map 0:a:1 -c copy "mic.aac"
+ffmpeg -i "Z:\Recordings\recording.mkv" -map 0:a:0 -c copy "desktop.m4a"
+ffmpeg -i "Z:\Recordings\recording.mkv" -map 0:a:1 -c copy "webcam-mic.m4a"
+ffmpeg -i "Z:\Recordings\recording.mkv" -map 0:a:2 -c copy "headphone-mic.m4a"
 ```
 
 ## Latest file checked
 
-`2026-11-23 02-12-11.mkv` had four AAC streams. The `desktop` and `mic` streams were identical to each other; streams 3 and 4 were another identical pair. Thus labels alone did not indicate isolated sources. OBS routing was corrected on 23 Nov; no post-change recording has been checked yet.
+`2026-11-23 02-43-13.mkv` has three separate AAC streams: desktop, Owl Lite webcam mic, and Razer Barracuda X headphone mic. Source integrated loudness / true peak:
+
+| Source | Integrated | True peak |
+|---|---:|---:|
+| Desktop | −14.0 LUFS | −2.6 dBFS |
+| Owl Lite webcam mic | −20.5 LUFS | −6.0 dBFS |
+| Razer headphone mic | −47.2 LUFS | −26.2 dBFS |
+
+Two comparison mixes were saved in `Z:\Recordings`, keeping the AV1 video unchanged and mixing audio to FLAC. Both were loudness-matched near −18 LUFS / −2 dBTP:
+
+| File | Desktop gain | Mic gain | Measured mix |
+|---|---:|---:|---:|
+| `2026-11-23 02-43-13 - webcam mic mix.mkv` | −4 dB | +3 dB | −17.6 LUFS / −2.8 dBFS true peak |
+| `2026-11-23 02-43-13 - headphone mic mix.mkv` | −10 dB | +24 dB | −17.8 LUFS / −2.0 dBFS true peak |
+
+The headphone mic needs a large capture gain increase; boosting it in post can raise its noise floor.
