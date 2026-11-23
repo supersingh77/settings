@@ -150,6 +150,6 @@ $rows = foreach ($file in $files) {
 }
 
 $rows | Format-Table SnrDb, NoiseDb, VoiceDb, PeakDb, Lufs, Lra, BodyDb, MidDb, HighDb, Verdict -AutoSize
-Write-Host 'How to read this: scripts/README.md'
+Write-Host 'How to read this: device/desktop/README.md'
 
 exit 0

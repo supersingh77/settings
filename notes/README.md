@@ -24,13 +24,3 @@ Long-term reference guides that outlive a single task. One topic per file, dated
 ```
 
 Keep it about *how the thing works and why*, not a snapshot of current versions — those belong in the device docs and go stale fastest.
-
-## Removed 16 Nov 2026
-
-Dropped because they described setups that no longer exist and would have been misleading:
-
-- `assetto-corsa-drift-setup.md`, `assetto-corsa-optimization.md`, `assetto-corsa-wheel-ffb.md` — sim-racing tuning for the old setup, untouched for months
-- `droidcam-obs-plugin.md`, `obs-stream-settings.md`, `streaming-workflow.md` — built around the phone-DroidCam webcam; replaced by a Kreo Owl Lite, so the OBS/DroidCam stack is being rebuilt from scratch
-- `music-starter.md`, `vod-posting-guide.md` — personal guides unrelated to system configuration
-
-The `games/` folder (Assetto Corsa `.ini` backups and Content Manager presets) was removed at the same time for the same reason: the settings no longer matched the car/wheel setup. Everything is still in Git history if it is ever needed.

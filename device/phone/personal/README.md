@@ -1,26 +1,4 @@
-# Personal phone — Redmi Note 11
-
-| Property | Value |
-|---|---|
-| Model | 2201117TI |
-| Device / product | spes / spes_in |
-| RAM visible to Android | 5.5 GiB |
-
-## installed-user-0 packages
-
-283 packages. Details are tracked in [`installed-user-0.txt`](installed-user-0.txt).
-
-## third-party-user-0 packages
-
-55 packages. Details are tracked in [`third-party-user-0.txt`](third-party-user-0.txt).
-
-## all-user-0-including-uninstalled packages
-
-391 packages. Details are tracked in [`all-user-0-including-uninstalled.txt`](all-user-0-including-uninstalled.txt).
-
-## not-installed-user-0 packages
-
-108 packages. Details are tracked in [`not-installed-user-0.txt`](not-installed-user-0.txt).
+# Personal Redmi Note 11
 
 ## Device state
 
