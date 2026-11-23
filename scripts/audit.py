@@ -12,13 +12,14 @@ FEDORA = pathlib.Path("device/fedora-laptop")
 IGNORED_PARTS = {".git", ".opencode", ".venv", "__pycache__"}
 SHELL_COMMENT = re.compile(r"^\s*#(?!!)")
 DOC_LINK = re.compile(r"\[[^]]+\]\(([^)]+)(?:#[^)]+)?\)")
-BACKTICK_PATH = re.compile(r"`((?:device|notes|inbox|outbox)/[^`\s]*)`")
-PLACEHOLDER = re.compile(r"[<>*{}\[\]…]")
-FRESHNESS = re.compile(
-    r"last verified|last checked|verified on|as of|last updated|current host|host queried",
-    re.IGNORECASE,
+BACKTICK_PATH = re.compile(
+    r"`((?:device|notes|inbox|outbox|scripts|declared|tests)/[^`\s]*)`"
 )
+PLACEHOLDER = re.compile(r"[<>*{}\[\]…]")
 DATE = re.compile(r"\b20\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\b")
+MONTH_DATE = re.compile(
+    r"\b\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* 20\d{2}\b"
+)
 PYTHON_AREAS = (
     "scripts",
     "tests",
@@ -126,9 +127,17 @@ def orphan_issues():
 def doc_issues(paths):
     issues = []
     for path in paths:
-        for number, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
-            if FRESHNESS.search(line) and DATE.search(line):
-                issues.append(f"{path}:{number}: dated freshness claim")
+        fenced = False
+        lines = path.read_text(errors="replace").splitlines()
+        for number, line in enumerate(lines, 1):
+            if line.lstrip().startswith("```"):
+                fenced = not fenced
+                continue
+            if fenced:
+                continue
+            prose = not line.startswith("|")
+            if prose and (DATE.search(line) or MONTH_DATE.search(line)):
+                issues.append(f"{path}:{number}: dated statement")
             for target in DOC_LINK.findall(line):
                 if "://" in target:
                     continue
@@ -137,7 +146,9 @@ def doc_issues(paths):
                 if not (base / file_target).resolve().exists():
                     issues.append(f"{path}:{number}: missing document {target}")
             for claim in BACKTICK_PATH.findall(line):
-                if not PLACEHOLDER.search(claim) and not (ROOT / claim).exists():
+                if PLACEHOLDER.search(claim):
+                    continue
+                if not ((ROOT / claim).exists() or (path.parent / claim).exists()):
                     issues.append(f"{path}:{number}: missing path {claim}")
     return issues
 
@@ -177,7 +188,7 @@ def lint_issues(shell, python):
             continue
         command = tool_command(tool, [*arguments, *map(str, files)])
         if command is None:
-            print(f"INFO {tool} unavailable; skipped")
+            issues.append(f"{tool} is not installed: run make setup-dev")
             continue
         result = run(command)
         if result.returncode:

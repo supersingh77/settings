@@ -82,10 +82,54 @@ class DocTests(unittest.TestCase):
         self.assertEqual(len(issues), 3)
         self.assertTrue(any("missing path device/gone.md" in i for i in issues))
 
+    def test_any_date_in_prose_is_a_dated_statement(self):
+        workspace = Workspace(self)
+        source = workspace.write(
+            "README.md",
+            "On 2026-10-08 the host was updated.\nUpdated 16 Nov 2026.\n"
+            "| Security patch | 2026-02-01 |\n```\n2026-01-01\n```\nNo date here.\n",
+        )
+        issues = AUDIT.doc_issues([source])
+        self.assertEqual(len(issues), 2)
+        self.assertTrue(all("dated statement" in issue for issue in issues))
+
+    def test_removed_script_paths_are_reported_and_relative_paths_resolve(self):
+        workspace = Workspace(self)
+        workspace.write("device/fedora-laptop/declared/apps.json", "{}")
+        workspace.write("scripts/audit.py")
+        source = workspace.write(
+            "device/fedora-laptop/lessons.md",
+            "`scripts/update-system.sh` `declared/apps.json` `scripts/audit.py`\n",
+        )
+        issues = AUDIT.doc_issues([source])
+        self.assertEqual(len(issues), 1)
+        self.assertIn("missing path scripts/update-system.sh", issues[0])
+
+    def test_links_inside_code_fences_are_examples_not_references(self):
+        workspace = Workspace(self)
+        source = workspace.write("README.md", "```\n[x](nowhere.md)\n```\n")
+        self.assertEqual(AUDIT.doc_issues([source]), [])
+
     def test_device_index_relative_links_are_checked(self):
         workspace = Workspace(self)
         source = workspace.write("device/README.md", "[phone apps](phone/apps/)\n")
         self.assertEqual(len(AUDIT.doc_issues([source])), 1)
+
+
+class LintTests(unittest.TestCase):
+    def test_a_missing_tool_is_a_failure_not_a_skip(self):
+        original = AUDIT.tool_command
+        AUDIT.tool_command = lambda tool, arguments: None
+        self.addCleanup(setattr, AUDIT, "tool_command", original)
+        issues = AUDIT.lint_issues([], [pathlib.Path("x.py")])
+        self.assertTrue(issues)
+        self.assertTrue(all("make setup-dev" in issue for issue in issues))
+
+    def test_no_files_means_no_tool_is_needed(self):
+        original = AUDIT.tool_command
+        AUDIT.tool_command = lambda tool, arguments: None
+        self.addCleanup(setattr, AUDIT, "tool_command", original)
+        self.assertEqual(AUDIT.lint_issues([], []), [])
 
 
 if __name__ == "__main__":
