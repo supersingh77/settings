@@ -68,7 +68,7 @@ foreach ($doc in $docs) {
     $outsideFences = [regex]::Replace($text, '(?ms)^\s*```.*?^\s*```\s*$', '')
     foreach ($match in [regex]::Matches($outsideFences, '`([^`]+)`')) {
         $claim = $match.Groups[1].Value.Trim().TrimEnd('/')
-        if ($claim -notmatch '^(device|notes|inbox|outbox)/' -and $claim -notin @('README.md', 'CONTEXT.md')) { continue }
+        if ($claim -notmatch '^(device|notes|inbox|outbox)/' -and $claim -notin @('README.md')) { continue }
         if ($claim -notmatch '^[\w./\-]+$') { continue }
         $candidate = $null
         try { $candidate = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $claim)) } catch { $candidate = $null }

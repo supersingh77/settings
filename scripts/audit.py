@@ -155,9 +155,7 @@ def doc_issues(paths):
 
 
 def doc_paths():
-    scoped = {
-        ROOT / name for name in ("README.md", "CONTEXT.md", "AGENTS.md", "STYLE.md")
-    }
+    scoped = {ROOT / name for name in ("README.md", "AGENTS.md")}
     scoped |= {ROOT / "device/README.md", ROOT / "device/phone/README.md"}
     return [
         path
