@@ -119,7 +119,7 @@ fine.)
 
 ## 7. Silverblue updates are staged; an ordinary restart may not apply them
 
-The `update` alias runs `scripts/update-system.sh`. Its `rpm-ostree upgrade` step stages a new immutable deployment; the script then tells you to reboot. Staging is **not** the same as booting the new deployment. GNOME's ordinary **Restart** restarts the selected/booted deployment; the update takes effect only after booting the staged deployment (for example, choosing **Restart & Update** when Software offers it, or restarting after checking `rpm-ostree status`).
+The `update` alias runs `laptop update`. Its `rpm-ostree upgrade` step stages a new immutable deployment, and the command then reports that a reboot is needed. Staging is **not** the same as booting the new deployment. GNOME's ordinary **Restart** restarts the selected/booted deployment; the update takes effect only after booting the staged deployment (for example, choosing **Restart & Update** when Software offers it, or restarting after checking `rpm-ostree status`).
 
 Use `rpm-ostree status` after running `update` and again after reboot:
 
@@ -130,9 +130,7 @@ uname -r
 
 Confirm that the desired new version is the booted deployment (`●`) and check that `uname -r` matches its kernel. A pending or cached update by itself does not mean it has been applied, and an ordinary desktop restart is not evidence that an update transaction failed.
 
-On 2026-10-08, before the user's current `update` run, the booted deployment was `44.20261006.0` with kernel `7.2.8-200.fc44`. A system update to `44.20261008.0` was cached/pending, including kernel `7.2.9-200.fc44` and UPower `1.91.5`; it was not yet booted. Treat these as a dated observation, not the current state after that update run.
-
-The update script updates Flatpaks, OpenWork, UAD-NG, Antigravity, Toolbox packages, and the host deployment. User-app/container changes can take effect immediately; host base-system changes require booting the staged deployment. See `scripts/update-system.sh`.
+`laptop update` runs the steps listed in `declared/maintenance.json`. User-app and container changes can take effect immediately; host base-system changes require booting the staged deployment.
 
 ---
 
@@ -154,7 +152,7 @@ Replace `-1` with the matching boot index if necessary. If the machine becomes c
 
 ## 9. Inventory RAM using the live OS and firmware; do not equate it to installed modules
 
-On 2026-10-08, the documentation listed 12GB of physical memory modules, but Fedora reported 10GiB usable and an 8GiB zram swap device. Usable memory, memory reserved by firmware/hardware, installed DIMM capacity, and zram swap are different measures. This discrepancy alone does not establish a changed or failing module. Check firmware setup or run `sudo dmidecode --type memory`, and update the inventory only after verifying physical modules.
+Documentation once listed 12GB of physical memory modules, but Fedora reported 10GiB usable and an 8GiB zram swap device. Usable memory, memory reserved by firmware/hardware, installed DIMM capacity, and zram swap are different measures. This discrepancy alone does not establish a changed or failing module. Check firmware setup or run `sudo dmidecode --type memory`, and update the inventory only after verifying physical modules.
 
 ---
 

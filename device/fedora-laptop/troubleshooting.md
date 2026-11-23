@@ -21,11 +21,10 @@ The built-in battery is documented as dead. Silverblue deployments have separate
 
 For host updates, `rpm-ostree status` distinguishes the booted deployment from a staged one. Reboot to activate staged host changes; Flatpak and user-installed app updates take effect separately.
 
-To repair OpenWork after an update issue, remove the app directory, wrapper, and version file, then run `update-openwork`:
+To repair OpenWork after an update issue, reinstall it from its declared release:
 
 ```bash
-rm -rf ~/.local/lib/openwork ~/.local/bin/openwork ~/.local/bin/openwork.version
-update-openwork
+laptop apps openwork --force
 ```
 
 For non-boot issues, use the app's own repair/update command or inspect its journal before applying a broad cleanup. Avoid editing immutable-root mounts or masking core OSTree/systemd units without checking Fedora's supported guidance.
