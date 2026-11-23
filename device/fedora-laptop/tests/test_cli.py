@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from laptop import declared, hooks
+from laptop import apps, declared, hooks
 from laptop.cli import main
 from laptop.render import parse_software
 from tests.support import FakeSystem
@@ -105,6 +105,14 @@ class RestoreTests(unittest.TestCase):
         )
 
     def test_dry_run_runs_nothing(self):
+        spec = declared.load("apps")["openwork"]
+        relative = apps.version_path(spec, self.system.home).lstrip("/")
+        version = self.system.root / relative
+        version.parent.mkdir(parents=True, exist_ok=True)
+        version.write_text("1.0.0\n")
+        main(["capture"], self.env)
+        version.unlink()
+        self.system.output.clear()
         self.system.flatpaks = ""
         self.assertEqual(main(["restore", "--dry-run"], self.env), 0)
         self.assertEqual(self.system.live, [])
