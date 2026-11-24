@@ -1,3 +1,7 @@
+---
+refs:
+---
+
 # Notes
 
 Long-term reference guides that outlive a single task. One topic per file, dated, with a `> Device:` line when it only applies to one machine.

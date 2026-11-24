@@ -1,3 +1,7 @@
+---
+refs:
+---
+
 # Windows shell: no default verb, and the app picker never opens
 
 > Device: desktop | Verified 16-17 Nov 2026 | Status: unresolved on this image

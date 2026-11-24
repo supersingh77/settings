@@ -1,3 +1,7 @@
+---
+refs:
+---
+
 # OBS Recording Setup
 
 > Device: desktop | Updated: 2026-11-23 | OBS 33.0.3
