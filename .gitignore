@@ -14,3 +14,12 @@ Desktop.ini
 *.jpg
 *.jpeg
 *.webp
+
+# bun
+node_modules/
+dist/
+
+/inbox/*
+/outbox/*
+!/inbox/.gitkeep
+!/outbox/.gitkeep
