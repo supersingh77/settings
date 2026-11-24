@@ -1,0 +1,88 @@
+{"id":"reg:7-Zip (x64)","a":{},"o":{"raw":"7-Zip 26.06 (x64)","version":"26.06"}}
+{"id":"reg:AMD Chipset Software","a":{},"o":{"raw":"AMD Chipset Software","version":"8.09.28.1124"}}
+{"id":"reg:AMD DVR","a":{},"o":{"raw":"AMD DVR","version":"26.20.26320.1325"}}
+{"id":"reg:AMD GPIO2 Driver","a":{},"o":{"raw":"AMD GPIO2 Driver","version":"2.2.0.136"}}
+{"id":"reg:AMD Install Manager","a":{},"o":{"raw":"AMD Install Manager","version":"26.20.26320.1318"}}
+{"id":"reg:AMD PCI Driver","a":{},"o":{"raw":"AMD PCI Driver","version":"1.0.0.90"}}
+{"id":"reg:AMD PSP Driver","a":{},"o":{"raw":"AMD PSP Driver","version":"5.40.0.0"}}
+{"id":"reg:AMD Ryzen Balanced Driver","a":{},"o":{"raw":"AMD Ryzen Balanced Driver","version":"8.0.1.13"}}
+{"id":"reg:AMD SBxxx SMBus Driver","a":{},"o":{"raw":"AMD SBxxx SMBus Driver","version":"5.12.0.44"}}
+{"id":"reg:AMD Settings","a":{},"o":{"raw":"AMD Settings","version":"2026.1116.1328.2112"}}
+{"id":"reg:AMD Software","a":{},"o":{"raw":"AMD Software","version":"26.11.2"}}
+{"id":"reg:AMD WVR64","a":{},"o":{"raw":"AMD WVR64","version":"26.20.26320.1324"}}
+{"id":"reg:AMD_Chipset_Drivers","a":{},"o":{"raw":"AMD_Chipset_Drivers","version":"8.09.28.1124"}}
+{"id":"reg:ActivityWatch","a":{},"o":{"raw":"ActivityWatch","version":"0.14.3"}}
+{"id":"reg:Adobe Acrobat (64-bit)","a":{},"o":{"raw":"Adobe Acrobat (64-bit)","version":"26.003.22110"}}
+{"id":"reg:Antigravity","a":{},"o":{"raw":"Antigravity 2.35.1","version":"2.35.1"}}
+{"id":"reg:Branding64","a":{},"o":{"raw":"Branding64","version":"1.00.0009"}}
+{"id":"reg:Bun","a":{},"o":{"raw":"Bun","version":"1.4.5"}}
+{"id":"reg:DeepSeek Harness","a":{},"o":{"raw":"DeepSeek Harness","version":"0.2.2-rc.5"}}
+{"id":"reg:Discord","a":{},"o":{"raw":"Discord","version":"1.0.9265"}}
+{"id":"reg:ExitLag","a":{},"o":{"raw":"ExitLag version 5.23.3","version":"5.23.3"}}
+{"id":"reg:Focusrite Audio Drivers","a":{},"o":{"raw":"Focusrite Audio Drivers 4.150.0.432","version":"4.150.0.432"}}
+{"id":"reg:Focusrite Control 2","a":{},"o":{"raw":"Focusrite Control 2 1.1210.0.0","version":"1.1210.0.0"}}
+{"id":"reg:GTA San Andreas","a":{},"o":{"raw":"GTA San Andreas","version":"1.00.00001"}}
+{"id":"reg:GameSir Connect","a":{},"o":{"raw":"GameSir Connect 1.17.4","version":"1.17.4"}}
+{"id":"reg:Gemini","a":{},"o":{"raw":"Gemini","version":"1.21.1"}}
+{"id":"reg:GenOffice","a":{},"o":{"raw":"GenOffice 0.13.615","version":"0.13.615"}}
+{"id":"reg:Git","a":{},"o":{"raw":"Git","version":"2.56.1"}}
+{"id":"reg:GitHub CLI","a":{},"o":{"raw":"GitHub CLI","version":"2.105.0"}}
+{"id":"reg:Google Chrome","a":{},"o":{"raw":"Google Chrome","version":"158.0.8127.37"}}
+{"id":"reg:HWiNFO® 64","a":{},"o":{"raw":"HWiNFO® 64","version":"8.60"}}
+{"id":"reg:LocalSend","a":{},"o":{"raw":"LocalSend version 1.18.2","version":"1.18.2"}}
+{"id":"reg:Microsoft .NET Host - (x64)","a":{},"o":{"raw":"Microsoft .NET Host - 8.0.34 (x64)","version":"64.136.61665"}}
+{"id":"reg:Microsoft .NET Host FX Resolver - (x64)","a":{},"o":{"raw":"Microsoft .NET Host FX Resolver - 8.0.34 (x64)","version":"64.136.61665"}}
+{"id":"reg:Microsoft .NET Runtime - (x64)","a":{},"o":{"raw":"Microsoft .NET Runtime - 8.0.34 (x64)","version":"64.136.61665"}}
+{"id":"reg:Microsoft Edge WebView2 Runtime","a":{},"o":{"raw":"Microsoft Edge WebView2 Runtime","version":"158.0.4370.33"}}
+{"id":"reg:Microsoft Visual C++ 2010 x64 Redistributable","a":{},"o":{"raw":"Microsoft Visual C++ 2010  x64 Redistributable - 10.0.40219","version":"10.0.40219"}}
+{"id":"reg:Microsoft Visual C++ 2010 x86 Redistributable","a":{},"o":{"raw":"Microsoft Visual C++ 2010  x86 Redistributable - 10.0.40219","version":"10.0.40219"}}
+{"id":"reg:Microsoft Visual C++ 2012 Redistributable (x64)","a":{},"o":{"raw":"Microsoft Visual C++ 2012 Redistributable (x64) - 11.0.61030","version":"11.0.61030.0"}}
+{"id":"reg:Microsoft Visual C++ 2012 Redistributable (x86)","a":{},"o":{"raw":"Microsoft Visual C++ 2012 Redistributable (x86) - 11.0.61030","version":"11.0.61030.0"}}
+{"id":"reg:Microsoft Visual C++ 2012 x64 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2012 x64 Additional Runtime - 11.0.61030","version":"11.0.61030"}}
+{"id":"reg:Microsoft Visual C++ 2012 x64 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2012 x64 Minimum Runtime - 11.0.61030","version":"11.0.61030"}}
+{"id":"reg:Microsoft Visual C++ 2012 x86 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2012 x86 Additional Runtime - 11.0.61030","version":"11.0.61030"}}
+{"id":"reg:Microsoft Visual C++ 2012 x86 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2012 x86 Minimum Runtime - 11.0.61030","version":"11.0.61030"}}
+{"id":"reg:Microsoft Visual C++ 2013 Redistributable (x64)","a":{},"o":{"raw":"Microsoft Visual C++ 2013 Redistributable (x64) - 12.0.40664","version":"12.0.40664.0"}}
+{"id":"reg:Microsoft Visual C++ 2013 Redistributable (x86)","a":{},"o":{"raw":"Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.40664","version":"12.0.40664.0"}}
+{"id":"reg:Microsoft Visual C++ 2013 x64 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2013 x64 Additional Runtime - 12.0.40664","version":"12.0.40664"}}
+{"id":"reg:Microsoft Visual C++ 2013 x64 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2013 x64 Minimum Runtime - 12.0.40664","version":"12.0.40664"}}
+{"id":"reg:Microsoft Visual C++ 2013 x86 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.40664","version":"12.0.40664"}}
+{"id":"reg:Microsoft Visual C++ 2013 x86 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.40664","version":"12.0.40664"}}
+{"id":"reg:Microsoft Visual C++ 2022 X64 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2022 X64 Additional Runtime - 14.52.37029","version":"14.52.37029"}}
+{"id":"reg:Microsoft Visual C++ 2022 X64 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2022 X64 Minimum Runtime - 14.52.37029","version":"14.52.37029"}}
+{"id":"reg:Microsoft Visual C++ 2022 X86 Additional Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2022 X86 Additional Runtime - 14.52.37029","version":"14.52.37029"}}
+{"id":"reg:Microsoft Visual C++ 2022 X86 Minimum Runtime","a":{},"o":{"raw":"Microsoft Visual C++ 2022 X86 Minimum Runtime - 14.52.37029","version":"14.52.37029"}}
+{"id":"reg:Microsoft Visual C++ v14 Redistributable (x64)","a":{},"o":{"raw":"Microsoft Visual C++ v14 Redistributable (x64) - 14.52.37029","version":"14.52.37029.0"}}
+{"id":"reg:Microsoft Visual C++ v14 Redistributable (x86)","a":{},"o":{"raw":"Microsoft Visual C++ v14 Redistributable (x86) - 14.52.37029","version":"14.52.37029.0"}}
+{"id":"reg:Microsoft Windows Application Compatibility Fix Database","a":{},"o":{"raw":"Microsoft Windows Application Compatibility Fix Database"}}
+{"id":"reg:Microsoft Windows Desktop Runtime - (x64)","a":{},"o":{"raw":"Microsoft Windows Desktop Runtime - 8.0.34 (x64)","version":"64.136.61676"}}
+{"id":"reg:Mozilla Firefox (x64 en-US)","a":{},"o":{"raw":"Mozilla Firefox (x64 en-US)","version":"160.0.1"}}
+{"id":"reg:Mozilla Maintenance Service","a":{},"o":{"raw":"Mozilla Maintenance Service","version":"158.0.1"}}
+{"id":"reg:OBS Studio","a":{},"o":{"raw":"OBS Studio","version":"33.0.3"}}
+{"id":"reg:OpenWork","a":{},"o":{"raw":"OpenWork 0.18.71","version":"0.18.71"}}
+{"id":"reg:PXN SimRacing","a":{},"o":{"raw":"PXN SimRacing","version":"1.2.0.0"}}
+{"id":"reg:PotPlayer-64 bit","a":{},"o":{"raw":"PotPlayer-64 bit","version":"26.10.21.0"}}
+{"id":"reg:PowerShell 7-x64","a":{},"o":{"raw":"PowerShell 7-x64","version":"7.6.10.0"}}
+{"id":"reg:Promontory_GPIO Driver","a":{},"o":{"raw":"Promontory_GPIO Driver","version":"3.0.5.0"}}
+{"id":"reg:Python (64-bit)","a":{},"o":{"raw":"Python 3.14.10 (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Add to Path (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Add to Path (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Core Interpreter (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Core Interpreter (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Development Libraries (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Development Libraries (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Documentation (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Documentation (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Executables (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Executables (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Launcher","a":{},"o":{"raw":"Python Launcher","version":"3.15.2150.0"}}
+{"id":"reg:Python Standard Library (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Standard Library (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python Tcl/Tk Support (64-bit)","a":{},"o":{"raw":"Python 3.14.10 Tcl/Tk Support (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Python pip Bootstrap (64-bit)","a":{},"o":{"raw":"Python 3.14.10 pip Bootstrap (64-bit)","version":"3.14.10150.0"}}
+{"id":"reg:Radmin VPN","a":{},"o":{"raw":"Radmin VPN 2.1.2","version":"2.1.4952.2"}}
+{"id":"reg:Realtek Audio Driver","a":{},"o":{"raw":"Realtek Audio Driver","version":"6.0.9231.1"}}
+{"id":"reg:Realtek Ethernet Controller Driver","a":{},"o":{"raw":"Realtek Ethernet Controller Driver","version":"10.50.511.2021"}}
+{"id":"reg:Revision Tool","a":{},"o":{"raw":"Revision Tool version 2.15.1","version":"2.15.1"}}
+{"id":"reg:Riot Vanguard","a":{},"o":{"raw":"Riot Vanguard"}}
+{"id":"reg:Roblox Player for amar","a":{},"o":{"raw":"Roblox Player for amar"}}
+{"id":"reg:RyzenMasterSDK","a":{},"o":{"raw":"RyzenMasterSDK","version":"26.20.26322.0049"}}
+{"id":"reg:Steam","a":{},"o":{"raw":"Steam","version":"2.10.91.91"}}
+{"id":"reg:T3 Code (Beta)","a":{},"o":{"raw":"T3 Code (Beta) 0.1.11","version":"0.1.11"}}
+{"id":"reg:TP-Link UB500 Bluetooth Driver","a":{},"o":{"raw":"TP-Link UB500 Bluetooth 5.3 Driver","version":"1051.1038.1040.230912"}}
+{"id":"reg:Twinkle Tray","a":{},"o":{"raw":"Twinkle Tray 1.17.2","version":"1.17.2"}}
+{"id":"reg:VLC media player","a":{},"o":{"raw":"VLC media player","version":"3.0.24"}}
