@@ -1,0 +1,1 @@
+[{"path":"C:\\Program Files (x86)\\Steam","registered":true,"apps":1},{"path":"V:\\Games\\SteamLibrary","registered":true,"apps":6},{"path":"Z:\\Games\\SteamLibrary","registered":false,"apps":2}]
