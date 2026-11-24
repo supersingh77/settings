@@ -1,0 +1,6 @@
+{
+  "id": "desktop",
+  "match": { "hostname": "DESKTOP-KGBOJJL" },
+  "facets": ["winget", "steam", "registry-app"],
+  "ignore": []
+}
