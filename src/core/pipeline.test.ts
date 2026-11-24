@@ -1,7 +1,7 @@
 import { beforeEach, expect, test } from "bun:test"
 import { PreconditionError, ProbeError } from "./errors"
 import { capture, compare, restore, statePath } from "./pipeline"
-import { pending } from "./plan"
+import { managedOnly, pending } from "./plan"
 import { fakeEnv, makeWorld, toyDevice, toyFacet, type World } from "../testing/world"
 
 const facets = [toyFacet]
@@ -81,4 +81,18 @@ test("drift without a captured store is a precondition failure", async () => {
 test("a failing probe is reported as a probe error naming the facet", async () => {
   const broken = { ...toyFacet, command: () => ({ argv: ["nothing"] }) }
   expect(compare(fakeEnv(world), toyDevice, [broken], opts)).rejects.toBeInstanceOf(ProbeError)
+})
+
+test("an observed facet shows drift but restore plans nothing and still converges", async () => {
+  const observed = [{ ...toyFacet, mode: "observed" as const }]
+  const env = fakeEnv(world)
+  await capture(env, toyDevice, observed, false)
+  world.items.set("gamma", "3")
+  const drifted = await compare(env, toyDevice, observed, opts)
+  expect(pending(drifted)).toBe(true)
+  const result = await restore(env, toyDevice, observed, { ...opts, dryRun: false })
+  expect(result.plan.steps).toEqual([])
+  expect(world.mutations).toEqual([])
+  expect(pending(managedOnly(result.remaining))).toBe(false)
+  expect(pending(result.remaining)).toBe(true)
 })

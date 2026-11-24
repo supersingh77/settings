@@ -1,6 +1,6 @@
 import { Exit, UsageError } from "../core/errors"
 import { capture, compare, restore } from "../core/pipeline"
-import { destructiveSteps, type Delta, pending } from "../core/plan"
+import { destructiveSteps, type Delta, managedOnly, pending } from "../core/plan"
 import type { Outcome, Verb } from "./ctx"
 import { targetOf } from "./target"
 
@@ -58,13 +58,16 @@ const restoreVerb: Verb = {
     }
     const result = await restore(ctx.env, device, facets, options)
     const steps = result.plan.steps.map((step) => `${step.id}: ${step.argv.join(" ")}`)
+    const manual = lines(result.remaining.filter((delta) => !delta.managed)).map((line) => `manual: ${line}`)
     if (ctx.args.dryRun) {
-      return report(steps.length ? steps : ["nothing to do"], { dryRun: true, ...result }, steps.length ? Exit.found : Exit.ok)
+      const text = [...(steps.length ? steps : ["nothing to do"]), ...manual]
+      return report(text, { dryRun: true, manual, ...result }, steps.length ? Exit.found : Exit.ok)
     }
     const failed = result.results.find((entry) => entry.code !== 0)
-    const converged = !failed && !pending(result.remaining)
-    const text = failed ? [`step ${failed.step.id} failed: ${failed.err}`] : converged ? ["converged"] : lines(result.remaining)
-    return report(text, { dryRun: false, converged, ...result }, converged ? Exit.ok : Exit.failed)
+    const left = managedOnly(result.remaining)
+    const converged = !failed && !pending(left)
+    const text = failed ? [`step ${failed.step.id} failed: ${failed.err}`] : converged ? ["converged", ...manual] : lines(left)
+    return report(text, { dryRun: false, converged, manual, ...result }, converged ? Exit.ok : Exit.failed)
   },
 }
 

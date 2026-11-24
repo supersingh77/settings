@@ -50,7 +50,7 @@ export async function compare(
     const have = await probe(env, device, facet)
     const want = await readState(env, device, facet)
     const changes = diff(want, have, { strict: options.strict, ignore: device.ignore })
-    deltas.push({ facet: facet.name, changes })
+    deltas.push({ facet: facet.name, managed: facet.mode === "managed", changes })
   }
   return deltas
 }
@@ -69,7 +69,7 @@ export async function capture(
     const before = text === null ? [] : parseJsonl(text, path)
     const changes = diff(before, have, { strict: true, ignore: device.ignore })
     if (!dryRun) await env.write(path, formatJsonl(have, path))
-    deltas.push({ facet: facet.name, changes })
+    deltas.push({ facet: facet.name, managed: facet.mode === "managed", changes })
   }
   return deltas
 }

@@ -20,6 +20,7 @@ export type Change = {
 
 export type Facet = {
   name: string
+  mode: "managed" | "observed"
   command: (device: Device) => Cmd
   parse: (stdout: string) => Item[]
   plan: (change: Change) => Step[]
