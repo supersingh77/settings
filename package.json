@@ -1,0 +1,19 @@
+{
+  "name": "settings",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun src/cli/main.ts",
+    "check": "bun src/cli/main.ts check",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "build": "bun build --compile src/cli/main.ts --outfile dist/dev"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.5",
+    "typescript": "5.9.3"
+  }
+}
