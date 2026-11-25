@@ -8,6 +8,7 @@
 - Run the smallest relevant checks after changes and report anything unavailable.
 - On the Windows desktop, run `bun run check`, `bun test`, `bun run typecheck`, and the read-only live `bun run dev drift`. Run the remaining media-utility PowerShell test with `pwsh device/desktop/tests/run-tests.ps1`.
 - On the Fedora laptop, run `make setup-dev` once and then `make audit`. This audit reads live Fedora and optional phone state; do not use it as a Windows check.
+- Agent sessions run inside the `fedora-toolbox-44` container: run `bun run check`, `bun test` and `bun run typecheck` there, and live verbs on the host with `flatpak-spawn --host --directory=$PWD <argv>` (bun is `/var/home/amrx/.bun/bin/bun`; the old tool is `env PYTHONPATH=device/fedora-laptop python3 -m laptop`). Host `sudo` needs a password; never run a host-mutating verb from an agent session.
 
 ## Editing workflow
 
