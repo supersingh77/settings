@@ -1,0 +1,12 @@
+{
+  "id": "phone-personal",
+  "platform": "android",
+  "match": {
+    "serial": "6cbccfac"
+  },
+  "via": "fedora-laptop",
+  "facets": [
+    "android"
+  ],
+  "ignore": []
+}

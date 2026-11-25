@@ -26,6 +26,7 @@ export const Device = z.strictObject({
   match: z.strictObject({
     hostname: z.string().optional(),
     board: z.string().optional(),
+    serial: z.string().optional(),
   }),
   via: Name.optional(),
   facets: z.array(Name),

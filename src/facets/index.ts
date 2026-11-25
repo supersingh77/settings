@@ -1,4 +1,5 @@
 import type { Facet } from "../core/facet"
+import { android } from "./android/android"
 import { app } from "./linux/app"
 import { configFile } from "./linux/config-file"
 import { copr } from "./linux/copr"
@@ -20,4 +21,4 @@ import { taskbar } from "./windows/taskbar"
 import { volume } from "./windows/volume"
 import { winget } from "./windows/winget"
 
-export const facets: Facet[] = [app, configFile, copr, flatpak, toolbox, rpmOstree, linuxHardware, winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
+export const facets: Facet[] = [android, app, configFile, copr, flatpak, toolbox, rpmOstree, linuxHardware, winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
