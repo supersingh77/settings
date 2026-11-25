@@ -1,8 +1,6 @@
 export type MediaCommand = { output: string; argv: string[] }
 
-export const EXTENSIONS = [".mp4", ".mkv", ".mov", ".avi", ".webm", ".ts"]
-export const DEFAULT_OUTPUT = "joined.mp4"
-export const AUDIO_BITRATE = "256k"
+export const AUDIO_BITRATE = "192k"
 
 function directoryOf(path: string): string {
   const at = path.lastIndexOf("/")
@@ -24,37 +22,45 @@ function joinPath(directory: string, name: string): string {
   return directory === "" ? name : directory + "/" + name
 }
 
-export function extractAudio(video: string): MediaCommand {
-  const output = joinPath(directoryOf(video), stem(video) + "_audio.m4a")
-  return { output, argv: ["ffmpeg", "-i", video, "-vn", "-c:a", "copy", output] }
+export function extractAudio(video: string, output?: string): MediaCommand {
+  const target = output ?? joinPath(directoryOf(video), stem(video) + "_audio.m4a")
+  return { output: target, argv: ["ffmpeg", "-i", video, "-vn", "-c:a", "copy", target] }
 }
 
-export function mergeAudio(video: string, audio: string, bitrate = AUDIO_BITRATE): MediaCommand {
-  const output = joinPath(directoryOf(video), stem(video) + "_denoised.mp4")
+export function remuxAudio(video: string, audio: string, output?: string): MediaCommand {
+  const target = output ?? joinPath(directoryOf(video), stem(video) + "_remuxed.mp4")
+  const argv = [
+    "ffmpeg", "-y", "-i", video, "-i", audio,
+    "-map", "0:v:0", "-map", "1:a:0",
+    "-c:v", "copy", "-c:a", "aac", "-b:a", AUDIO_BITRATE,
+    "-movflags", "+faststart", target,
+  ]
+  return { output: target, argv }
+}
+
+export function denoiseAudio(video: string, output?: string): MediaCommand {
+  const target = output ?? joinPath(directoryOf(video), stem(video) + "_denoised.mp4")
+  const argv = [
+    "ffmpeg", "-y", "-i", video,
+    "-map", "0:v:0", "-map", "0:a:0",
+    "-c:v", "copy", "-af", "afftdn", "-c:a", "aac", "-b:a", AUDIO_BITRATE,
+    "-movflags", "+faststart", target,
+  ]
+  return { output: target, argv }
+}
+
+export type JoinCommand = { output: string; list: string; argv: string[] }
+
+export function joinPair(first: string, second: string, output?: string): JoinCommand {
+  const target = output ?? joinPath(directoryOf(first), stem(first) + "_joined.mp4")
+  const list = target + ".list"
   return {
-    output,
-    argv: [
-      "ffmpeg", "-y", "-i", video, "-i", audio,
-      "-c:v", "copy", "-c:a", "aac", "-b:a", bitrate,
-      "-map", "0:v:0", "-map", "1:a:0", output,
-    ],
+    output: target,
+    list,
+    argv: ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", target],
   }
 }
 
-export function selectClips(names: readonly string[], output: string): string[] {
-  return names
-    .filter((name) => EXTENSIONS.includes(name.slice(name.lastIndexOf(".")).toLowerCase()) && name !== output)
-    .sort()
-}
-
-export function concatList(folder: string, clips: readonly string[]): string {
-  const lines = clips.map((clip) => {
-    const path = joinPath(folder, clip).replaceAll("'", "'\\''")
-    return `file '${path}'`
-  })
-  return lines.join("\n") + "\n"
-}
-
-export function joinCommand(listPath: string, output: string): string[] {
-  return ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", listPath, "-c", "copy", output]
+export function concatText(paths: readonly string[]): string {
+  return paths.map((path) => `file '${path.replaceAll("'", "'\\''")}'`).join("\n") + "\n"
 }
