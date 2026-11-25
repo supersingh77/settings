@@ -150,6 +150,6 @@ $rows = foreach ($file in $files) {
 }
 
 $rows | Format-Table SnrDb, NoiseDb, VoiceDb, PeakDb, Lufs, Lra, BodyDb, MidDb, HighDb, Verdict -AutoSize
-Write-Host 'How to read this: device/desktop/README.md'
+Write-Host 'SNR: >=30 clean, >=20 usable, <20 noisy; PeakDb above -3 is near clipping; Lufs below -30 is too quiet.'
 
 exit 0
