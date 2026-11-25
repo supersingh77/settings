@@ -37,6 +37,7 @@ function parseArp(stdout: string): Item[] {
 
 export const registryApp: Facet = {
   name: "registry-app",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/registry-app.ps1"] }),
   parse: parseArp,

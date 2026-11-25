@@ -1,10 +1,10 @@
 ---
-refs: devices/fedora-laptop/device.json, devices/fedora-laptop/tasks.json, src/facets/linux/sys-hardware.ts, src/facets/linux/config-file.ts, layer:ghostty
+refs: devices/fedora-laptop/device.json, devices/fedora-laptop/tasks.json, src/facets/linux/hardware.ts, src/facets/linux/config-file.ts, layer:ghostty
 ---
 
 # Fedora port decisions
 
-The Fedora hardware facet is named `sys-hardware` because facet names share one global namespace and the Windows port already uses `hardware`. The item ids stay `board:`, `disk:`, `os:`, `kernel:`, `mount:`, `iface:`, `battery:`, `zram:` and `mem:`.
+Facets are platform-scoped: each facet and each device declares a `platform`, so `hardware` exists once for Windows and once for Linux instead of needing distinct names. Fixtures live under `fixtures/<platform>/<facet>/`.
 
 `config-file` is observed, not managed: the old tool only captured `/etc/UPower/UPower.conf` and restoring it needs safe in-place editing plus a rule for removed items.
 

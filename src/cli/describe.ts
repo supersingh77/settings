@@ -34,8 +34,8 @@ const describe: Verb = {
       verbs: ctx.catalog,
       flags: FLAGS,
       exit: EXIT_CODES,
-      devices: devices.map((device) => ({ id: device.id, facets: device.facets })),
-      facets: facets.map((facet) => facet.name),
+      devices: devices.map((device) => ({ id: device.id, platform: device.platform, facets: device.facets })),
+      facets: facets.map((facet) => ({ platform: facet.platform, name: facet.name })),
       lint: Object.keys(rules),
       scanned: [...SCANNED_DIRS, ...SCANNED_FILES],
       schemas: {
@@ -51,7 +51,7 @@ const describe: Verb = {
       "verbs:",
       ...verbLines,
       `devices: ${data.devices.map((d) => d.id).join(", ") || "none"}`,
-      `facets: ${data.facets.join(", ") || "none"}`,
+      `facets: ${data.facets.map((facet) => `${facet.platform}:${facet.name}`).join(", ") || "none"}`,
       "use --json for flags, exit codes and schemas",
     ].join("\n")
     return { code: Exit.ok, data, text }

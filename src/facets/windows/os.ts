@@ -25,6 +25,7 @@ function parseOs(stdout: string): Item[] {
 
 export const os: Facet = {
   name: "os",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/os.ps1"] }),
   parse: parseOs,

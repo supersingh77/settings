@@ -47,6 +47,7 @@ function parseAppx(stdout: string): Item[] {
 
 export const appx: Facet = {
   name: "appx",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/appx.ps1"] }),
   parse: parseAppx,

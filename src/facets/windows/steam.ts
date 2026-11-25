@@ -26,6 +26,7 @@ function parseSteam(stdout: string): Item[] {
 
 export const steam: Facet = {
   name: "steam",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/steam.ps1"] }),
   parse: parseSteam,

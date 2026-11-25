@@ -47,6 +47,7 @@ function planChange(change: Change): Step[] {
 
 export const flatpak: Facet = {
   name: "flatpak",
+  platform: "linux",
   mode: "managed",
   command: () => ({
     argv: ["flatpak", "list", "--system", "--app", "--columns=application,version,branch,origin"],

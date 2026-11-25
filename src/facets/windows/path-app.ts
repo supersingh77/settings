@@ -32,6 +32,7 @@ function parsePathApp(stdout: string): Item[] {
 
 export const pathApp: Facet = {
   name: "path-app",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/path-app.ps1"] }),
   parse: parsePathApp,

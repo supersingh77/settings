@@ -38,6 +38,7 @@ function planChange(_change: Change): Step[] {
 
 export const configFile: Facet = {
   name: "config-file",
+  platform: "linux",
   mode: "observed",
   command: () => ({ argv: ["cat", PATH] }),
   parse: parseConfig,

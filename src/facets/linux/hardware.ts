@@ -156,7 +156,8 @@ function planChange(_change: Change): Step[] {
 }
 
 export const hardware: Facet = {
-  name: "sys-hardware",
+  name: "hardware",
+  platform: "linux",
   mode: "observed",
   command: () => ({ argv: ["bash", "-c", SCRIPT] }),
   parse: parseHardware,

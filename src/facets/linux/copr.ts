@@ -46,6 +46,7 @@ function planChange(change: Change): Step[] {
 
 export const copr: Facet = {
   name: "copr",
+  platform: "linux",
   mode: "managed",
   command: () => ({
     argv: ["find", "/etc/yum.repos.d", "-maxdepth", "1", "-name", "_copr*", "-printf", "%f\n"],

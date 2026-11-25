@@ -33,6 +33,7 @@ function parseDisplay(stdout: string): Item[] {
 
 export const display: Facet = {
   name: "display",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/display.ps1"] }),
   parse: parseDisplay,

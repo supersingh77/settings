@@ -191,6 +191,7 @@ function planChange(change: Change): Step[] {
 
 export const association: Facet = {
   name: "association",
+  platform: "windows",
   mode: "managed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/association.ps1"] }),
   parse: parseAssociations,

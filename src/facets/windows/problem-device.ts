@@ -51,6 +51,7 @@ function parseProblemDevices(stdout: string): Item[] {
 
 export const problemDevice: Facet = {
   name: "problem-device",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/problem-device.ps1"] }),
   parse: parseProblemDevices,

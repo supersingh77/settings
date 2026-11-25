@@ -1,5 +1,6 @@
 {
   "id": "desktop",
+  "platform": "windows",
   "match": { "hostname": "DESKTOP-KGBOJJL" },
   "facets": ["winget", "steam", "registry-app", "appx", "path-app", "os", "volume", "hardware", "display", "problem-device", "association", "obs", "taskbar"],
   "ignore": []

@@ -24,6 +24,7 @@ function parseTaskbar(stdout: string): Item[] {
 
 export const taskbar: Facet = {
   name: "taskbar",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/taskbar.ps1"] }),
   parse: parseTaskbar,

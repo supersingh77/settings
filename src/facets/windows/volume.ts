@@ -35,6 +35,7 @@ function parseVolume(stdout: string): Item[] {
 
 export const volume: Facet = {
   name: "volume",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/volume.ps1"] }),
   parse: parseVolume,

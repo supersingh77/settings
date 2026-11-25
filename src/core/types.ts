@@ -12,6 +12,9 @@ export const Item = z.strictObject({
 })
 export type Item = z.infer<typeof Item>
 
+export const Platform = z.enum(["linux", "windows", "android"])
+export type Platform = z.infer<typeof Platform>
+
 export const Needs = z.enum(["admin", "toolbox"])
 export type Needs = z.infer<typeof Needs>
 
@@ -19,6 +22,7 @@ const Name = z.string().regex(/^[a-z][a-z0-9-]*$/)
 
 export const Device = z.strictObject({
   id: Name,
+  platform: Platform,
   match: z.strictObject({
     hostname: z.string().optional(),
     board: z.string().optional(),

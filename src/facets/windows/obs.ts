@@ -123,6 +123,7 @@ function parseObs(stdout: string): Item[] {
 
 export const obs: Facet = {
   name: "obs",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/obs.ps1"] }),
   parse: parseObs,

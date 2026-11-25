@@ -1,5 +1,6 @@
 {
   "id": "fedora-laptop",
+  "platform": "linux",
   "match": {
     "hostname": "fedora",
     "board": "X505ZA"
@@ -10,7 +11,7 @@
     "flatpak",
     "toolbox",
     "config-file",
-    "sys-hardware"
+    "hardware"
   ],
   "ignore": []
 }

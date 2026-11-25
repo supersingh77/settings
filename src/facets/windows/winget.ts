@@ -58,6 +58,7 @@ function planChange(change: Change): Step[] {
 
 export const winget: Facet = {
   name: "winget",
+  platform: "windows",
   mode: "managed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/winget.ps1"] }),
   parse: parseExport,

@@ -53,6 +53,7 @@ function planChange(change: Change): Step[] {
 
 export const toolbox: Facet = {
   name: "toolbox",
+  platform: "linux",
   mode: "managed",
   command: () => ({ argv: ["bash", "-c", SCRIPT] }),
   parse: parseToolbox,

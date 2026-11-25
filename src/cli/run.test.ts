@@ -8,7 +8,7 @@ import { run } from "./run"
 import { verbs } from "./verbs"
 
 const repoRoot = join(import.meta.dir, "..", "..")
-const DEVICE = '{"id":"toybox","match":{"hostname":"toyhost"},"facets":["toy"],"ignore":[]}'
+const DEVICE = '{"id":"toybox","platform":"linux","match":{"hostname":"toyhost"},"facets":["toy"],"ignore":[]}'
 let dir: string
 let out: string[]
 let err: string[]

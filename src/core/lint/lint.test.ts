@@ -5,7 +5,7 @@ import type { SourceFile } from "./types"
 const file = (path: string, text: string): SourceFile => ({ path, text })
 const rulesOf = (files: SourceFile[]) => lint(files).map((v) => v.rule)
 
-const device = file("devices/d1/device.json", '{"id":"d1","match":{},"facets":["toy"],"ignore":[]}')
+const device = file("devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":["toy"],"ignore":[]}')
 const state = file("devices/d1/state/toy.jsonl", '{"id":"toy:a","a":{}}\n')
 
 test("comments are flagged, shebangs and string contents are not", () => {
@@ -39,7 +39,7 @@ test("markdown is only allowed in notes, README and AGENTS, within bounds", () =
 
 test("device and state files are validated against strict schemas", () => {
   expect(rulesOf([device, state])).toEqual([])
-  expect(rulesOf([file("devices/d1/device.json", '{"id":"d1","match":{},"facets":[],"ignore":[],"note":"x"}')])).toEqual(["data"])
+  expect(rulesOf([file("devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":[],"ignore":[],"note":"x"}')])).toEqual(["data"])
   expect(rulesOf([device, file("devices/d1/state/toy.jsonl", '{"id":"toy:b","a":{}}\n{"id":"toy:a","a":{}}\n')])).toEqual(["data"])
   expect(rulesOf([device, file("devices/d1/state/other.jsonl", "")])).toEqual(["data"])
   expect(rulesOf([state])).toEqual(["data", "data"])
@@ -55,11 +55,11 @@ test("notes need front matter, no dates, and refs that resolve", () => {
 })
 
 test("facet files must be named, registered and have fixtures", () => {
-  const facet = file("src/facets/linux/flatpak.ts", 'export const flatpak = { name: "flatpak" }\n')
+  const facet = file("src/facets/linux/flatpak.ts", 'export const flatpak = { name: "flatpak", platform: "linux" }\n')
   const index = file("src/facets/index.ts", 'import { flatpak } from "./linux/flatpak"\n')
-  const fixtures = [file("fixtures/flatpak/a.txt", ""), file("fixtures/flatpak/a.golden.jsonl", "")]
+  const fixtures = [file("fixtures/linux/flatpak/a.txt", ""), file("fixtures/linux/flatpak/a.golden.jsonl", "")]
   expect(rulesOf([facet, index, ...fixtures])).toEqual([])
   expect(rulesOf([facet, file("src/facets/index.ts", ""), ...fixtures])).toEqual(["facet-files"])
   expect(rulesOf([facet, index])).toEqual(["facet-files", "facet-files"])
-  expect(rulesOf([file("src/facets/linux/flatpak.ts", 'export const x = { name: "other" }\n'), index, ...fixtures])).toEqual(["facet-files"])
+  expect(rulesOf([file("src/facets/linux/flatpak.ts", 'export const x = { name: "other", platform: "linux" }\n'), index, ...fixtures])).toEqual(["facet-files"])
 })

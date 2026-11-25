@@ -14,6 +14,7 @@ export function makeWorld(items: Record<string, string> = {}): World {
 
 export const toyDevice: Device = {
   id: "toybox",
+  platform: "linux",
   match: { hostname: "toyhost" },
   facets: ["toy"],
   ignore: ["toy:tmp-*"],
@@ -37,6 +38,7 @@ function toyStep(id: string, verb: "set" | "del", key: string, value: string): S
 
 export const toyFacet: Facet = {
   name: "toy",
+  platform: "linux",
   mode: "managed",
   command: () => ({ argv: ["toy", "list"] }),
   parse: parseToy,

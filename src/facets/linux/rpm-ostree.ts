@@ -51,6 +51,7 @@ function planChange(change: Change): Step[] {
 
 export const rpmOstree: Facet = {
   name: "rpm-ostree",
+  platform: "linux",
   mode: "managed",
   command: () => ({ argv: ["rpm-ostree", "status", "--json"] }),
   parse: parseStatus,

@@ -1,4 +1,4 @@
-import type { Device, Item, Needs, Step } from "./types"
+import type { Device, Item, Needs, Platform, Step } from "./types"
 
 export type Cmd = { argv: string[]; needs?: Needs }
 
@@ -20,6 +20,7 @@ export type Change = {
 
 export type Facet = {
   name: string
+  platform: Platform
   mode: "managed" | "observed"
   command: (device: Device) => Cmd
   parse: (stdout: string) => Item[]

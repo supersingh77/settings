@@ -126,6 +126,7 @@ function parseHardware(stdout: string): Item[] {
 
 export const hardware: Facet = {
   name: "hardware",
+  platform: "windows",
   mode: "observed",
   command: () => ({ argv: ["pwsh", "-NoProfile", "-File", "src/facets/windows/hardware.ps1"] }),
   parse: parseHardware,
