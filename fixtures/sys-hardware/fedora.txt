@@ -1,0 +1,142 @@
+@@os
+NAME="Fedora Linux"
+VERSION="44.20261124.0 (Silverblue)"
+RELEASE_TYPE=stable
+ID=fedora
+VERSION_ID=44
+VERSION_CODENAME=""
+PRETTY_NAME="Fedora Linux 44.20261124.0 (Silverblue)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:fedoraproject:fedora:44"
+DEFAULT_HOSTNAME="fedora"
+HOME_URL="https://silverblue.fedoraproject.org"
+DOCUMENTATION_URL="https://docs.fedoraproject.org/en-US/fedora-silverblue/"
+SUPPORT_URL="https://ask.fedoraproject.org/"
+BUG_REPORT_URL="https://github.com/fedora-silverblue/issue-tracker/issues"
+REDHAT_BUGZILLA_PRODUCT="Fedora"
+REDHAT_BUGZILLA_PRODUCT_VERSION=44
+REDHAT_SUPPORT_PRODUCT="Fedora"
+REDHAT_SUPPORT_PRODUCT_VERSION=44
+SUPPORT_END=2027-05-19
+VARIANT="Silverblue"
+VARIANT_ID=silverblue
+OSTREE_VERSION='44.20261124.0'
+@@kernel
+7.3.4-200.fc44.x86_64
+@@dmi
+board_name	X505ZA
+board_vendor	ASUSTeK COMPUTER INC.
+bios_vendor	American Megatrends Inc.
+bios_version	X505ZA.313
+bios_date	02/25/2020
+@@cpu
+model	AMD Ryzen 5 2500U with Radeon Vega Mobile Gfx
+cores	4
+processors	8
+@@meminfo
+MemTotal:       11145920 kB
+@@zram
+zram0	8589934592
+@@battery
+BAT0	42157000	
+@@net
+enp2s0	ethernet
+wlp1s0	wireless
+@@fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Thu Feb 26 17:17:38 2026
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk/'.
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info.
+#
+# After editing this file, run 'systemctl daemon-reload' to update systemd
+# units generated from this file.
+#
+# Updated by bootc-fstab-edit.service
+UUID=b04e20df-a549-43ef-9170-86af7d3fb414 / btrfs subvol=root,compress=zstd:1,ro 0 0
+UUID=b1a89e17-13a5-4342-99a9-58df15d7a465 /boot ext4 defaults 1 2
+UUID=BCA9-64E5 /boot/efi vfat umask=0077,shortname=winnt 0 2
+UUID=b04e20df-a549-43ef-9170-86af7d3fb414 /home btrfs subvol=home,compress=zstd:1 0 0
+UUID=b04e20df-a549-43ef-9170-86af7d3fb414 /var btrfs subvol=var,compress=zstd:1 0 0
+UUID=b1574f54-626e-47f7-bf93-81ce091beb7a /var/mnt/data btrfs defaults,noatime 0 0
+@@lsblk
+{
+   "blockdevices": [
+      {
+         "name": "sda",
+         "size": "931.5G",
+         "model": "ST1000LM035-1RK172",
+         "type": "disk",
+         "fstype": null,
+         "label": null,
+         "mountpoints": [],
+         "children": [
+            {
+               "name": "sda1",
+               "size": "931.5G",
+               "model": null,
+               "type": "part",
+               "fstype": "btrfs",
+               "label": "data",
+               "mountpoints": [
+                   "/var/mnt/data"
+               ]
+            }
+         ]
+      },{
+         "name": "sdb",
+         "size": "447.1G",
+         "model": "WD Green M.2 2280 480GB",
+         "type": "disk",
+         "fstype": null,
+         "label": null,
+         "mountpoints": [],
+         "children": [
+            {
+               "name": "sdb1",
+               "size": "100M",
+               "model": null,
+               "type": "part",
+               "fstype": "vfat",
+               "label": null,
+               "mountpoints": [
+                   "/boot/efi"
+               ]
+            },{
+               "name": "sdb2",
+               "size": "2G",
+               "model": null,
+               "type": "part",
+               "fstype": "ext4",
+               "label": null,
+               "mountpoints": [
+                   "/boot"
+               ]
+            },{
+               "name": "sdb3",
+               "size": "445G",
+               "model": null,
+               "type": "part",
+               "fstype": "btrfs",
+               "label": "fedora_fedora",
+               "mountpoints": [
+                   "/var/home", "/var", "/sysroot/ostree/deploy/fedora/var", "/sysroot", "/etc"
+               ]
+            }
+         ]
+      },{
+         "name": "zram0",
+         "size": "8G",
+         "model": null,
+         "type": "disk",
+         "fstype": "swap",
+         "label": "zram0",
+         "mountpoints": [
+             "[SWAP]"
+         ]
+      }
+   ]
+}

@@ -1,0 +1,22 @@
+{"id":"battery:BAT0","a":{"capacity":"unreported"}}
+{"id":"board:X505ZA","a":{"vendor":"ASUSTeK COMPUTER INC."}}
+{"id":"cpu:AMD Ryzen 5 2500U with Radeon Vega Mobile Gfx","a":{"cores":4,"threads":8}}
+{"id":"disk:sda","a":{"model":"ST1000LM035-1RK172","size":"931.5G","type":"disk"}}
+{"id":"disk:sda1","a":{"fstype":"btrfs","label":"data","mounts":["/var/mnt/data"],"size":"931.5G","type":"part"}}
+{"id":"disk:sdb","a":{"model":"WD Green M.2 2280 480GB","size":"447.1G","type":"disk"}}
+{"id":"disk:sdb1","a":{"fstype":"vfat","mounts":["/boot/efi"],"size":"100M","type":"part"}}
+{"id":"disk:sdb2","a":{"fstype":"ext4","mounts":["/boot"],"size":"2G","type":"part"}}
+{"id":"disk:sdb3","a":{"fstype":"btrfs","label":"fedora_fedora","mounts":["/etc","/sysroot","/sysroot/ostree/deploy/fedora/var","/var","/var/home"],"size":"445G","type":"part"}}
+{"id":"firmware:X505ZA.313","a":{"date":"02/25/2020","vendor":"American Megatrends Inc."}}
+{"id":"iface:enp2s0","a":{"kind":"ethernet"}}
+{"id":"iface:wlp1s0","a":{"kind":"wireless"}}
+{"id":"kernel:7.3.4-200.fc44.x86_64","a":{}}
+{"id":"mem:total","a":{"gib":11}}
+{"id":"mount:/","a":{"options":"subvol=root,compress=zstd:1,ro","source":"UUID=b04e20df-a549-43ef-9170-86af7d3fb414","type":"btrfs"}}
+{"id":"mount:/boot","a":{"options":"defaults","source":"UUID=b1a89e17-13a5-4342-99a9-58df15d7a465","type":"ext4"}}
+{"id":"mount:/boot/efi","a":{"options":"umask=0077,shortname=winnt","source":"UUID=BCA9-64E5","type":"vfat"}}
+{"id":"mount:/home","a":{"options":"subvol=home,compress=zstd:1","source":"UUID=b04e20df-a549-43ef-9170-86af7d3fb414","type":"btrfs"}}
+{"id":"mount:/var","a":{"options":"subvol=var,compress=zstd:1","source":"UUID=b04e20df-a549-43ef-9170-86af7d3fb414","type":"btrfs"}}
+{"id":"mount:/var/mnt/data","a":{"options":"defaults,noatime","source":"UUID=b1574f54-626e-47f7-bf93-81ce091beb7a","type":"btrfs"}}
+{"id":"os:fedora","a":{"variant":"Silverblue","version":"44.20261124.0"}}
+{"id":"zram:zram0","a":{"gib":8}}

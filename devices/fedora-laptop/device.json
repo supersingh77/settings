@@ -10,7 +10,7 @@
     "flatpak",
     "toolbox",
     "config-file",
-    "hardware",
+    "sys-hardware",
     "app"
   ],
   "ignore": []
