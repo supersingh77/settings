@@ -1,5 +1,5 @@
 import { readdir, stat, unlink, writeFile } from "node:fs/promises"
-import { join as joinPath } from "node:path"
+import { join as joinPath, resolve } from "node:path"
 import { Exit, PreconditionError, UsageError } from "../core/errors"
 import type { RunResult } from "../core/facet"
 import * as audio from "../core/audio"
@@ -41,7 +41,8 @@ async function join(ctx: Ctx, first: string, second: string, output?: string): P
   if (ctx.args.dryRun) {
     return { code: Exit.ok, data: { dryRun: true, output: file.output, list: file.list, argv: ffmpegArgv(file.argv) }, text: show(file.argv) }
   }
-  await writeFile(file.list, mediaModule.concatText([first, second]))
+  const entries = [resolve(first), resolve(second)].map((path) => path.replaceAll("\\", "/"))
+  await writeFile(file.list, mediaModule.concatText(entries))
   try {
     return await command(ctx, file)
   } finally {
