@@ -8,6 +8,6 @@ refs: devices/phone-personal/device.json, devices/phone-personal/state/android.j
 
 Items are `android:<package>` with `a.installed` and `a.thirdParty`. The all-including-uninstalled list is the source, so not-installed packages are derivable and the four old Markdown lists are not needed. Device facts are `device:*` items plus `mem:total` (GiB visible to Android, one decimal).
 
-Phones are captured with `--device phone-personal` or `--device phone-work`; `via: fedora-laptop` records that the laptop reaches them over adb. The facet stays observed because the old tool only captured too, and rewriting phone packages is not safe to automate.
+Phones are captured with `--device phone-personal` or `--device phone-work`; `via: fedora-laptop` records that the laptop reaches them over adb. The facet stays observed because rewriting phone packages is not safe to automate.
 
 Both phones are captured: personal (6 GB model, 5.5 GiB visible, serial `6cbccfac`) and work (4 GB model, 3.6 GiB visible, serial `d7587816`).

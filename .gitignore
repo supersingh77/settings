@@ -1,8 +1,5 @@
 .opencode/
 .opencode-router/
-.venv/
-__pycache__/
-*.py[cod]
 Thumbs.db
 Desktop.ini
 *.log

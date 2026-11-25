@@ -15,4 +15,4 @@ Both units are Xiaomi Redmi Note 11 (`2201117TI`, device `spes`, product `spes_i
 5. Capture with `dev capture --device phone-personal` or `--device phone-work`; the serial lives in the device's `match.serial` (personal `6cbccfac`, work `d7587816`).
 6. Both phones report the same model, so the serial, not the model, identifies the role.
 
-USB debugging is normally off because of banking apps; enable it only while capturing or managing a phone. If adb cannot open a phone, install `android-udev-rules` in the toolbox and reload udev on the host, or use wireless debugging. UAD-NG is still launched by the legacy `laptop` command and uses the same adb access.
+USB debugging is normally off because of banking apps; enable it only while capturing or managing a phone. If adb cannot open a phone, install `android-udev-rules` in the toolbox and reload udev on the host, or use wireless debugging. UAD-NG launches with `bun run dev uad`, which starts it through its desktop entry and the same adb access.

@@ -10,7 +10,8 @@ Long-term reference guides that outlive a single task. One topic per file with a
 
 | Note | Covers |
 |------|--------|
-| [fedora-port.md](fedora-port.md) | Fedora port decisions: platform scoping, observed facets, recipes and the remaining Python |
+| [fedora-port.md](fedora-port.md) | Fedora port decisions: platform scoping, observed facets, recipes and the retired Python |
+| [android-capture.md](android-capture.md) | Phone capture model: one state file, package flags, adb setup |
 | [silverblue-system.md](silverblue-system.md) | Per-deployment `/etc`, staged updates, composefs root, debugging after an update |
 | [upower-battery.md](upower-battery.md) | UPower action fallback, the dead battery, journal forensics |
 | [phone-connection.md](phone-connection.md) | Redmi Note 11 model facts, USB debugging, adb capture, role serials |
