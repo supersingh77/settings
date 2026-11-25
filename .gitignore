@@ -16,7 +16,7 @@ Desktop.ini
 node_modules/
 dist/
 
-/inbox/*
-/outbox/*
-!/inbox/.gitkeep
-!/outbox/.gitkeep
+/mail/inbox/*
+/mail/outbox/*
+!/mail/inbox/.gitkeep
+!/mail/outbox/.gitkeep

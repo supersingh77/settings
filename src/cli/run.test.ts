@@ -32,7 +32,7 @@ async function exec(root: string, ...argv: string[]): Promise<number> {
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "dev-"))
   await mkdir(join(dir, "data/devices/toybox"), { recursive: true })
-  await mkdir(join(dir, "inbox"), { recursive: true })
+  await mkdir(join(dir, "mail/inbox"), { recursive: true })
   await writeFile(join(dir, "data/devices/toybox/device.json"), DEVICE)
 })
 
@@ -82,16 +82,16 @@ test("outbox put, show and ack round trip a message", async () => {
   const put = ["outbox", "put", "--to", "desktop", "--subject", "hello", "--ref", "toy:a"]
   expect(await exec(dir, ...put)).toBe(0)
   const name = "20261125T041200Z-hello"
-  const text = await readFile(join(dir, "outbox", `${name}.md`), "utf8")
+  const text = await readFile(join(dir, "mail/outbox", `${name}.md`), "utf8")
   expect(text).toBe("---\nfrom: toyhost\nto: desktop\nkind: note\nrefs: toy:a\n---\n\nfrom stdin\n")
   expect(await exec(dir, "outbox", "list", "--json")).toBe(0)
   expect(JSON.parse(out[0] ?? "").entries[0].to).toBe("desktop")
   expect(await exec(dir, "outbox", "ack", name)).toBe(0)
-  expect(await readdir(join(dir, "outbox"))).toEqual([])
+  expect(await readdir(join(dir, "mail/outbox"))).toEqual([])
 })
 
 test("inbox lists non-message files by name without parsing them", async () => {
-  await writeFile(join(dir, "inbox/bundle.zip"), "x")
+  await writeFile(join(dir, "mail/inbox/bundle.zip"), "x")
   expect(await exec(dir, "inbox", "list", "--json")).toBe(0)
   expect(JSON.parse(out[0] ?? "").entries).toEqual([{ name: "bundle.zip", kind: "file" }])
 })
