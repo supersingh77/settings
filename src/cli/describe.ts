@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { Exit } from "../core/errors"
 import { SCANNED_DIRS, SCANNED_FILES, rules } from "../core/lint"
+import { Recipe } from "../core/recipe"
 import { Device, Item, MessageHead, Plan, Task } from "../core/types"
 import { facets } from "../facets"
 import { listDevices } from "../runtime/files"
@@ -42,6 +43,7 @@ const describe: Verb = {
         item: z.toJSONSchema(Item),
         device: z.toJSONSchema(Device),
         task: z.toJSONSchema(Task),
+        recipe: z.toJSONSchema(Recipe),
         plan: z.toJSONSchema(Plan),
         message: z.toJSONSchema(MessageHead),
       },

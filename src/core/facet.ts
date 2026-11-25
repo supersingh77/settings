@@ -1,3 +1,4 @@
+import type { Recipe } from "./recipe"
 import type { Device, Item, Needs, Platform, Step } from "./types"
 
 export type Cmd = { argv: string[]; needs?: Needs }
@@ -11,6 +12,11 @@ export type Env = {
   say: (line: string) => void
 }
 
+export type Repo = {
+  home: string
+  recipes: readonly Recipe[]
+}
+
 export type Change = {
   kind: "add" | "remove" | "modify"
   id: string
@@ -22,9 +28,9 @@ export type Facet = {
   name: string
   platform: Platform
   mode: "managed" | "observed"
-  command: (device: Device) => Cmd
+  command: (device: Device, repo: Repo) => Cmd
   parse: (stdout: string) => Item[]
-  plan: (change: Change) => Step[]
+  plan: (change: Change, repo: Repo) => Step[]
 }
 
 export function wrap(cmd: Cmd, platform: string): string[] {

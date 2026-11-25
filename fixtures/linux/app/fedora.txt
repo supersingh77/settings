@@ -1,0 +1,3 @@
+antigravity	2.34.0-5887025308631040
+openwork	0.18.72
+uad-ng	1.3.1

@@ -11,7 +11,8 @@
     "flatpak",
     "toolbox",
     "config-file",
-    "hardware"
+    "hardware",
+    "app"
   ],
   "ignore": []
 }

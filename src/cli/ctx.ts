@@ -1,4 +1,4 @@
-import type { Env } from "../core/facet"
+import type { Env, Repo } from "../core/facet"
 import type { Args } from "./args"
 
 export type Io = {
@@ -20,6 +20,7 @@ export type Ctx = {
   args: Args
   io: Io
   env: Env
+  repo: Repo
   catalog: VerbInfo[]
 }
 

@@ -1,9 +1,11 @@
 import { InputError } from "../errors"
 import { formatJsonl, parseJsonl } from "../store"
+import { Recipe } from "../recipe"
 import { Device, Tasks } from "../types"
 import type { Rule, SourceFile, Violation } from "./types"
 
 const DEVICE_FILE = /^devices\/([^/]+)\/(.+)$/
+const RECIPE_FILE = /^recipes\/([a-z0-9-]+)\.json$/
 
 function readJson(text: string): unknown {
   try {
@@ -47,8 +49,23 @@ function checkTasks(file: SourceFile): string[] {
   }
 }
 
+function checkRecipe(file: SourceFile, name: string): string[] {
+  try {
+    const parsed = Recipe.safeParse(readJson(file.text))
+    if (!parsed.success) return [parsed.error.issues[0]?.message ?? "invalid recipe"]
+    return parsed.data.id === name ? [] : [`id ${parsed.data.id} does not match the file name`]
+  } catch (error) {
+    return [error instanceof Error ? error.message : String(error)]
+  }
+}
+
 export const data: Rule = (files) => {
   const violations: Violation[] = []
+  for (const file of files.filter((entry) => entry.path.startsWith("recipes/"))) {
+    const match = RECIPE_FILE.exec(file.path)
+    const problems = match?.[1] ? checkRecipe(file, match[1]) : ["unexpected file"]
+    for (const message of problems) violations.push({ rule: "data", path: file.path, line: 1, message })
+  }
   const inDevices = files.filter((file) => DEVICE_FILE.test(file.path))
   const facetsOf = new Map<string, string[]>()
   for (const file of inDevices) {

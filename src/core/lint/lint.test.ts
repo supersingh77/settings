@@ -46,6 +46,14 @@ test("device and state files are validated against strict schemas", () => {
   expect(rulesOf([device, file("devices/d1/readme.txt", "x")])).toEqual(["data"])
 })
 
+test("recipes are validated against the strict schema", () => {
+  const ok = '{"id":"x","source":{"kind":"github","repo":"a/b","asset":{"name":"x"}},"paths":{"install":"{home}/x","version":"{home}/x.version"},"install":{"kind":"binary"}}'
+  expect(rulesOf([file("recipes/x.json", ok)])).toEqual([])
+  expect(rulesOf([file("recipes/x.json", '{"id":"x"}')])).toEqual(["data"])
+  expect(rulesOf([file("recipes/x.json", ok.replace('"id":"x"', '"id":"y"'))])).toEqual(["data"])
+  expect(rulesOf([file("recipes/x.txt", "")])).toEqual(["data"])
+})
+
 test("notes need front matter, no dates, and refs that resolve", () => {
   const note = (name: string, refs: string) => file(`notes/${name}.md`, `---\nrefs: ${refs}\n---\n\nbody\n`)
   expect(rulesOf([device, state, note("ok", "toy:a, src/x.ts"), file("src/x.ts", "")])).toEqual([])

@@ -22,7 +22,7 @@ const drift: Verb = {
   mutates: "no",
   run: async (ctx) => {
     const { device, facets } = await targetOf(ctx)
-    const deltas = await compare(ctx.env, device, facets, { strict: ctx.args.strict })
+    const deltas = await compare(ctx.env, device, facets, { strict: ctx.args.strict }, ctx.repo)
     const drifted = pending(deltas)
     const text = drifted ? lines(deltas) : ["no drift"]
     return report(text, { device: device.id, drifted, deltas }, drifted ? Exit.found : Exit.ok)
@@ -35,7 +35,7 @@ const captureVerb: Verb = {
   mutates: "repo",
   run: async (ctx) => {
     const { device, facets } = await targetOf(ctx)
-    const deltas = await capture(ctx.env, device, facets, ctx.args.dryRun)
+    const deltas = await capture(ctx.env, device, facets, ctx.args.dryRun, ctx.repo)
     const verb = ctx.args.dryRun ? "would change" : "changed"
     const text = pending(deltas) ? lines(deltas).map((line) => `${verb}: ${line}`) : ["store already matches live"]
     return report(text, { device: device.id, dryRun: ctx.args.dryRun, deltas }, Exit.ok)
@@ -50,13 +50,13 @@ const restoreVerb: Verb = {
     const { device, facets } = await targetOf(ctx)
     const options = { strict: ctx.args.strict, dryRun: ctx.args.dryRun }
     if (!ctx.args.dryRun && !ctx.args.yes) {
-      const preview = await restore(ctx.env, device, facets, { ...options, dryRun: true })
+      const preview = await restore(ctx.env, device, facets, { ...options, dryRun: true }, ctx.repo)
       const risky = destructiveSteps(preview.plan)
       if (risky.length > 0) {
         throw new UsageError(`destructive steps need --yes: ${risky.map((step) => step.id).join(", ")}`)
       }
     }
-    const result = await restore(ctx.env, device, facets, options)
+    const result = await restore(ctx.env, device, facets, options, ctx.repo)
     const steps = result.plan.steps.map((step) => `${step.id}: ${step.argv.join(" ")}`)
     const manual = lines(result.remaining.filter((delta) => !delta.managed)).map((line) => `manual: ${line}`)
     if (ctx.args.dryRun) {

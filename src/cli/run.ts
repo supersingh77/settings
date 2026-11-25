@@ -1,5 +1,6 @@
 import { DevError, Exit, UsageError } from "../core/errors"
 import type { Env } from "../core/facet"
+import { loadRepo } from "../runtime/recipes"
 import { parseArgs } from "./args"
 import type { Io, Outcome } from "./ctx"
 import { verbs } from "./verbs"
@@ -23,7 +24,8 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
     const verb = verbs.find((candidate) => candidate.name === name)
     if (!verb) throw new UsageError(`unknown verb ${name}`)
     const catalog = verbs.map(({ name: verbName, usage, mutates }) => ({ name: verbName, usage, mutates }))
-    const outcome = await verb.run({ root: deps.root, args, io: deps.io, env: deps.env, catalog })
+    const repo = await loadRepo(deps.root)
+    const outcome = await verb.run({ root: deps.root, args, io: deps.io, env: deps.env, repo, catalog })
     emit(outcome, json, deps.io)
     return outcome.code
   } catch (error) {

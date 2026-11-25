@@ -1,0 +1,69 @@
+{
+  "id": "uad-ng",
+  "source": {
+    "kind": "github",
+    "repo": "Universal-Debloater-Alliance/universal-android-debloater-next-generation",
+    "asset": {
+      "name": "uad-ng-linux"
+    }
+  },
+  "paths": {
+    "install": "{home}/.local/bin/uad-ng",
+    "version": "{home}/.local/bin/uad-ng.version",
+    "desktop": "{home}/.local/share/applications/uad-ng.desktop",
+    "icon": "{home}/.local/share/icons/hicolor/128x128/apps/uad-ng.png"
+  },
+  "install": {
+    "kind": "binary"
+  },
+  "icon": {
+    "kind": "url",
+    "url": "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/main/resources/assets/logo-light.png"
+  },
+  "desktop": [
+    [
+      "Version",
+      "1.0"
+    ],
+    [
+      "Type",
+      "Application"
+    ],
+    [
+      "Name",
+      "UAD-NG"
+    ],
+    [
+      "Comment",
+      "Universal Android Debloater Next Generation"
+    ],
+    [
+      "Exec",
+      "toolbox run -c {toolbox} {install}"
+    ],
+    [
+      "Icon",
+      "uad-ng"
+    ],
+    [
+      "Terminal",
+      "false"
+    ],
+    [
+      "Categories",
+      "System;Utility;"
+    ],
+    [
+      "Keywords",
+      "android;debloat;adb;phone;bloatware;"
+    ],
+    [
+      "StartupNotify",
+      "true"
+    ],
+    [
+      "StartupWMClass",
+      "uad-ng"
+    ]
+  ]
+}

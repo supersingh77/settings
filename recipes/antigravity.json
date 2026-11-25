@@ -1,0 +1,67 @@
+{
+  "id": "antigravity",
+  "source": {
+    "kind": "antigravity",
+    "api": "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/releases",
+    "download": "https://storage.googleapis.com/antigravity-public/antigravity-hub/{version}-{execution}/linux-x64/Antigravity.tar.gz"
+  },
+  "paths": {
+    "install": "{home}/.local/lib/antigravity-hub",
+    "version": "{home}/.local/lib/antigravity-hub/version",
+    "launcher": "{home}/.local/bin/antigravity2",
+    "desktop": "{home}/.local/share/applications/antigravity2.desktop",
+    "icon": "{home}/.local/share/icons/hicolor/512x512/apps/antigravity2.png"
+  },
+  "install": {
+    "kind": "tarball",
+    "replace": "Antigravity-x64",
+    "verify": "Antigravity-x64/antigravity"
+  },
+  "launcher": {
+    "env": [],
+    "command": "{install}/Antigravity-x64/antigravity --no-sandbox"
+  },
+  "icon": {
+    "kind": "asar",
+    "asar": "{install}/Antigravity-x64/resources/app.asar",
+    "entry": "icon.png"
+  },
+  "desktop": [
+    [
+      "Name",
+      "Antigravity 2.0"
+    ],
+    [
+      "Comment",
+      "Google Antigravity AI Agent Platform"
+    ],
+    [
+      "Exec",
+      "{home}/.local/bin/antigravity2 %U"
+    ],
+    [
+      "Icon",
+      "antigravity2"
+    ],
+    [
+      "Type",
+      "Application"
+    ],
+    [
+      "Categories",
+      "Development;IDE;X-AI;"
+    ],
+    [
+      "StartupWMClass",
+      "Antigravity"
+    ],
+    [
+      "Terminal",
+      "false"
+    ],
+    [
+      "StartupNotify",
+      "true"
+    ]
+  ]
+}
