@@ -1,0 +1,103 @@
+[
+  {
+    "id": "flatpak-update",
+    "group": "update",
+    "argv": [
+      "flatpak",
+      "update",
+      "-y"
+    ],
+    "needs": "admin",
+    "destructive": false
+  },
+  {
+    "id": "toolbox-update",
+    "group": "update",
+    "argv": [
+      "sudo",
+      "dnf",
+      "upgrade",
+      "-y",
+      "--refresh"
+    ],
+    "needs": "toolbox",
+    "destructive": false
+  },
+  {
+    "id": "host-update",
+    "group": "update",
+    "argv": [
+      "rpm-ostree",
+      "upgrade"
+    ],
+    "needs": "admin",
+    "destructive": false
+  },
+  {
+    "id": "btrfs-scrub",
+    "group": "cleanup",
+    "argv": [
+      "btrfs",
+      "scrub",
+      "start",
+      "-B",
+      "/var"
+    ],
+    "needs": "admin",
+    "destructive": false
+  },
+  {
+    "id": "flatpak-unused",
+    "group": "cleanup",
+    "argv": [
+      "flatpak",
+      "uninstall",
+      "--unused",
+      "-y"
+    ],
+    "needs": "admin",
+    "destructive": true
+  },
+  {
+    "id": "ostree-cleanup",
+    "group": "cleanup",
+    "argv": [
+      "rpm-ostree",
+      "cleanup",
+      "-b"
+    ],
+    "needs": "admin",
+    "destructive": true
+  },
+  {
+    "id": "journal-vacuum",
+    "group": "cleanup",
+    "argv": [
+      "journalctl",
+      "--vacuum-time=2weeks",
+      "--vacuum-size=64M"
+    ],
+    "needs": "admin",
+    "destructive": true
+  },
+  {
+    "id": "dns-flush",
+    "group": "cleanup",
+    "argv": [
+      "resolvectl",
+      "flush-caches"
+    ],
+    "needs": "admin",
+    "destructive": false
+  },
+  {
+    "id": "trash-empty",
+    "group": "cleanup",
+    "argv": [
+      "gio",
+      "trash",
+      "--empty"
+    ],
+    "destructive": true
+  }
+]
