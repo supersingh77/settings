@@ -1,5 +1,5 @@
 ---
-refs:
+refs: assoc:.md, assoc:.mp4, assoc:.mkv, assoc:.m4a, open-with:.md, open-with:.mp4, progid:MarkdownText, progid:Markdown Document, progid:Text Document, app-reg:GenOffice.exe, app-reg:PotPlayerMini64.exe, app-reg:notepad.exe
 ---
 
 # Windows shell: no default verb, and the app picker never opens
@@ -47,9 +47,13 @@ Measured 17 Nov 2026. None of these carries a `UserChoice`, so each falls back t
 | `.mp4` | `PotPlayerMini64.MP4` → quoted PotPlayer | opens |
 | `.mkv` | `PotPlayerMini64.MKV` → quoted PotPlayer | opens |
 | `.m4a` | `PotPlayerMini64.m4a` → quoted PotPlayer | nothing |
-| `.md` | `MarkdownText` → quoted `notepad.exe` ([why notepad](../device/desktop/declared/associations.json)) | nothing |
+| `.md` | `MarkdownText` → quoted `notepad.exe` (stopgap; `progid:MarkdownText`) | nothing |
 
 Identical structure, identical quoting, different outcomes. Registry surgery has reached its limit here.
+
+## What the facet restores
+
+`devices/desktop/state/association.jsonl` holds only the scriptable parts: `assoc:<ext>` (class default), `progid:<ProgId>` (description and open command), `open-with:<ext>` (exposed `OpenWithProgids` values and the `OpenWithList` program), and `app-reg:<exe>` (`Applications\<exe>` registration). `dev restore` plans `reg.exe` steps for each item; steps under HKCR carry `needs: admin` but nothing elevates them, so run `restore` from an elevated shell. `UserChoice` is not tracked because it is hash-protected.
 
 ## What not to do
 

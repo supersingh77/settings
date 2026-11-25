@@ -1,5 +1,6 @@
 import type { Facet } from "../core/facet"
 import { appx } from "./windows/appx"
+import { association } from "./windows/association"
 import { display } from "./windows/display"
 import { hardware } from "./windows/hardware"
 import { os } from "./windows/os"
@@ -10,4 +11,4 @@ import { steam } from "./windows/steam"
 import { volume } from "./windows/volume"
 import { winget } from "./windows/winget"
 
-export const facets: Facet[] = [winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice]
+export const facets: Facet[] = [winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association]

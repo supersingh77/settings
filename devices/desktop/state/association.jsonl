@@ -1,0 +1,65 @@
+{"id":"app-reg:GenOffice.exe","a":{"command":"\"C:\\Program Files\\GenOffice\\GenOffice.exe\" \"%1\"","friendly":"GenOffice"}}
+{"id":"app-reg:PotPlayerMini64.exe","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","friendly":"PotPlayer (64-Bit)"}}
+{"id":"app-reg:notepad.exe","a":{"command":"C:\\WINDOWS\\system32\\NOTEPAD.EXE %1","friendly":""}}
+{"id":"assoc:.aac","a":{"progid":"PotPlayerMini64.aac"}}
+{"id":"assoc:.ac3","a":{"progid":"PotPlayerMini64.ac3"}}
+{"id":"assoc:.avi","a":{"progid":"PotPlayerMini64.AVI"}}
+{"id":"assoc:.flac","a":{"progid":"PotPlayerMini64.flac"}}
+{"id":"assoc:.m2ts","a":{"progid":"PotPlayerMini64.m2ts"}}
+{"id":"assoc:.m4a","a":{"progid":"PotPlayerMini64.m4a"}}
+{"id":"assoc:.m4v","a":{"progid":"PotPlayerMini64.M4V"}}
+{"id":"assoc:.md","a":{"progid":"MarkdownText"}}
+{"id":"assoc:.mkv","a":{"progid":"PotPlayerMini64.MKV"}}
+{"id":"assoc:.mov","a":{"progid":"PotPlayerMini64.MOV"}}
+{"id":"assoc:.mp3","a":{"progid":"PotPlayerMini64.mp3"}}
+{"id":"assoc:.mp4","a":{"progid":"PotPlayerMini64.MP4"}}
+{"id":"assoc:.mpeg","a":{"progid":"PotPlayerMini64.MPEG"}}
+{"id":"assoc:.mpg","a":{"progid":"PotPlayerMini64.MPG"}}
+{"id":"assoc:.ogg","a":{"progid":"PotPlayerMini64.ogg"}}
+{"id":"assoc:.opus","a":{"progid":"PotPlayerMini64.opus"}}
+{"id":"assoc:.ts","a":{"progid":"PotPlayerMini64.TS"}}
+{"id":"assoc:.wav","a":{"progid":"PotPlayerMini64.wav"}}
+{"id":"assoc:.wma","a":{"progid":"PotPlayerMini64.wma"}}
+{"id":"assoc:.wmv","a":{"progid":"PotPlayerMini64.WMV"}}
+{"id":"open-with:.aac","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.aac"]}}
+{"id":"open-with:.ac3","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.ac3"]}}
+{"id":"open-with:.avi","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.AVI"]}}
+{"id":"open-with:.flac","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.flac"]}}
+{"id":"open-with:.m2ts","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.m2ts"]}}
+{"id":"open-with:.m4a","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.m4a"]}}
+{"id":"open-with:.m4v","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.M4V"]}}
+{"id":"open-with:.md","a":{"exe":"notepad.exe","progids":["Markdown Document","MarkdownText"]}}
+{"id":"open-with:.mkv","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.MKV"]}}
+{"id":"open-with:.mov","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.MOV"]}}
+{"id":"open-with:.mp3","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.mp3"]}}
+{"id":"open-with:.mp4","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.MP4"]}}
+{"id":"open-with:.mpeg","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.MPEG"]}}
+{"id":"open-with:.mpg","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.MPG"]}}
+{"id":"open-with:.ogg","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.ogg"]}}
+{"id":"open-with:.opus","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.opus"]}}
+{"id":"open-with:.ts","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.TS"]}}
+{"id":"open-with:.wav","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.wav"]}}
+{"id":"open-with:.wma","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.wma"]}}
+{"id":"open-with:.wmv","a":{"exe":"PotPlayerMini64.exe","progids":["PotPlayerMini64.WMV"]}}
+{"id":"progid:Markdown Document","a":{"command":"C:\\Program Files\\GenOffice\\GenOffice.exe \"%1\"","description":""}}
+{"id":"progid:MarkdownText","a":{"command":"\"C:\\Windows\\System32\\notepad.exe\" \"%1\"","description":"Markdown File"}}
+{"id":"progid:PotPlayerMini64.AVI","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"AVI - Windows default video file"}}
+{"id":"progid:PotPlayerMini64.M4V","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"M4V - MPEG-4 video files"}}
+{"id":"progid:PotPlayerMini64.MKV","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"MKV - Matroska video files"}}
+{"id":"progid:PotPlayerMini64.MOV","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"MOV - Quicktime video file"}}
+{"id":"progid:PotPlayerMini64.MP4","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"MP4 - MPEG-4 video files"}}
+{"id":"progid:PotPlayerMini64.MPEG","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"MPEG - MPEG video file"}}
+{"id":"progid:PotPlayerMini64.MPG","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"MPG - MPEG video file"}}
+{"id":"progid:PotPlayerMini64.TS","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"TS - MPEG2 Transport video files"}}
+{"id":"progid:PotPlayerMini64.WMV","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"WMV - Windows Media files"}}
+{"id":"progid:PotPlayerMini64.aac","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"aac - Audio File"}}
+{"id":"progid:PotPlayerMini64.ac3","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"ac3 - Audio File"}}
+{"id":"progid:PotPlayerMini64.flac","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"flac - Audio File"}}
+{"id":"progid:PotPlayerMini64.m2ts","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"m2ts - Video File"}}
+{"id":"progid:PotPlayerMini64.m4a","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"m4a - Audio File"}}
+{"id":"progid:PotPlayerMini64.mp3","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"mp3 - Audio File"}}
+{"id":"progid:PotPlayerMini64.ogg","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"ogg - Audio File"}}
+{"id":"progid:PotPlayerMini64.opus","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"opus - Audio File"}}
+{"id":"progid:PotPlayerMini64.wav","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"wav - Audio File"}}
+{"id":"progid:PotPlayerMini64.wma","a":{"command":"\"C:\\Program Files\\DAUM\\PotPlayer\\PotPlayerMini64.exe\" \"%1\"","description":"wma - Audio File"}}
+{"id":"progid:Text Document","a":{"command":"C:\\Program Files\\GenOffice\\GenOffice.exe \"%1\"","description":"Text Document"}}
