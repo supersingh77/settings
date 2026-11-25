@@ -1,11 +1,13 @@
 # Personal configuration repository
 
-One Bun/TypeScript tool, `dev`, tracks configuration and state for these machines:
+One Bun/TypeScript tool, `dev`, tracks configuration and state for these machines. Four folders hold everything:
 
+- `src/` — the CLI; `bun run dev describe --json` is the contract
 - `data/devices/` — per-device state (`state/*.jsonl`), device config and task lists
 - `data/recipes/` — how to install things no package manager handles
-- `notes/` — the knowledge code cannot derive
 - `data/fixtures/` — recorded command output and parsed golden files
+- `notes/` — the knowledge code cannot derive
+- `mail/inbox/`, `mail/outbox/` — agent drop folders (contents local and gitignored)
 
 ## Workflow
 
