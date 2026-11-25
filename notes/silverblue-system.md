@@ -1,5 +1,5 @@
 ---
-refs: os:fedora, kernel:7.3.4-200.fc44.x86_64, devices/fedora-laptop/state/hardware.jsonl, devices/fedora-laptop/state/rpm-ostree.jsonl
+refs: os:fedora, kernel:7.3.4-200.fc44.x86_64, data/devices/fedora-laptop/state/hardware.jsonl, data/devices/fedora-laptop/state/rpm-ostree.jsonl
 ---
 
 # Silverblue system behaviour

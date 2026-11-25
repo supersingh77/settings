@@ -59,9 +59,9 @@ export async function loadSources(root: string): Promise<SourceFile[]> {
 }
 
 export async function listDevices(root: string): Promise<Device[]> {
-  const found = await listFiles(root, "devices")
+  const found = await listFiles(root, "data/devices")
   const devices: Device[] = []
-  for (const path of found.filter((p) => /^devices\/[^/]+\/device\.json$/.test(p))) {
+  for (const path of found.filter((p) => /^data\/devices\/[^/]+\/device\.json$/.test(p))) {
     const parsed = Device.safeParse(JSON.parse(await readFile(join(root, path), "utf8")))
     if (!parsed.success) {
       throw new InputError(`${path}: ${parsed.error.issues[0]?.message ?? "invalid device"}`)
@@ -90,7 +90,7 @@ export async function writeToBox(root: string, box: string, name: string, text: 
 }
 
 export async function loadTasks(root: string, device: string): Promise<Task[]> {
-  const path = `devices/${device}/tasks.json`
+  const path = `data/devices/${device}/tasks.json`
   let text: string
   try {
     text = await readFile(join(root, path), "utf8")

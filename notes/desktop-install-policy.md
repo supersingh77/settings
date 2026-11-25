@@ -1,5 +1,5 @@
 ---
-refs: devices/desktop/tasks.json, devices/desktop/device.json
+refs: data/devices/desktop/tasks.json, data/devices/desktop/device.json
 ---
 
 # Desktop software install policy

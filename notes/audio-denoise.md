@@ -1,5 +1,5 @@
 ---
-refs: devices/fedora-laptop/device.json, devices/fedora-laptop/state/hardware.jsonl
+refs: data/devices/fedora-laptop/device.json, data/devices/fedora-laptop/state/hardware.jsonl
 ---
 
 # Audio denoise

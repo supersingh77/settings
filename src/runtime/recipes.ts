@@ -7,7 +7,7 @@ import { Recipe } from "../core/recipe"
 import { listFiles } from "./files"
 
 export async function loadRepo(root: string): Promise<Repo> {
-  const paths = (await listFiles(root, "recipes")).filter((path) => path.endsWith(".json"))
+  const paths = (await listFiles(root, "data/recipes")).filter((path) => path.endsWith(".json"))
   const recipes: Recipe[] = []
   for (const path of paths) {
     let raw: unknown
@@ -18,7 +18,7 @@ export async function loadRepo(root: string): Promise<Repo> {
     }
     const parsed = Recipe.safeParse(raw)
     if (!parsed.success) throw new InputError(`${path}: ${parsed.error.issues[0]?.message ?? "invalid recipe"}`)
-    if (`recipes/${parsed.data.id}.json` !== path) throw new InputError(`${path}: id must match the file name`)
+    if (`data/recipes/${parsed.data.id}.json` !== path) throw new InputError(`${path}: id must match the file name`)
     recipes.push(parsed.data)
   }
   return { home: homedir(), recipes }

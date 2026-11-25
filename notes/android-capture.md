@@ -1,5 +1,5 @@
 ---
-refs: devices/phone-personal/device.json, devices/phone-personal/state/android.jsonl, src/facets/android/android.ts, device:model, android:com.android.updater
+refs: data/devices/phone-personal/device.json, data/devices/phone-personal/state/android.jsonl, src/facets/android/android.ts, device:model, android:com.android.updater
 ---
 
 # Android capture

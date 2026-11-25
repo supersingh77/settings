@@ -1,5 +1,5 @@
 ---
-refs: volume:C:, volume:V:, volume:Z:, display-mode:DISPLAY1, monitor:MSI MAG 255XF, devices/desktop/device.json
+refs: volume:C:, volume:V:, volume:Z:, display-mode:DISPLAY1, monitor:MSI MAG 255XF, data/devices/desktop/device.json
 ---
 
 # Desktop drive, display and controller rules

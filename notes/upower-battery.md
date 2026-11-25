@@ -1,5 +1,5 @@
 ---
-refs: battery:BAT0, conf:/etc/UPower/UPower.conf#CriticalPowerAction, conf:/etc/UPower/UPower.conf#AllowRiskyCriticalPowerAction, devices/fedora-laptop/state/config-file.jsonl
+refs: battery:BAT0, conf:/etc/UPower/UPower.conf#CriticalPowerAction, conf:/etc/UPower/UPower.conf#AllowRiskyCriticalPowerAction, data/devices/fedora-laptop/state/config-file.jsonl
 ---
 
 # UPower and the dead battery

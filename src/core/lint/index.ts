@@ -6,7 +6,7 @@ import { limits } from "./limits"
 import { notes } from "./notes"
 import type { Rule, SourceFile, Violation } from "./types"
 
-export const SCANNED_DIRS = ["src", "devices", "notes", "fixtures", "recipes"] as const
+export const SCANNED_DIRS = ["src", "data", "notes"] as const
 export const SCANNED_FILES = ["README.md", "AGENTS.md"] as const
 
 export const rules: Record<string, Rule> = {

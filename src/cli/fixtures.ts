@@ -12,7 +12,7 @@ const fixtures: Verb = {
     if (ctx.args.positional[0] !== "update") throw new UsageError("usage: fixtures update")
     const written: string[] = []
     for (const facet of facets) {
-      const dir = `fixtures/${facet.platform}/${facet.name}`
+      const dir = `data/fixtures/${facet.platform}/${facet.name}`
       const inputs = (await listFiles(ctx.root, dir)).filter((path) => path.endsWith(".txt"))
       for (const input of inputs) {
         const raw = await ctx.env.read(input)

@@ -2,10 +2,10 @@
 
 One Bun/TypeScript tool, `dev`, tracks configuration and state for these machines:
 
-- `devices/` — per-device state (`state/*.jsonl`), device config and task lists
-- `recipes/` — how to install things no package manager handles
+- `data/devices/` — per-device state (`state/*.jsonl`), device config and task lists
+- `data/recipes/` — how to install things no package manager handles
 - `notes/` — the knowledge code cannot derive
-- `fixtures/` — recorded command output and parsed golden files
+- `data/fixtures/` — recorded command output and parsed golden files
 
 ## Workflow
 

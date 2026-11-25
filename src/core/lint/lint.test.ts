@@ -5,8 +5,8 @@ import type { SourceFile } from "./types"
 const file = (path: string, text: string): SourceFile => ({ path, text })
 const rulesOf = (files: SourceFile[]) => lint(files).map((v) => v.rule)
 
-const device = file("devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":["toy"],"ignore":[]}')
-const state = file("devices/d1/state/toy.jsonl", '{"id":"toy:a","a":{}}\n')
+const device = file("data/devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":["toy"],"ignore":[]}')
+const state = file("data/devices/d1/state/toy.jsonl", '{"id":"toy:a","a":{}}\n')
 
 test("comments are flagged, shebangs and string contents are not", () => {
   expect(rulesOf([file("src/x.ts", "const a = 1 // note\n")])).toEqual(["no-comments"])
@@ -39,19 +39,19 @@ test("markdown is only allowed in notes, README and AGENTS, within bounds", () =
 
 test("device and state files are validated against strict schemas", () => {
   expect(rulesOf([device, state])).toEqual([])
-  expect(rulesOf([file("devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":[],"ignore":[],"note":"x"}')])).toEqual(["data"])
-  expect(rulesOf([device, file("devices/d1/state/toy.jsonl", '{"id":"toy:b","a":{}}\n{"id":"toy:a","a":{}}\n')])).toEqual(["data"])
-  expect(rulesOf([device, file("devices/d1/state/other.jsonl", "")])).toEqual(["data"])
+  expect(rulesOf([file("data/devices/d1/device.json", '{"id":"d1","platform":"linux","match":{},"facets":[],"ignore":[],"note":"x"}')])).toEqual(["data"])
+  expect(rulesOf([device, file("data/devices/d1/state/toy.jsonl", '{"id":"toy:b","a":{}}\n{"id":"toy:a","a":{}}\n')])).toEqual(["data"])
+  expect(rulesOf([device, file("data/devices/d1/state/other.jsonl", "")])).toEqual(["data"])
   expect(rulesOf([state])).toEqual(["data", "data"])
-  expect(rulesOf([device, file("devices/d1/readme.txt", "x")])).toEqual(["data"])
+  expect(rulesOf([device, file("data/devices/d1/readme.txt", "x")])).toEqual(["data"])
 })
 
 test("recipes are validated against the strict schema", () => {
   const ok = '{"id":"x","source":{"kind":"github","repo":"a/b","asset":{"name":"x"}},"paths":{"install":"{home}/x","version":"{home}/x.version"},"install":{"kind":"binary"}}'
-  expect(rulesOf([file("recipes/x.json", ok)])).toEqual([])
-  expect(rulesOf([file("recipes/x.json", '{"id":"x"}')])).toEqual(["data"])
-  expect(rulesOf([file("recipes/x.json", ok.replace('"id":"x"', '"id":"y"'))])).toEqual(["data"])
-  expect(rulesOf([file("recipes/x.txt", "")])).toEqual(["data"])
+  expect(rulesOf([file("data/recipes/x.json", ok)])).toEqual([])
+  expect(rulesOf([file("data/recipes/x.json", '{"id":"x"}')])).toEqual(["data"])
+  expect(rulesOf([file("data/recipes/x.json", ok.replace('"id":"x"', '"id":"y"'))])).toEqual(["data"])
+  expect(rulesOf([file("data/recipes/x.txt", "")])).toEqual(["data"])
 })
 
 test("notes need front matter, no dates, and refs that resolve", () => {
@@ -65,7 +65,7 @@ test("notes need front matter, no dates, and refs that resolve", () => {
 test("facet files must be named, registered and have fixtures", () => {
   const facet = file("src/facets/linux/flatpak.ts", 'export const flatpak = { name: "flatpak", platform: "linux" }\n')
   const index = file("src/facets/index.ts", 'import { flatpak } from "./linux/flatpak"\n')
-  const fixtures = [file("fixtures/linux/flatpak/a.txt", ""), file("fixtures/linux/flatpak/a.golden.jsonl", "")]
+  const fixtures = [file("data/fixtures/linux/flatpak/a.txt", ""), file("data/fixtures/linux/flatpak/a.golden.jsonl", "")]
   expect(rulesOf([facet, index, ...fixtures])).toEqual([])
   expect(rulesOf([facet, file("src/facets/index.ts", ""), ...fixtures])).toEqual(["facet-files"])
   expect(rulesOf([facet, index])).toEqual(["facet-files", "facet-files"])

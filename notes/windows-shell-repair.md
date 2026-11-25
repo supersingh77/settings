@@ -53,7 +53,7 @@ Identical structure, identical quoting, different outcomes. Registry surgery has
 
 ## What the facet restores
 
-`devices/desktop/state/association.jsonl` holds only the scriptable parts: `assoc:<ext>` (class default), `progid:<ProgId>` (description and open command), `open-with:<ext>` (exposed `OpenWithProgids` values and the `OpenWithList` program), and `app-reg:<exe>` (`Applications\<exe>` registration). `dev restore` plans `reg.exe` steps for each item; steps under HKCR carry `needs: admin` but nothing elevates them, so run `restore` from an elevated shell. `UserChoice` is not tracked because it is hash-protected.
+`data/devices/desktop/state/association.jsonl` holds only the scriptable parts: `assoc:<ext>` (class default), `progid:<ProgId>` (description and open command), `open-with:<ext>` (exposed `OpenWithProgids` values and the `OpenWithList` program), and `app-reg:<exe>` (`Applications\<exe>` registration). `dev restore` plans `reg.exe` steps for each item; steps under HKCR carry `needs: admin` but nothing elevates them, so run `restore` from an elevated shell. `UserChoice` is not tracked because it is hash-protected.
 
 ## What not to do
 

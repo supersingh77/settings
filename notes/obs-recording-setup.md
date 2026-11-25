@@ -6,7 +6,7 @@ refs: obs:output.mode, obs:output.recordingType, obs:output.recEncoder, obs:outp
 
 > Device: desktop | Updated: 2026-11-23 | OBS 33.0.3
 
-Current recording choices are recorded in [`devices/desktop/state/obs.jsonl`](../devices/desktop/state/obs.jsonl). OBS keeps them under `%APPDATA%\obs-studio` in `global.ini` and the active profile's `basic.ini`; the state file is a read-only capture of that profile, so changing it here does not change OBS.
+Current recording choices are recorded in [`data/devices/desktop/state/obs.jsonl`](../data/devices/desktop/state/obs.jsonl). OBS keeps them under `%APPDATA%\obs-studio` in `global.ini` and the active profile's `basic.ini`; the state file is a read-only capture of that profile, so changing it here does not change OBS.
 
 ## Recording
 

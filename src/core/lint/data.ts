@@ -4,8 +4,8 @@ import { Recipe } from "../recipe"
 import { Device, Tasks } from "../types"
 import type { Rule, SourceFile, Violation } from "./types"
 
-const DEVICE_FILE = /^devices\/([^/]+)\/(.+)$/
-const RECIPE_FILE = /^recipes\/([a-z0-9-]+)\.json$/
+const DEVICE_FILE = /^data\/devices\/([^/]+)\/(.+)$/
+const RECIPE_FILE = /^data\/recipes\/([a-z0-9-]+)\.json$/
 
 function readJson(text: string): unknown {
   try {
@@ -61,7 +61,7 @@ function checkRecipe(file: SourceFile, name: string): string[] {
 
 export const data: Rule = (files) => {
   const violations: Violation[] = []
-  for (const file of files.filter((entry) => entry.path.startsWith("recipes/"))) {
+  for (const file of files.filter((entry) => entry.path.startsWith("data/recipes/"))) {
     const match = RECIPE_FILE.exec(file.path)
     const problems = match?.[1] ? checkRecipe(file, match[1]) : ["unexpected file"]
     for (const message of problems) violations.push({ rule: "data", path: file.path, line: 1, message })
@@ -79,7 +79,7 @@ export const data: Rule = (files) => {
     if (rel === "device.json") problems = checkDevice(file, dir).problems
     else if (rel === "tasks.json") problems = checkTasks(file)
     else problems = checkState(file, facetsOf.get(dir) ?? [], rel)
-    if (rel !== "device.json" && !facetsOf.has(dir)) problems.push(`devices/${dir}/device.json is missing`)
+    if (rel !== "device.json" && !facetsOf.has(dir)) problems.push(`data/devices/${dir}/device.json is missing`)
     for (const message of problems) violations.push({ rule: "data", path: file.path, line: 1, message })
   }
   return violations

@@ -1,5 +1,5 @@
 ---
-refs: devices/desktop/device.json
+refs: data/devices/desktop/device.json
 ---
 
 # Desktop layout rules

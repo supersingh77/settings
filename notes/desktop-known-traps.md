@@ -1,5 +1,5 @@
 ---
-refs: devices/desktop/tasks.json, volume:Z:, steam-lib:V:\Games\SteamLibrary, steam-lib:Z:\Games\SteamLibrary, reg:PXN SimRacing
+refs: data/devices/desktop/tasks.json, volume:Z:, steam-lib:V:\Games\SteamLibrary, steam-lib:Z:\Games\SteamLibrary, reg:PXN SimRacing
 ---
 
 # Desktop known traps

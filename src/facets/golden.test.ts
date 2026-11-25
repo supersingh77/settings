@@ -14,7 +14,7 @@ test("facet names are unique per platform", () => {
 
 for (const facet of facets) {
   test(`${facet.platform}/${facet.name} parses every recorded fixture to its golden file`, async () => {
-    const dir = `fixtures/${facet.platform}/${facet.name}`
+    const dir = `data/fixtures/${facet.platform}/${facet.name}`
     const inputs = (await listFiles(root, dir)).filter((path) => path.endsWith(".txt"))
     expect(inputs.length).toBeGreaterThan(0)
     for (const input of inputs) {

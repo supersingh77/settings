@@ -1,5 +1,5 @@
 ---
-refs: devices/desktop/state/taskbar.jsonl, devices/desktop/device.json
+refs: data/devices/desktop/state/taskbar.jsonl, data/devices/desktop/device.json
 ---
 
 # Desktop Start menu pins

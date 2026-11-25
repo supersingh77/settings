@@ -31,9 +31,9 @@ async function exec(root: string, ...argv: string[]): Promise<number> {
 
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "dev-"))
-  await mkdir(join(dir, "devices/toybox"), { recursive: true })
+  await mkdir(join(dir, "data/devices/toybox"), { recursive: true })
   await mkdir(join(dir, "inbox"), { recursive: true })
-  await writeFile(join(dir, "devices/toybox/device.json"), DEVICE)
+  await writeFile(join(dir, "data/devices/toybox/device.json"), DEVICE)
 })
 
 afterEach(async () => {
@@ -62,14 +62,14 @@ test("usage errors exit 2 and --json reports them as one document", async () => 
 })
 
 test("a host that matches no device is a precondition failure", async () => {
-  await rm(join(dir, "devices/toybox/device.json"))
+  await rm(join(dir, "data/devices/toybox/device.json"))
   expect(await exec(dir, "drift")).toBe(3)
 })
 
 test("want add and rm edit the state file in canonical form", async () => {
   expect(await exec(dir, "want", "add", "toy:b", "--facet", "toy", "--set", "value=2")).toBe(0)
   expect(await exec(dir, "want", "add", "toy:a", "--facet", "toy", "--set", "on=true")).toBe(0)
-  const path = join(dir, "devices/toybox/state/toy.jsonl")
+  const path = join(dir, "data/devices/toybox/state/toy.jsonl")
   expect(await readFile(path, "utf8")).toBe(
     '{"id":"toy:a","a":{"on":true}}\n{"id":"toy:b","a":{"value":2}}\n',
   )

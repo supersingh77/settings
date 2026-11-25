@@ -1,12 +1,12 @@
 ---
-refs: devices/desktop/tasks.json, volume:C:, volume:Z:
+refs: data/devices/desktop/tasks.json, volume:C:, volume:Z:
 ---
 
 # Desktop maintenance tasks
 
 > Device: desktop
 
-[`devices/desktop/tasks.json`](../devices/desktop/tasks.json) is the proposed command list for `dev update` and `dev cleanup`. Those verbs are not implemented yet, so nothing executes this file today; it records the argv the verbs should run.
+[`data/devices/desktop/tasks.json`](../data/devices/desktop/tasks.json) is the proposed command list for `dev update` and `dev cleanup`. Those verbs are not implemented yet, so nothing executes this file today; it records the argv the verbs should run.
 
 **update** refreshes winget sources and upgrades installed packages. **cleanup** clears user and system temp folders, the component store cache, the Recycle Bin and the Delivery Optimization cache, flushes the DNS cache, and reports recordings still under `Videos` instead of `Z:\Recordings` without deleting them.
 

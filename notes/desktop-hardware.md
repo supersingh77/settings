@@ -1,5 +1,5 @@
 ---
-refs: gpu:AMD Radeon RX 7600, os:windows, devices/desktop/state/hardware.jsonl
+refs: gpu:AMD Radeon RX 7600, os:windows, data/devices/desktop/state/hardware.jsonl
 ---
 
 # Desktop hardware notes

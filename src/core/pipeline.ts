@@ -10,7 +10,7 @@ export type RestoreResult = { plan: Plan; results: StepResult[]; remaining: Delt
 export type CompareOptions = { strict: boolean }
 
 export function statePath(device: string, facet: string): string {
-  return `devices/${device}/state/${facet}.jsonl`
+  return `data/devices/${device}/state/${facet}.jsonl`
 }
 
 function firstLine(text: string): string {

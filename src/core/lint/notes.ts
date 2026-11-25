@@ -4,7 +4,7 @@ import type { Rule, SourceFile, Violation } from "./types"
 
 function stateIds(files: readonly SourceFile[]): Set<string> {
   const ids = new Set<string>()
-  for (const file of files.filter((f) => /^devices\/[^/]+\/state\/.+\.jsonl$/.test(f.path))) {
+  for (const file of files.filter((f) => /^data\/devices\/[^/]+\/state\/.+\.jsonl$/.test(f.path))) {
     try {
       for (const item of parseJsonl(file.text, file.path)) ids.add(item.id)
     } catch {
