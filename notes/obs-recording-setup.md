@@ -15,6 +15,17 @@ Current recording choices are recorded in [`devices/desktop/state/obs.jsonl`](..
 - CQP is variable bitrate: lower CQ values use more data for better quality. The Airtel 40 Mbps plan is an internet upload speed and does not cap local recording. `Z:` had about 478 GiB free when checked.
 - AAC, 48 kHz stereo, 192 kbps per track.
 
+## Microphone and desktop audio choices
+
+- **Mic/Aux is the Owl Lite webcam mic** because it is wired and always on. The Razer Barracuda X mic auto-sleeps when idle and then records near-silence, so it is not safe as the default recording mic.
+- **Desktop audio is pinned to the Barracuda X output**, not "default": the default followed Windows onto the Bluetooth speaker, which runs at a different sample rate and adds Bluetooth latency.
+- **One live microphone only.** Capturing the Owl Lite twice (its own source plus global Mic/Aux) comb-filters the voice.
+- **Digitek USB wireless mic** is visible to OBS through WASAPI but not to DirectShow, so ffmpeg and `mic-check.ps1` cannot measure it.
+- The Zebronics Bluetooth speaker's mic is a low-bandwidth HFP telephony endpoint, not a recording mic. No monitor has a microphone; HDMI audio is output only.
+- Mic filter order is noise suppression → gain → limiter: gain amplifies clean voice, and the limiter last prevents clipping.
+
+Keep OBS stream keys out of the repository.
+
 ## Separate desktop and microphone audio
 
 OBS puts these tracks in **one MKV file**. For the microphone comparison recording, the sources were assigned:
