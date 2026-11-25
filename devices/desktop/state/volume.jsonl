@@ -1,0 +1,3 @@
+{"id":"volume:C:","a":{"label":"","totalGb":126.1,"type":"Fixed"},"o":{"freeGb":53.8}}
+{"id":"volume:V:","a":{"label":"Vacuum Drive","totalGb":350,"type":"Fixed"},"o":{"freeGb":133}}
+{"id":"volume:Z:","a":{"label":"Mass Storage","totalGb":931.5,"type":"Fixed"},"o":{"freeGb":477.3}}

@@ -1,0 +1,1 @@
+[{"letter":"C:","label":"","type":"Fixed","totalGb":126.1,"freeGb":53.8},{"letter":"V:","label":"Vacuum Drive","type":"Fixed","totalGb":350.0,"freeGb":133.0},{"letter":"Z:","label":"Mass Storage","type":"Fixed","totalGb":931.5,"freeGb":477.3}]

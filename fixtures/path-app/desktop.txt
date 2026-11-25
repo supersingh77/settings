@@ -1,0 +1,1 @@
+[{"name":"ffmpeg","path":"C:\\Program Files\\FFmpeg\\bin\\ffmpeg.exe","version":"9.0.2-full_build-www.gyan.dev"}]
