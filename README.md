@@ -17,5 +17,6 @@ One Bun/TypeScript tool, `dev`, tracks configuration and state for these machine
 - `bun run dev update` and `cleanup` run the device's `tasks.json`.
 - `bun run dev media` extracts, remuxes, joins, denoises, lists mics and measures audio levels; `shell` and `uad` cover the small utilities.
 - `bun run dev check` runs schema, lint, fixture and note-reference checks.
+- `bun run dev outbox source [name]` exports the tracked source at `HEAD` as a zip into `mail/outbox/`.
 
 Run `bun install` once, then `bun run dev describe --json` for the contract. Machine knowledge lives in `notes/`; the Windows laptop is deferred until it boots again.
