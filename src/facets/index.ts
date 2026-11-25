@@ -1,5 +1,6 @@
 import type { Facet } from "../core/facet"
 import { copr } from "./linux/copr"
+import { flatpak } from "./linux/flatpak"
 import { rpmOstree } from "./linux/rpm-ostree"
 import { appx } from "./windows/appx"
 import { association } from "./windows/association"
@@ -15,4 +16,4 @@ import { taskbar } from "./windows/taskbar"
 import { volume } from "./windows/volume"
 import { winget } from "./windows/winget"
 
-export const facets: Facet[] = [copr, rpmOstree, winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
+export const facets: Facet[] = [copr, flatpak, rpmOstree, winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
