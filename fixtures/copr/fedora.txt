@@ -1,0 +1,2 @@
+_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+_copr:alternateved:ghostty.repo
