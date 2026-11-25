@@ -1,0 +1,17 @@
+{
+  "id": "fedora-laptop",
+  "match": {
+    "hostname": "fedora",
+    "board": "X505ZA"
+  },
+  "facets": [
+    "rpm-ostree",
+    "copr",
+    "flatpak",
+    "toolbox",
+    "config-file",
+    "hardware",
+    "app"
+  ],
+  "ignore": []
+}

@@ -1,0 +1,642 @@
+{
+  "deployments" : [
+    {
+      "unlocked" : "none",
+      "base-local-replacements" : [],
+      "requested-local-packages" : [],
+      "base-commit-meta" : {
+        "ostree.bootable" : true,
+        "ostree.composefs.digest.v0" : [
+          20,
+          253,
+          198,
+          110,
+          98,
+          250,
+          248,
+          167,
+          254,
+          194,
+          169,
+          19,
+          172,
+          210,
+          48,
+          118,
+          143,
+          148,
+          150,
+          149,
+          147,
+          45,
+          141,
+          126,
+          115,
+          192,
+          28,
+          1,
+          163,
+          11,
+          115,
+          77
+        ],
+        "rpmostree.inputhash" : "d496af77cdc63b53db5a1ec6291ecac932a9b31029d92306624f730ff5258309",
+        "version" : "44.20261125.0",
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.container-cmd" : [
+          "/usr/bin/bash"
+        ],
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "repo-0",
+            "timestamp" : 7552229162816110592
+          },
+          {
+            "id" : "repo-1",
+            "timestamp" : 85012499597885440
+          },
+          {
+            "id" : "repo-2",
+            "timestamp" : -4022270360564006912
+          }
+        ]
+      },
+      "base-removals" : [
+        [
+          "firefox-160.0-1.fc44.x86_64",
+          "firefox",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ],
+        [
+          "firefox-langpacks-160.0-1.fc44.x86_64",
+          "firefox-langpacks",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ]
+      ],
+      "gpg-enabled" : true,
+      "pinned" : false,
+      "osname" : "fedora",
+      "base-remote-replacements" : {      },
+      "origin" : "fedora:fedora/44/x86_64/silverblue",
+      "regenerate-initramfs" : false,
+      "checksum" : "8d8a47373ae48edbee008c9187aa97a71c4263a8740e000f328a15b065961027",
+      "requested-base-local-replacements" : [],
+      "id" : "fedora-8d8a47373ae48edbee008c9187aa97a71c4263a8740e000f328a15b065961027.0",
+      "version" : "44.20261125.0",
+      "base-version" : "44.20261125.0",
+      "base-checksum" : "40b2f191b459a12e45f47354971386382b29fa0a492aef754f21806429ceffd8",
+      "requested-base-removals" : [
+        "firefox",
+        "firefox-langpacks"
+      ],
+      "requested-local-fileoverride-packages" : [],
+      "serial" : 0,
+      "base-timestamp" : 1795569257,
+      "staged" : true,
+      "booted" : false,
+      "layered-commit-meta" : {
+        "rpmostree.clientlayer" : true,
+        "version" : "44.20261125.0",
+        "rpmostree.clientlayer_version" : 6,
+        "rpmostree.state-sha512" : "a3e9cf3526691f2c3807127a588aaf3fe9693ad1a6cddef60c5db275b141852eeb1a95f847b49a846bd335ce81b4b9432e3ca9c5a82e0872d1efdc35cb63ab72",
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "fedora-cisco-openh264",
+            "timestamp" : 1774348624
+          },
+          {
+            "id" : "updates",
+            "timestamp" : 1795571015
+          },
+          {
+            "id" : "fedora",
+            "timestamp" : 1776864872
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:phracek:PyCharm",
+            "timestamp" : 1795231468
+          },
+          {
+            "id" : "rpmfusion-nonfree-steam",
+            "timestamp" : 1786562752
+          },
+          {
+            "id" : "rpmfusion-nonfree-nvidia-driver",
+            "timestamp" : 1795527356
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:alternateved:ghostty",
+            "timestamp" : 1791301005
+          },
+          {
+            "id" : "antigravity-rpm",
+            "timestamp" : 1785178613064200
+          },
+          {
+            "id" : "updates-archive",
+            "timestamp" : 1795238326
+          }
+        ],
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.bootable" : true
+      },
+      "packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "requested-packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "timestamp" : 1795620393,
+      "signatures" : [
+        [
+          true,
+          false,
+          false,
+          false,
+          false,
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          1795570284,
+          0,
+          "RSA",
+          "SHA256",
+          "Fedora",
+          "fedora-44-primary@fedoraproject.org",
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "requested-packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "requested-base-local-replacements" : [],
+      "pending-base-timestamp" : 1795569257,
+      "signatures" : [
+        [
+          true,
+          false,
+          false,
+          false,
+          false,
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          1795482480,
+          0,
+          "RSA",
+          "SHA256",
+          "Fedora",
+          "fedora-44-primary@fedoraproject.org",
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          0,
+          0
+        ]
+      ],
+      "regenerate-initramfs" : false,
+      "pending-base-version" : "44.20261125.0",
+      "version" : "44.20261124.0",
+      "requested-local-fileoverride-packages" : [],
+      "base-commit-meta" : {
+        "ostree.bootable" : true,
+        "ostree.composefs.digest.v0" : [
+          105,
+          29,
+          32,
+          205,
+          198,
+          193,
+          236,
+          146,
+          167,
+          168,
+          196,
+          62,
+          194,
+          31,
+          138,
+          46,
+          231,
+          129,
+          198,
+          86,
+          83,
+          131,
+          130,
+          235,
+          31,
+          102,
+          75,
+          231,
+          151,
+          34,
+          206,
+          63
+        ],
+        "rpmostree.inputhash" : "f7fc7f2cbe5082618bafb12ef51e22f2e35cde2fbbe6a0a61f009d76bf962f65",
+        "version" : "44.20261124.0",
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.container-cmd" : [
+          "/usr/bin/bash"
+        ],
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "repo-0",
+            "timestamp" : 7552229162816110592
+          },
+          {
+            "id" : "repo-1",
+            "timestamp" : 5464841530445398016
+          },
+          {
+            "id" : "repo-2",
+            "timestamp" : -299765992588836864
+          }
+        ]
+      },
+      "base-remote-replacements" : {      },
+      "layered-commit-meta" : {
+        "rpmostree.clientlayer" : true,
+        "version" : "44.20261124.0",
+        "rpmostree.clientlayer_version" : 6,
+        "rpmostree.state-sha512" : "a3e9cf3526691f2c3807127a588aaf3fe9693ad1a6cddef60c5db275b141852eeb1a95f847b49a846bd335ce81b4b9432e3ca9c5a82e0872d1efdc35cb63ab72",
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "fedora-cisco-openh264",
+            "timestamp" : 1774348624
+          },
+          {
+            "id" : "updates",
+            "timestamp" : 1795484485
+          },
+          {
+            "id" : "fedora",
+            "timestamp" : 1776864872
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:phracek:PyCharm",
+            "timestamp" : 1795231468
+          },
+          {
+            "id" : "rpmfusion-nonfree-steam",
+            "timestamp" : 1786562752
+          },
+          {
+            "id" : "rpmfusion-nonfree-nvidia-driver",
+            "timestamp" : 1794598235
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:alternateved:ghostty",
+            "timestamp" : 1791301005
+          },
+          {
+            "id" : "antigravity-rpm",
+            "timestamp" : 1785178613064200
+          },
+          {
+            "id" : "updates-archive",
+            "timestamp" : 1795238326
+          }
+        ],
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.bootable" : true
+      },
+      "timestamp" : 1795509062,
+      "packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "base-local-replacements" : [],
+      "osname" : "fedora",
+      "pending-base-checksum" : "40b2f191b459a12e45f47354971386382b29fa0a492aef754f21806429ceffd8",
+      "pinned" : false,
+      "booted" : true,
+      "base-removals" : [
+        [
+          "firefox-160.0-1.fc44.x86_64",
+          "firefox",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ],
+        [
+          "firefox-langpacks-160.0-1.fc44.x86_64",
+          "firefox-langpacks",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ]
+      ],
+      "unlocked" : "none",
+      "requested-base-removals" : [
+        "firefox",
+        "firefox-langpacks"
+      ],
+      "base-checksum" : "910d3414a8d67ad8d494c9e7c6be40a34504dac02d23ae952175b3f2e22f7d1c",
+      "id" : "fedora-1d4d82d06ef8f5b165614ade426deb13c6e2ce84df2ad15971a7a2d49fed8606.0",
+      "origin" : "fedora:fedora/44/x86_64/silverblue",
+      "serial" : 0,
+      "base-version" : "44.20261124.0",
+      "gpg-enabled" : true,
+      "base-timestamp" : 1795482404,
+      "requested-local-packages" : [],
+      "checksum" : "1d4d82d06ef8f5b165614ade426deb13c6e2ce84df2ad15971a7a2d49fed8606",
+      "staged" : false
+    },
+    {
+      "requested-packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "requested-base-local-replacements" : [],
+      "pending-base-timestamp" : 1795569257,
+      "signatures" : [
+        [
+          true,
+          false,
+          false,
+          false,
+          false,
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          1795394818,
+          0,
+          "RSA",
+          "SHA256",
+          "Fedora",
+          "fedora-44-primary@fedoraproject.org",
+          "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+          0,
+          0
+        ]
+      ],
+      "regenerate-initramfs" : false,
+      "pending-base-version" : "44.20261125.0",
+      "version" : "44.20261123.0",
+      "requested-local-fileoverride-packages" : [],
+      "base-commit-meta" : {
+        "ostree.bootable" : true,
+        "ostree.composefs.digest.v0" : [
+          30,
+          248,
+          209,
+          104,
+          253,
+          18,
+          182,
+          11,
+          120,
+          59,
+          172,
+          25,
+          41,
+          88,
+          4,
+          25,
+          153,
+          108,
+          82,
+          85,
+          71,
+          250,
+          120,
+          245,
+          47,
+          59,
+          197,
+          92,
+          63,
+          138,
+          43,
+          171
+        ],
+        "rpmostree.inputhash" : "ed27f431e1bc3870a995cf56bb95f43d607b5e77dbc3dd0126c443368bbc337e",
+        "version" : "44.20261123.0",
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.container-cmd" : [
+          "/usr/bin/bash"
+        ],
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "repo-0",
+            "timestamp" : 7552229162816110592
+          },
+          {
+            "id" : "repo-1",
+            "timestamp" : -106675258076954624
+          },
+          {
+            "id" : "repo-2",
+            "timestamp" : -6231289276324118528
+          }
+        ]
+      },
+      "base-remote-replacements" : {      },
+      "layered-commit-meta" : {
+        "rpmostree.clientlayer" : true,
+        "version" : "44.20261123.0",
+        "rpmostree.clientlayer_version" : 6,
+        "rpmostree.state-sha512" : "a3e9cf3526691f2c3807127a588aaf3fe9693ad1a6cddef60c5db275b141852eeb1a95f847b49a846bd335ce81b4b9432e3ca9c5a82e0872d1efdc35cb63ab72",
+        "rpmostree.rpmmd-repos" : [
+          {
+            "id" : "fedora-cisco-openh264",
+            "timestamp" : 1774348624
+          },
+          {
+            "id" : "updates",
+            "timestamp" : 1795396551
+          },
+          {
+            "id" : "fedora",
+            "timestamp" : 1776864872
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:phracek:PyCharm",
+            "timestamp" : 1795231468
+          },
+          {
+            "id" : "rpmfusion-nonfree-steam",
+            "timestamp" : 1786562752
+          },
+          {
+            "id" : "rpmfusion-nonfree-nvidia-driver",
+            "timestamp" : 1794598235
+          },
+          {
+            "id" : "copr:copr.fedorainfracloud.org:alternateved:ghostty",
+            "timestamp" : 1791301005
+          },
+          {
+            "id" : "antigravity-rpm",
+            "timestamp" : 1785178613064200
+          },
+          {
+            "id" : "updates-archive",
+            "timestamp" : 1795238326
+          }
+        ],
+        "ostree.linux" : "7.3.4-200.fc44.x86_64",
+        "ostree.bootable" : true
+      },
+      "timestamp" : 1795437543,
+      "packages" : [
+        "distrobox",
+        "ghostty",
+        "uhubctl"
+      ],
+      "base-local-replacements" : [],
+      "osname" : "fedora",
+      "pending-base-checksum" : "40b2f191b459a12e45f47354971386382b29fa0a492aef754f21806429ceffd8",
+      "pinned" : false,
+      "booted" : false,
+      "base-removals" : [
+        [
+          "firefox-160.0-1.fc44.x86_64",
+          "firefox",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ],
+        [
+          "firefox-langpacks-160.0-1.fc44.x86_64",
+          "firefox-langpacks",
+          0,
+          "160.0",
+          "1.fc44",
+          "x86_64"
+        ]
+      ],
+      "unlocked" : "none",
+      "requested-base-removals" : [
+        "firefox",
+        "firefox-langpacks"
+      ],
+      "base-checksum" : "bfb941c4b11b41ad892a70a958a668d88ecb99295927a07ee4c124ad53e8e6fc",
+      "id" : "fedora-e687a07c87a8ce374ed530ef9163e30d5cb07daf77d3a666e9d4b4807a3bcc11.0",
+      "origin" : "fedora:fedora/44/x86_64/silverblue",
+      "serial" : 0,
+      "base-version" : "44.20261123.0",
+      "gpg-enabled" : true,
+      "base-timestamp" : 1795394755,
+      "requested-local-packages" : [],
+      "checksum" : "e687a07c87a8ce374ed530ef9163e30d5cb07daf77d3a666e9d4b4807a3bcc11",
+      "staged" : false
+    }
+  ],
+  "transaction" : null,
+  "cached-update" : {
+    "update-sha256" : "1d4d82d06ef8f5b165614ade426deb13c6e2ce84df2ad15971a7a2d49fed8606",
+    "signatures" : [
+      [
+        true,
+        false,
+        false,
+        false,
+        false,
+        "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+        1795570284,
+        0,
+        "RSA",
+        "SHA256",
+        "Fedora",
+        "fedora-44-primary@fedoraproject.org",
+        "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6",
+        0,
+        0
+      ]
+    ],
+    "rpm-diff" : {
+      "downgraded" : [],
+      "removed" : [],
+      "upgraded" : [
+        [
+          0,
+          "sqlite-libs",
+          [
+            "3.51.2-2.fc44",
+            "x86_64"
+          ],
+          [
+            "3.51.2-3.fc44",
+            "x86_64"
+          ]
+        ]
+      ],
+      "added" : []
+    },
+    "checksum" : "40b2f191b459a12e45f47354971386382b29fa0a492aef754f21806429ceffd8",
+    "advisories" : [
+      [
+        "FEDORA-2026-95f1a4f58d",
+        1,
+        3,
+        [
+          "sqlite-libs-3.51.2-3.fc44.x86_64"
+        ],
+        {
+          "cve_references" : [
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2523518",
+              "CVE-2026-50812 sqlite: SQLite: Denial of Service via malformed changeset in Session Extension [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2565587",
+              "CVE-2026-119586 sqlite: sqlite: Arbitrary command execution via .recover command [fedora-43]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2567028",
+              "CVE-2026-119376 sqlite: sqlite: Denial of Service via stack exhaustion from chained COLLATE operators [fedora-43]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569666",
+              "CVE-2026-119379 sqlite: sqlite: Arbitrary code execution via crafted session changesets [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569689",
+              "CVE-2026-119375 sqlite: sqlite: Information disclosure via undersized WAL page size [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569706",
+              "CVE-2026-119372 sqlite: sqlite: Denial of Service via use-after-free in full-text search [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569728",
+              "CVE-2026-119377 sqlite: sqlite: Authorization bypass via USING clause in JOIN queries [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569738",
+              "CVE-2026-119371 sqlite: sqlite: Denial of Service via stack exhaustion from deeply nested Common Table Expressions [fedora-all]"
+            ],
+            [
+              "https://bugzilla.redhat.com/show_bug.cgi?id=2569752",
+              "CVE-2026-119374 sqlite: sqlite: Arbitrary code execution via corrupted FTS5 index [fedora-all]"
+            ]
+          ]
+        }
+      ]
+    ],
+    "version" : "44.20261125.0",
+    "deployment" : "fedora-8d8a47373ae48edbee008c9187aa97a71c4263a8740e000f328a15b065961027.0",
+    "origin" : "fedora:fedora/44/x86_64/silverblue",
+    "osname" : "fedora",
+    "gpg-enabled" : true,
+    "ref-has-new-commit" : true,
+    "timestamp" : 1795569257
+  },
+  "update-driver" : null
+}

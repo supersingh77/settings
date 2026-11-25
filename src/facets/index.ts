@@ -1,4 +1,5 @@
 import type { Facet } from "../core/facet"
+import { rpmOstree } from "./linux/rpm-ostree"
 import { appx } from "./windows/appx"
 import { association } from "./windows/association"
 import { display } from "./windows/display"
@@ -13,4 +14,4 @@ import { taskbar } from "./windows/taskbar"
 import { volume } from "./windows/volume"
 import { winget } from "./windows/winget"
 
-export const facets: Facet[] = [winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
+export const facets: Facet[] = [rpmOstree, winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
