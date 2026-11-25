@@ -20,7 +20,7 @@ Current recording choices are recorded in [`devices/desktop/state/obs.jsonl`](..
 - **Mic/Aux is the Owl Lite webcam mic** because it is wired and always on. The Razer Barracuda X mic auto-sleeps when idle and then records near-silence, so it is not safe as the default recording mic.
 - **Desktop audio is pinned to the Barracuda X output**, not "default": the default followed Windows onto the Bluetooth speaker, which runs at a different sample rate and adds Bluetooth latency.
 - **One live microphone only.** Capturing the Owl Lite twice (its own source plus global Mic/Aux) comb-filters the voice.
-- **Digitek USB wireless mic** is visible to OBS through WASAPI but not to DirectShow, so ffmpeg and `mic-check.ps1` cannot measure it.
+- **Digitek USB wireless mic** is visible to OBS through WASAPI but not to DirectShow, so ffmpeg and `dev media mic` cannot measure it.
 - The Zebronics Bluetooth speaker's mic is a low-bandwidth HFP telephony endpoint, not a recording mic. No monitor has a microphone; HDMI audio is output only.
 - Mic filter order is noise suppression → gain → limiter: gain amplifies clean voice, and the limiter last prevents clipping.
 

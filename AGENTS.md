@@ -7,10 +7,10 @@
 - Add automated checks for behavior that can be tested without modifying the host. Do not run install, cleanup, reboot, or other host-mutating actions as tests.
 - Run the smallest relevant checks after changes and report anything unavailable.
 - Run `bun install` once, then `bun run check`, `bun test` and `bun run typecheck` after any change under `src/`, `devices/`, `notes/`, `recipes/` or `fixtures/`. Start with `bun run dev describe --json`.
-- On the Windows desktop, run those checks plus the read-only live `bun run dev drift`; run the media-utility test with `pwsh device/desktop/tests/run-tests.ps1`.
+- On the Windows desktop, run those checks plus the read-only live `bun run dev drift`.
 - On the Fedora laptop, run live verbs on the host: `flatpak-spawn --host --directory=$PWD $HOME/.bun/bin/bun src/cli/main.ts <verb>`. Host `sudo` needs a password; never run a host-mutating verb from an agent session.
 - Phone capture uses the user-level `adb` at `~/.local/lib/platform-tools/adb` on the host; pass `--device phone-personal` or `--device phone-work`.
-- The Windows laptop is the last device on its own scripts (`device/laptop/`); every other device is on `dev`.
+- The Windows laptop is deferred until it boots again; its old scripts live only in git history. Every reachable device is on `dev`.
 
 ## Editing workflow
 

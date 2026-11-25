@@ -85,5 +85,5 @@ ffmpeg -ss 00:06:26 -i "input.mp4" -to 00:02:50 -c copy -avoid_negative_ts make_
 
 ## Related
 
-- [`join-videos.ps1`](../device/desktop/scripts/join-videos.ps1) — lossless concat of clips in a folder
-- [`remux-audio-back.ps1`](../device/desktop/scripts/remux-audio-back.ps1) — put cleaned audio back into the original video without re-encoding it
+- `bun run dev media join <first> <second> [output]` — lossless concat of two clips
+- `bun run dev media remux <video> <audio> [output]` — put cleaned audio back into the original video, copying the video stream
