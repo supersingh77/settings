@@ -1,0 +1,8 @@
+{"id":"taskbar:Antigravity","a":{"target":"C:\\Users\\amar\\AppData\\Local\\Programs\\antigravity\\Antigravity.exe"}}
+{"id":"taskbar:DeepSeek Harness","a":{"target":"C:\\Users\\amar\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe"}}
+{"id":"taskbar:File Explorer","a":{}}
+{"id":"taskbar:Gemini","a":{"target":"C:\\Users\\amar\\AppData\\Local\\Google\\Gemini\\Gemini.exe"}}
+{"id":"taskbar:GenOffice","a":{"target":"C:\\Program Files\\GenOffice\\GenOffice.exe"}}
+{"id":"taskbar:Google Chrome","a":{"arguments":"--source-shortcut-location=taskbar","target":"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"}}
+{"id":"taskbar:OpenWork","a":{"target":"C:\\Users\\amar\\AppData\\Local\\Programs\\@openworkdesktop\\OpenWork.exe"}}
+{"id":"taskbar:T3 Code (Beta)","a":{"target":"C:\\Users\\amar\\AppData\\Local\\Programs\\t3code\\T3 Code (Beta).exe"}}

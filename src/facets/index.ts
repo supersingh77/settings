@@ -9,7 +9,8 @@ import { pathApp } from "./windows/path-app"
 import { problemDevice } from "./windows/problem-device"
 import { registryApp } from "./windows/registry-app"
 import { steam } from "./windows/steam"
+import { taskbar } from "./windows/taskbar"
 import { volume } from "./windows/volume"
 import { winget } from "./windows/winget"
 
-export const facets: Facet[] = [winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs]
+export const facets: Facet[] = [winget, steam, registryApp, appx, pathApp, os, volume, hardware, display, problemDevice, association, obs, taskbar]
