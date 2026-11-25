@@ -1,0 +1,6 @@
+{"id":"board:B450M-HDV R4.0","a":{"manufacturer":"ASRock"},"o":{"biosDate":"04/17/2026","biosVendor":"American Megatrends Inc.","biosVersion":"P10.60"}}
+{"id":"cpu:AMD Ryzen 7 5700X 8-Core Processor","a":{"cores":8,"threads":16},"o":{"mhz":3394}}
+{"id":"dimm:DIMM 0 (P0 CHANNEL A)","a":{"manufacturer":"Unknown","partNumber":"F4-3000C15-8GVRB","rated":3000,"sizeMb":8192,"type":"DDR4"},"o":{"configured":3000}}
+{"id":"dimm:DIMM 0 (P0 CHANNEL B)","a":{"manufacturer":"Kingston","partNumber":"KF3200C16D4/8GX","rated":3000,"sizeMb":8192,"type":"DDR4"},"o":{"configured":3000}}
+{"id":"gpu:AMD Radeon RX 7600","a":{"vramMb":8176},"o":{"driverDate":"11-18-2026","driverVersion":"32.0.32029.2010"}}
+{"id":"monitor:MSI MAG 255XF","a":{},"o":{"icm":"MSI MAG 255XF.icm","inf":"oem30.inf"}}
