@@ -3,7 +3,7 @@ import { dirname, join, relative } from "node:path"
 import { InputError, PreconditionError } from "../core/errors"
 import { SCANNED_DIRS, SCANNED_FILES } from "../core/lint"
 import type { SourceFile } from "../core/lint/types"
-import { Device } from "../core/types"
+import { Device, Tasks, type Task } from "../core/types"
 
 const TEXT = /\.(ts|json|jsonl|md|txt)$/
 
@@ -87,4 +87,24 @@ export async function removeFromBox(root: string, box: string, name: string): Pr
 export async function writeToBox(root: string, box: string, name: string, text: string): Promise<void> {
   await mkdir(join(root, box), { recursive: true })
   await writeFile(join(root, box, name), text)
+}
+
+export async function loadTasks(root: string, device: string): Promise<Task[]> {
+  const path = `devices/${device}/tasks.json`
+  let text: string
+  try {
+    text = await readFile(join(root, path), "utf8")
+  } catch (error) {
+    if (isMissing(error)) return []
+    throw error
+  }
+  let raw: unknown
+  try {
+    raw = JSON.parse(text)
+  } catch {
+    throw new InputError(`${path}: invalid JSON`)
+  }
+  const parsed = Tasks.safeParse(raw)
+  if (!parsed.success) throw new InputError(`${path}: ${parsed.error.issues[0]?.message ?? "invalid tasks"}`)
+  return parsed.data
 }

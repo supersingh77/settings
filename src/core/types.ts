@@ -44,6 +44,20 @@ export const Task = z.strictObject({
 export const Tasks = z.array(Task)
 export type Task = z.infer<typeof Task>
 
+export const TaskStep = z.strictObject({
+  id: Name,
+  argv: z.array(z.string()).min(1),
+  needs: Needs.optional(),
+  destructive: z.boolean(),
+})
+
+export const TaskPlan = z.strictObject({
+  device: Name,
+  group: z.enum(["update", "cleanup"]),
+  steps: z.array(TaskStep),
+})
+export type TaskPlan = z.infer<typeof TaskPlan>
+
 export const Step = z.strictObject({
   id: z.string().min(1),
   item: ItemId,
