@@ -20,7 +20,7 @@ function destFile(owner: string, project: string): string {
 function addScript(owner: string, project: string): string {
   const dest = destFile(owner, project)
   const url = `https://copr.fedorainfracloud.org/coprs/${owner}/${project}/repo/fedora-$v/${owner}-${project}-fedora-$v.repo`
-  return `v=$(sed -n 's/^VERSION_ID="\\(.*\\)"/\\1/p' /etc/os-release); curl -fsSL -o "${dest}" "${url}"`
+  return `v=$(sed -n 's/^VERSION_ID=//p' /etc/os-release | sed 's/"//g'); curl -fsSL -o "${dest}" "${url}"`
 }
 
 function planChange(change: Change): Step[] {
