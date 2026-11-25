@@ -1,0 +1,29 @@
+{"id":"obs:audio.channels","a":{"value":"Stereo"}}
+{"id":"obs:audio.sampleRate","a":{"value":48000}}
+{"id":"obs:output.mode","a":{"value":"Advanced"}}
+{"id":"obs:output.recEncoder","a":{"value":"av1_texture_amf"}}
+{"id":"obs:output.recFilePath","a":{"value":"Z:\\Recordings"}}
+{"id":"obs:output.recFormat","a":{"value":"mkv"}}
+{"id":"obs:output.recTracks","a":{"value":11}}
+{"id":"obs:output.recordingType","a":{"value":"Standard"}}
+{"id":"obs:output.streamEncoder","a":{"value":"obs_x264"}}
+{"id":"obs:output.track1Bitrate","a":{"value":192}}
+{"id":"obs:output.track1Name","a":{"value":"desktop"}}
+{"id":"obs:output.track2Bitrate","a":{"value":192}}
+{"id":"obs:output.track2Name","a":{"value":"kreo owl lite webcam mic"}}
+{"id":"obs:output.track3Bitrate","a":{"value":192}}
+{"id":"obs:output.track3Name","a":{"value":"unplugged mic"}}
+{"id":"obs:output.track4Bitrate","a":{"value":192}}
+{"id":"obs:output.track4Name","a":{"value":"razer barracuda x wireless headphones mic"}}
+{"id":"obs:output.track5Bitrate","a":{"value":192}}
+{"id":"obs:output.track5Name","a":{"value":"desktop audio"}}
+{"id":"obs:output.track6Bitrate","a":{"value":160}}
+{"id":"obs:video.baseHeight","a":{"value":1080}}
+{"id":"obs:video.baseWidth","a":{"value":1920}}
+{"id":"obs:video.colorFormat","a":{"value":"NV12"}}
+{"id":"obs:video.colorRange","a":{"value":"Partial"}}
+{"id":"obs:video.colorSpace","a":{"value":"709"}}
+{"id":"obs:video.fps","a":{"value":60}}
+{"id":"obs:video.outputHeight","a":{"value":1080}}
+{"id":"obs:video.outputWidth","a":{"value":1920}}
+{"id":"obs:video.scaleType","a":{"value":"lanczos"}}
