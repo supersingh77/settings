@@ -1,0 +1,12 @@
+{
+  "id": "phone-work",
+  "platform": "android",
+  "match": {
+    "serial": "d7587816"
+  },
+  "via": "fedora-laptop",
+  "facets": [
+    "android"
+  ],
+  "ignore": []
+}

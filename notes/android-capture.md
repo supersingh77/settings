@@ -10,4 +10,4 @@ Items are `android:<package>` with `a.installed` and `a.thirdParty`. The all-inc
 
 Phones are captured with `--device phone-personal` or `--device phone-work`; `via: fedora-laptop` records that the laptop reaches them over adb. The facet stays observed because the old tool only captured too, and rewriting phone packages is not safe to automate.
 
-The personal phone (6 GB model, 5.5 GiB visible, serial `6cbccfac`) is captured. The work phone (4 GB) still needs its serial and a capture once it is plugged in.
+Both phones are captured: personal (6 GB model, 5.5 GiB visible, serial `6cbccfac`) and work (4 GB model, 3.6 GiB visible, serial `d7587816`).
