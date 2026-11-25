@@ -1,0 +1,117 @@
+[
+  {
+    "id": "winget-source-update",
+    "group": "update",
+    "argv": [
+      "winget.exe",
+      "source",
+      "update"
+    ],
+    "destructive": false
+  },
+  {
+    "id": "winget-upgrade",
+    "group": "update",
+    "argv": [
+      "winget.exe",
+      "upgrade",
+      "--all",
+      "--include-unknown",
+      "--accept-package-agreements",
+      "--accept-source-agreements"
+    ],
+    "destructive": false
+  },
+  {
+    "id": "powershell-upgrade",
+    "group": "update",
+    "argv": [
+      "winget.exe",
+      "upgrade",
+      "--id",
+      "Microsoft.PowerShell",
+      "--exact",
+      "--accept-package-agreements",
+      "--accept-source-agreements"
+    ],
+    "destructive": false
+  },
+  {
+    "id": "clean-user-temp",
+    "group": "cleanup",
+    "argv": [
+      "pwsh",
+      "-NoProfile",
+      "-Command",
+      "Get-ChildItem -LiteralPath $env:TEMP -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
+    "destructive": true
+  },
+  {
+    "id": "clean-system-temp",
+    "group": "cleanup",
+    "needs": "admin",
+    "argv": [
+      "pwsh",
+      "-NoProfile",
+      "-Command",
+      "Get-ChildItem -LiteralPath (Join-Path $env:SystemRoot 'Temp') -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
+    "destructive": true
+  },
+  {
+    "id": "clean-component-store",
+    "group": "cleanup",
+    "needs": "admin",
+    "argv": [
+      "dism.exe",
+      "/Online",
+      "/Cleanup-Image",
+      "/StartComponentCleanup"
+    ],
+    "destructive": true
+  },
+  {
+    "id": "clean-recycle-bin",
+    "group": "cleanup",
+    "argv": [
+      "pwsh",
+      "-NoProfile",
+      "-Command",
+      "Clear-RecycleBin -Force"
+    ],
+    "destructive": true
+  },
+  {
+    "id": "flush-dns",
+    "group": "cleanup",
+    "argv": [
+      "ipconfig.exe",
+      "/flushdns"
+    ],
+    "destructive": false
+  },
+  {
+    "id": "clean-delivery-optimization",
+    "group": "cleanup",
+    "needs": "admin",
+    "argv": [
+      "pwsh",
+      "-NoProfile",
+      "-Command",
+      "Get-ChildItem -LiteralPath (Join-Path $env:ProgramData 'Microsoft\\Windows\\DeliveryOptimization\\Cache') -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
+    "destructive": true
+  },
+  {
+    "id": "check-recordings-location",
+    "group": "cleanup",
+    "argv": [
+      "pwsh",
+      "-NoProfile",
+      "-Command",
+      "$videos = Join-Path $env:USERPROFILE 'Videos'; $found = @(Get-ChildItem -LiteralPath $videos -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in '.mp4', '.mkv', '.m4a', '.mov' }); if ($found.Count -eq 0) { Write-Output ('No out-of-policy recordings in ' + $videos + '.') } else { $found | Select-Object FullName, Length | Format-Table -AutoSize; Write-Output ('{0:N2} GB of recordings sit in {1} - out of policy, they belong on {2}.' -f (($found | Measure-Object Length -Sum).Sum / 1GB), $videos, 'Z:\\Recordings') }"
+    ],
+    "destructive": false
+  }
+]
