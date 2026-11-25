@@ -1,0 +1,5 @@
+{"id":"conf:/etc/UPower/UPower.conf#AllowRiskyCriticalPowerAction","a":{"value":"true"}}
+{"id":"conf:/etc/UPower/UPower.conf#CriticalPowerAction","a":{"value":"Ignore"}}
+{"id":"conf:/etc/UPower/UPower.conf#IgnoreLid","a":{"value":"true"}}
+{"id":"conf:/etc/UPower/UPower.conf#NoPollBatteries","a":{"value":"true"}}
+{"id":"conf:/etc/UPower/UPower.conf#UsePercentageForPolicy","a":{"value":"false"}}
