@@ -1,6 +1,6 @@
 import { diff, ignored } from "./diff"
 import { PreconditionError, ProbeError } from "./errors"
-import type { Env, Facet, Repo } from "./facet"
+import type { Env, Facet, Repo, RunResult } from "./facet"
 import { type Delta, plan } from "./plan"
 import { formatJsonl, parseJsonl, sortItems } from "./store"
 import { type Device, Item, type Plan, type Step } from "./types"
@@ -76,6 +76,15 @@ export async function capture(
   return deltas
 }
 
+async function executeStep(env: Env, repo: Repo, step: Step): Promise<RunResult> {
+  if (step.recipe !== undefined) {
+    const recipe = repo.recipes.find((entry) => entry.id === step.recipe)
+    if (!recipe) return { code: 3, out: "", err: `no recipe ${step.recipe}` }
+    return env.install(recipe, step.action ?? "install")
+  }
+  return env.run({ argv: step.argv ?? [], needs: step.needs })
+}
+
 export async function restore(
   env: Env,
   device: Device,
@@ -90,7 +99,7 @@ export async function restore(
   }
   const results: StepResult[] = []
   for (const step of planned.steps) {
-    const run = await env.run({ argv: step.argv, needs: step.needs })
+    const run = await executeStep(env, repo, step)
     results.push({ step, code: run.code, err: firstLine(run.err) })
     if (run.code !== 0) return { plan: planned, results, remaining: deltas }
   }

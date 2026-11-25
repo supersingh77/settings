@@ -1,15 +1,19 @@
 import type { Recipe } from "./recipe"
 import type { Device, Item, Needs, Platform, Step } from "./types"
 
-export type Cmd = { argv: string[]; needs?: Needs }
+export type Cmd = { argv: string[]; needs?: Needs; cwd?: string }
 
 export type RunResult = { code: number; out: string; err: string }
+
+export type InstallAction = "install" | "remove"
+export type Installer = (recipe: Recipe, action: InstallAction) => Promise<RunResult>
 
 export type Env = {
   run: (cmd: Cmd) => Promise<RunResult>
   read: (path: string) => Promise<string | null>
   write: (path: string, text: string) => Promise<void>
   say: (line: string) => void
+  install: Installer
 }
 
 export type Repo = {

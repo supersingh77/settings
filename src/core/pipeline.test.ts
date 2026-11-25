@@ -1,4 +1,6 @@
 import { beforeEach, expect, test } from "bun:test"
+import type { Env, Facet } from "./facet"
+import type { Recipe } from "./recipe"
 import { PreconditionError, ProbeError } from "./errors"
 import { capture, compare, restore, statePath } from "./pipeline"
 import { managedOnly, pending } from "./plan"
@@ -96,4 +98,39 @@ test("an observed facet shows drift but restore plans nothing and still converge
   expect(world.mutations).toEqual([])
   expect(pending(managedOnly(result.remaining))).toBe(false)
   expect(pending(result.remaining)).toBe(true)
+})
+
+test("recipe steps run through the installer", async () => {
+  const calls: string[] = []
+  const env = fakeEnv(world)
+  const installing: Env = {
+    ...env,
+    install: async (recipe, action) => {
+      calls.push(action + ":" + recipe.id)
+      return { code: 0, out: "", err: "" }
+    },
+  }
+  const recipe: Recipe = {
+    id: "tool",
+    source: { kind: "github", repo: "a/b", asset: { name: "x" } },
+    paths: { install: "{home}/x", version: "{home}/x.version" },
+    install: { kind: "binary" },
+  }
+  const facet: Facet = {
+    ...toyFacet,
+    plan: (change) => [
+      { id: "recipe-step", item: change.id, recipe: "tool", action: "install", destructive: false },
+    ],
+  }
+  await capture(env, toyDevice, [toyFacet], false, repo)
+  world.items.delete("alpha")
+  const result = await restore(
+    installing,
+    toyDevice,
+    [facet],
+    { strict: false, dryRun: false },
+    { home: "/home/toy", recipes: [recipe] },
+  )
+  expect(calls).toEqual(["install:tool"])
+  expect(result.results[0]?.code).toBe(0)
 })

@@ -69,5 +69,6 @@ export function fakeEnv(world: World): Env {
       world.files.set(path, text)
     },
     say: () => {},
+    install: async () => ({ code: 127, out: "", err: "no installer" }),
   }
 }

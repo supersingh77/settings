@@ -46,7 +46,9 @@ export type Task = z.infer<typeof Task>
 export const Step = z.strictObject({
   id: z.string().min(1),
   item: ItemId,
-  argv: z.array(z.string()).min(1),
+  argv: z.array(z.string()).min(1).optional(),
+  recipe: z.string().min(1).optional(),
+  action: z.enum(["install", "remove"]).optional(),
   needs: Needs.optional(),
   destructive: z.boolean(),
 })

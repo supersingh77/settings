@@ -1,3 +1,4 @@
+import { PreconditionError } from "../../core/errors"
 import type { Change, Cmd, Facet, Repo } from "../../core/facet"
 import type { Device, Item, Step } from "../../core/types"
 
@@ -34,14 +35,19 @@ function parseApps(stdout: string): Item[] {
   return items
 }
 
-function planChange(_change: Change, _repo: Repo): Step[] {
-  return []
+function planChange(change: Change, repo: Repo): Step[] {
+  const name = change.id.slice("app:".length)
+  if (!repo.recipes.some((recipe) => recipe.id === name)) {
+    throw new PreconditionError(`app:${name} has no recipe`)
+  }
+  const action = change.kind === "remove" ? "remove" : "install"
+  return [{ id: `app:${name}:${action}`, item: change.id, recipe: name, action, destructive: action === "remove" }]
 }
 
 export const app: Facet = {
   name: "app",
   platform: "linux",
-  mode: "observed",
+  mode: "managed",
   command,
   parse: parseApps,
   plan: planChange,

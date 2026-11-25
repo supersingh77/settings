@@ -42,3 +42,43 @@ export const Recipe = z.strictObject({
   desktop: z.array(z.tuple([z.string(), z.string()])).optional(),
 })
 export type Recipe = z.infer<typeof Recipe>
+
+export function expand(template: string, values: Record<string, string>): string {
+  let text = template
+  for (const [key, value] of Object.entries(values)) text = text.replaceAll("{" + key + "}", value)
+  return text
+}
+
+export type Release = { tag_name?: string; assets?: Array<{ name?: string; browser_download_url?: string }> }
+export type AssetRule = { name?: string; prefix?: string; suffix?: string }
+
+export function matchAsset(release: Release, rule: AssetRule): string {
+  for (const asset of release.assets ?? []) {
+    const name = asset.name ?? ""
+    const matched =
+      rule.name !== undefined
+        ? name === rule.name
+        : rule.prefix !== undefined && rule.suffix !== undefined && name.startsWith(rule.prefix) && name.endsWith(rule.suffix)
+    if (matched && asset.browser_download_url) return asset.browser_download_url
+  }
+  return ""
+}
+
+export function githubLatest(release: Release, rule: AssetRule): { version: string; url: string } {
+  const version = (release.tag_name ?? "").replace(/^v/, "")
+  const url = matchAsset(release, rule)
+  if (version === "" || url === "") throw new Error("release has no version or no matching asset")
+  return { version, url }
+}
+
+export type AntigravityRelease = { version?: string; execution_id?: string }
+
+export function antigravityLatest(
+  releases: readonly AntigravityRelease[],
+  template: string,
+): { version: string; url: string } {
+  const newest = releases[0]
+  if (!newest?.version || newest.execution_id === undefined) throw new Error("release list is empty")
+  const version = newest.version + "-" + newest.execution_id
+  return { version, url: expand(template, { version: newest.version, execution: newest.execution_id }) }
+}

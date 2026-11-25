@@ -57,7 +57,9 @@ const restoreVerb: Verb = {
       }
     }
     const result = await restore(ctx.env, device, facets, options, ctx.repo)
-    const steps = result.plan.steps.map((step) => `${step.id}: ${step.argv.join(" ")}`)
+    const steps = result.plan.steps.map((step) =>
+      `${step.id}: ${step.argv?.join(" ") ?? `recipe ${step.action ?? "install"} ${step.recipe ?? ""}`}`,
+    )
     const manual = lines(result.remaining.filter((delta) => !delta.managed)).map((line) => `manual: ${line}`)
     if (ctx.args.dryRun) {
       const text = [...(steps.length ? steps : ["nothing to do"]), ...manual]
