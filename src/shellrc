@@ -1,0 +1,5 @@
+SETTINGS_ROOT="${SETTINGS_ROOT:-$(git -C "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." rev-parse --show-toplevel 2>/dev/null)}"
+dev() { ( cd "$SETTINGS_ROOT" && bun src/cli/main.ts "$@" ); }
+alias update='dev update'
+alias cleanup='dev cleanup'
+alias uad='dev uad'

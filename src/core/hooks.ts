@@ -1,4 +1,5 @@
-export const MARKER = "device/fedora-laptop/shellrc"
+export const MARKER = "src/shellrc"
+export const LEGACY_MARKER = "device/fedora-laptop/shellrc"
 export const PROFILE_LINE = "[ -f ~/.bashrc ] && source ~/.bashrc"
 
 function quoted(value: string): string {
@@ -12,20 +13,20 @@ export function bashrcHook(repoRoot: string): string {
   )
 }
 
+function withoutHook(text: string): string {
+  return text
+    .split("\n")
+    .filter((line) => !line.includes("SETTINGS_ROOT=") && !line.includes(MARKER) && !line.includes(LEGACY_MARKER))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/^\n+/, "")
+    .replace(/\n+$/, "")
+}
+
 export function withBashrcHook(text: string, repoRoot: string): string {
   const hook = bashrcHook(repoRoot)
-  if (text.includes(MARKER)) {
-    const lines = text.split("\n")
-    for (const [index, line] of lines.entries()) {
-      if (line.startsWith("export SETTINGS_ROOT=")) {
-        lines[index] = hook.split("\n")[0] ?? ""
-        return lines.join("\n")
-      }
-    }
-    return text
-  }
-  const separator = text === "" || text.endsWith("\n") ? "" : "\n"
-  return text + separator + "\n" + hook
+  const rest = withoutHook(text)
+  return rest === "" ? hook : rest + "\n" + hook
 }
 
 export function withProfileHook(text: string): string {
