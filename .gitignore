@@ -23,3 +23,5 @@ dist/
 /outbox/*
 !/inbox/.gitkeep
 !/outbox/.gitkeep
+
+device/fedora-laptop/scripts/
