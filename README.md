@@ -1,16 +1,18 @@
 # Personal configuration repository
 
-This repository tracks configuration, maintenance tools, and reference notes for the owner's devices. The Bun/TypeScript [`dev`](src/cli/main.ts) tool and the captured state under [`devices/`](devices/) are the current workflow; remaining per-device scripts and guides live under [`device/`](device/).
+One Bun/TypeScript tool, `dev`, tracks configuration and state for these machines:
 
-## Source of truth
+- `devices/` — per-device state (`state/*.jsonl`), device config and task lists
+- `recipes/` — how to install things no package manager handles
+- `notes/` — the knowledge code cannot derive
+- `fixtures/` — recorded command output and parsed golden files
 
-- `bun run dev drift` compares the running device with captured state and reports differences without writing anything.
-- `bun run dev capture` records observed state and `bun run dev restore` plans host changes; review the plan before applying it.
-- Scripts define behavior; machine-readable files hold declared configuration where practical.
-- Keep explanations, recovery steps, and decisions in [`notes/`](notes/). Do not copy volatile inventories or repeat command/file maps.
+## Workflow
 
-## Working in the repository
+- `bun run dev drift` compares the live machine with the store and writes nothing.
+- `bun run dev capture` records live state; review the diff and commit it.
+- `bun run dev restore` plans changes that make the machine match the store; preview with `--dry-run`.
+- `bun run dev update` and `cleanup` run the device's `tasks.json`; `media`, `shell` and `uad` cover the small utilities.
+- `bun run dev check` runs schema, lint, fixture and note-reference checks.
 
-Read [`AGENTS.md`](AGENTS.md) before making changes. Run `bun install` once, then `bun run check`, `bun test` and `bun run typecheck`. Checks inspect state or temporary fixtures; they must not install packages, clean the host, or reboot it.
-
-The Fedora laptop's inventory workflow is documented in [`device/fedora-laptop/README.md`](device/fedora-laptop/README.md). Desktop knowledge is in [`notes/`](notes/).
+Run `bun install` once, then `bun run dev describe --json` for the contract. Machine knowledge lives in `notes/`; the Windows laptop keeps its own scripts under `device/laptop/` until phase 5.

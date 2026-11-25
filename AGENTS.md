@@ -6,10 +6,11 @@
 - Keep scripts idempotent where practical, fail clearly, and avoid hidden global state.
 - Add automated checks for behavior that can be tested without modifying the host. Do not run install, cleanup, reboot, or other host-mutating actions as tests.
 - Run the smallest relevant checks after changes and report anything unavailable.
-- On the Windows desktop, run `bun run check`, `bun test`, `bun run typecheck`, and the read-only live `bun run dev drift`. Run the remaining media-utility PowerShell test with `pwsh device/desktop/tests/run-tests.ps1`.
-- On the Fedora laptop, run `make setup-dev` once and then `make audit`. This audit reads live Fedora and optional phone state; do not use it as a Windows check.
-- Phone capture uses the user-level `adb` at `~/.local/lib/platform-tools/adb` on the host; pass `--device phone-personal` (or `phone-work`).
-- Agent sessions run inside the `fedora-toolbox-44` container: run `bun run check`, `bun test` and `bun run typecheck` there, and live verbs on the host with `flatpak-spawn --host --directory=$PWD <argv>` (bun is `/var/home/amrx/.bun/bin/bun`; the old tool is `env PYTHONPATH=device/fedora-laptop python3 -m laptop`). Host `sudo` needs a password; never run a host-mutating verb from an agent session.
+- Run `bun install` once, then `bun run check`, `bun test` and `bun run typecheck` after any change under `src/`, `devices/`, `notes/`, `recipes/` or `fixtures/`. Start with `bun run dev describe --json`.
+- On the Windows desktop, run those checks plus the read-only live `bun run dev drift`; run the media-utility test with `pwsh device/desktop/tests/run-tests.ps1`.
+- On the Fedora laptop, run live verbs on the host: `flatpak-spawn --host --directory=$PWD /var/home/amrx/.bun/bin/bun src/cli/main.ts <verb>`. Host `sudo` needs a password; never run a host-mutating verb from an agent session.
+- Phone capture uses the user-level `adb` at `~/.local/lib/platform-tools/adb` on the host; pass `--device phone-personal` or `--device phone-work`.
+- The Windows laptop is the last device on its own scripts (`device/laptop/`); every other device is on `dev`.
 
 ## Editing workflow
 
@@ -17,6 +18,5 @@
 - Use the patch tool for short, stable hunks. For structural rewrites or repeated mechanical changes, use a short script that asserts its expected input before writing; never use broad search/replace without checking the match count.
 - Do not mix commands into a patch call or assume a failed call changed nothing: inspect file/status after any tool error.
 - Before committing, review the full staged diff and status. Do not commit or alter unrelated pre-existing changes.
-- Keep each topic's current facts in one canonical place. Supporting docs should cover procedures, risks, or explanations—not repeat inventories or file maps. For device pairs, put shared facts in the parent README and only differences in per-device notes.
-- Prefer read-only inventory scripts over manually maintained volatile facts. Treat program output/configuration as the source of truth; docs may explain interpretation, risks, or where the output lives, but must not mirror changing values or repeat command/file maps.
-- The desktop is on the Bun/TypeScript tool `dev`; other devices still use their own scripts. Run `bun install` once, then `bun run check`, `bun test` and `bun run typecheck` after any change under `src/`, `devices/`, `notes/` or `fixtures/`. Start with `bun run dev describe --json`.
+- Keep each topic's current facts in one canonical place. Supporting docs should cover procedures, risks, or explanations, not repeat inventories or file maps.
+- Prefer read-only inventory scripts over manually maintained volatile facts. Treat program output and configuration as the source of truth; docs may explain interpretation, risks, or where the output lives, but must not mirror changing values or repeat command/file maps.

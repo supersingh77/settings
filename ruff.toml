@@ -1,7 +1,0 @@
-line-length = 88
-target-version = "py311"
-src = ["device/fedora-laptop", "."]
-
-[lint]
-select = ["E", "F", "I", "UP", "B", "BLE", "RUF"]
-ignore = ["E501", "RUF001", "RUF012"]
