@@ -10,9 +10,20 @@ function json(body: unknown, status = 200): Response {
   return Response.json(body, { status })
 }
 
+function loopback(origin: URL): boolean {
+  return origin.hostname === "localhost" || origin.hostname === "127.0.0.1" || origin.hostname === "::1" || origin.hostname === "[::1]"
+}
+
 function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin")
-  return origin === null || new URL(origin).host === request.headers.get("host")
+  if (origin === null) return true
+  let parsed: URL
+  try {
+    parsed = new URL(origin)
+  } catch {
+    return false
+  }
+  return parsed.host === request.headers.get("host") || loopback(parsed)
 }
 
 async function runRoute(root: string, request: Request): Promise<Response> {

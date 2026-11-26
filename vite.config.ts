@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: true,
-    hmr: false,
     proxy: {
       "/api": "http://127.0.0.1:4173",
       "/health": "http://127.0.0.1:4173",
