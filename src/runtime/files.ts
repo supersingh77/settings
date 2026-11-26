@@ -5,7 +5,7 @@ import { SCANNED_DIRS, SCANNED_FILES } from "../core/lint"
 import type { SourceFile } from "../core/lint/types"
 import { Device, Tasks, type Task } from "../core/types"
 
-const TEXT = /\.(ts|json|jsonl|md|txt)$/
+const TEXT = /\.(ts|tsx|json|jsonl|md|txt|css|html)$/
 
 function isMissing(error: unknown): boolean {
   return (error as { code?: string }).code === "ENOENT"

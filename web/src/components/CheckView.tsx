@@ -3,15 +3,6 @@ import { useCallback } from "react"
 import { api, useLoad, type Describe } from "../api"
 import { Card, Failure, Heading, Loading, Th, ghostButton } from "./ui"
 
-const ruleNotes: Record<string, string> = {
-  "no-comments": "No comments in TypeScript source",
-  layers: "core and facets stay pure; layers import only downward",
-  limits: "Source files stay small, LF only, markdown only where allowed",
-  data: "Device state, tasks and recipes parse and stay canonical",
-  notes: "Notes carry front matter and refs that resolve",
-  "facet-files": "Every facet has its parser, probe and fixtures",
-}
-
 export function CheckView({ describe }: { describe: Describe }) {
   const { data, error, reload } = useLoad(useCallback(() => api.check(), []))
   if (error) return <Failure message={error} />
@@ -72,12 +63,12 @@ export function CheckView({ describe }: { describe: Describe }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#1D222C]">
-            {describe.lint.map((rule) => {
-              const failing = data.violations.some((violation) => violation.rule === rule)
+            {Object.entries(describe.lint).map(([rule, description]) => {
+              const failing = data.violations.some((violation) => (violation.group ?? violation.rule) === rule)
               return (
                 <tr key={rule} className="hover:bg-[#171B23]">
                   <td className="py-2.5 px-4 font-mono text-xs text-[#F1F5F9] whitespace-nowrap">{rule}</td>
-                  <td className="py-2.5 px-4 text-xs text-[#CBD5E1]">{ruleNotes[rule] ?? ""}</td>
+                  <td className="py-2.5 px-4 text-xs text-[#CBD5E1]">{description}</td>
                   <td className={`py-2.5 px-4 text-xs text-right ${failing ? "text-[#FCA5A5]" : "text-[#86EFAC]"}`}>
                     {failing ? "failing" : "passing"}
                   </td>

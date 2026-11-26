@@ -95,3 +95,30 @@ test("inbox lists non-message files by name without parsing them", async () => {
   expect(await exec(dir, "inbox", "list", "--json")).toBe(0)
   expect(JSON.parse(out[0] ?? "").entries).toEqual([{ name: "bundle.zip", kind: "file" }])
 })
+
+test("the web policy refuses host-changing verbs without --dry-run", async () => {
+  const deps = { root: repoRoot, io: io(), env: realEnv(repoRoot, () => {}), policy: "web" as const }
+  out = []
+  err = []
+  expect(await run(["restore", "--json"], deps)).toBe(2)
+  expect(err.join("\n")).toContain("--dry-run")
+  expect(await run(["check", "--rule", "layers"], deps)).toBe(0)
+})
+
+test("read verbs list devices, state, recipes, notes and fixtures", async () => {
+  expect(await exec(repoRoot, "devices", "show", "desktop", "--json")).toBe(0)
+  const shown = JSON.parse(out[0] ?? "")
+  expect(shown.counts.winget).toBeGreaterThan(0)
+  expect(await exec(repoRoot, "state", "list", "desktop", "--facet", "winget", "--query", "git", "--json")).toBe(0)
+  const listed = JSON.parse(out[0] ?? "")
+  expect(listed.items.length).toBeGreaterThan(0)
+  expect(listed.total).toBe(shown.counts.winget)
+  expect(await exec(repoRoot, "state", "list", "desktop", "--facet", "nope")).toBe(2)
+  expect(await exec(repoRoot, "recipes", "list", "--json")).toBe(0)
+  expect(await exec(repoRoot, "notes", "show", "upower-battery.md", "--json")).toBe(0)
+  expect(JSON.parse(out[0] ?? "").note.refs.length).toBeGreaterThan(0)
+  expect(await exec(repoRoot, "fixtures", "show", "windows/winget/desktop", "--json")).toBe(0)
+  expect(JSON.parse(out[0] ?? "").fixture.golden).not.toBe("")
+  expect(await exec(repoRoot, "fixtures", "list", "--platform", "android", "--json")).toBe(0)
+  expect(JSON.parse(out[0] ?? "").fixtures.length).toBe(2)
+})

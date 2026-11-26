@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { Exit } from "../core/errors"
-import { SCANNED_DIRS, SCANNED_FILES, rules } from "../core/lint"
+import { SCANNED_DIRS, SCANNED_FILES, ruleDocs } from "../core/lint"
 import { Recipe } from "../core/recipe"
 import { Device, Item, MessageHead, Plan, Task, TaskPlan } from "../core/types"
 import { facets } from "../facets"
@@ -23,6 +23,10 @@ const FLAGS = {
   "--yes": "allow destructive steps",
   "--facet": "narrow to a facet, repeatable",
   "--device": "choose a device instead of matching the hostname",
+  "--query": "filter a listing by text",
+  "--only": "state list: asserted or observed",
+  "--platform": "fixtures list: windows, linux or android",
+  "--rule": "check: report one lint rule or group only",
 }
 
 const describe: Verb = {
@@ -37,7 +41,7 @@ const describe: Verb = {
       exit: EXIT_CODES,
       devices: devices.map((device) => ({ id: device.id, platform: device.platform, facets: device.facets })),
       facets: facets.map((facet) => ({ platform: facet.platform, name: facet.name })),
-      lint: Object.keys(rules),
+      lint: ruleDocs,
       scanned: [...SCANNED_DIRS, ...SCANNED_FILES],
       schemas: {
         item: z.toJSONSchema(Item),

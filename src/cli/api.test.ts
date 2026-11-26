@@ -1,31 +1,71 @@
 import { describe, expect, test } from "bun:test"
+import { readdir, readFile } from "node:fs/promises"
+import { join } from "node:path"
+import { verbs as client } from "../../web/src/verbs"
 import { findRoot } from "../runtime/files"
-import { blocked, fixtures, notes, runArgv } from "./api"
+import { runArgv } from "./api"
+import { parseArgs } from "./args"
+import { verbs } from "./verbs"
 
 const root = await findRoot(process.cwd())
 
-describe("web api", () => {
-  test("host-changing verbs need --dry-run", () => {
-    expect(blocked(["restore", "--json"])).toContain("--dry-run")
-    expect(blocked(["restore", "--dry-run"])).toBeUndefined()
-    expect(blocked(["check"])).toBeUndefined()
+const reads: Record<string, string[]> = {
+  describe: client.describe(),
+  check: client.check(),
+  device: client.device("desktop"),
+  state: client.state("desktop", "winget", "git", "all"),
+  stateObserved: client.state("desktop", "winget", "", "observed"),
+  recipes: client.recipes(),
+  recipe: client.recipe("uad-ng"),
+  fixtures: client.fixtures("windows"),
+  fixture: client.fixture("windows/winget/desktop"),
+  notes: client.notes("battery"),
+  note: client.note("notes/upower-battery.md"),
+  inbox: client.mail.list("inbox"),
+  outbox: client.mail.list("outbox"),
+  previewUpdate: client.preview("update", "desktop"),
+}
+
+const writes: string[][] = [
+  client.want.add("desktop", "winget", "winget:X.Y", ["a=1"]),
+  client.want.rm("desktop", "winget", "winget:X.Y"),
+  client.mail.ack("inbox", "x"),
+  client.mail.put("desktop", "slug", "note", "body"),
+  client.mail.show("inbox", "x"),
+]
+
+describe("web client parity", () => {
+  test("every web call names a real verb and parses as CLI arguments", () => {
+    const names = new Set(verbs.map((verb) => verb.name))
+    for (const argv of [...Object.values(reads), ...writes]) {
+      expect(names.has(parseArgs(argv).verb ?? "")).toBe(true)
+    }
   })
 
-  test("runArgv captures json output and exit code", async () => {
-    const result = await runArgv(root, ["check", "--json"])
-    expect(result.code).toBe(0)
-    expect((result.data as { violations: unknown[] }).violations).toEqual([])
+  test("every read call succeeds through the same run() the CLI uses", async () => {
+    for (const [name, argv] of Object.entries(reads)) {
+      const result = await runArgv(root, argv)
+      expect([name, result.code <= 1]).toEqual([name, true])
+      expect(result.data).toBeDefined()
+    }
   })
 
-  test("fixtures expose platform, facet and golden text", async () => {
-    const { fixtures: found } = (await fixtures(root)) as { fixtures: { platform: string; facet: string; golden: string }[] }
-    const winget = found.find((entry) => entry.facet === "winget")
-    expect(winget?.platform).toBe("windows")
-    expect(winget?.golden).not.toBe("")
+  test("the web policy keeps host-changing verbs in dry-run", async () => {
+    const refused = await runArgv(root, ["restore", "--json"])
+    expect(refused.code).toBe(2)
+    expect((refused.data as { error: string }).error).toContain("--dry-run")
   })
 
-  test("notes carry refs from front matter", async () => {
-    const { notes: found } = (await notes(root)) as { notes: { path: string; refs: string[] }[] }
-    expect(found.find((entry) => entry.path === "notes/upower-battery.md")?.refs.length).toBeGreaterThan(0)
+  test("the web client only talks to /api/run", async () => {
+    const files = await readdir(join(root, "web/src"), { recursive: true })
+    for (const file of files.filter((name) => /\.tsx?$/.test(name))) {
+      const text = await readFile(join(root, "web/src", file), "utf8")
+      for (const found of text.match(/\/api\/[A-Za-z0-9_-]+/g) ?? []) expect(found).toBe("/api/run")
+    }
+  })
+
+  test("write verbs run through the queue and report their errors", async () => {
+    const results = await Promise.all([runArgv(root, ["inbox", "list", "--json"]), runArgv(root, ["want", "rm", "x:y", "--device", "desktop", "--json"])])
+    expect(results[1]?.code).toBe(3)
   })
 })

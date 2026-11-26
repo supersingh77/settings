@@ -20,7 +20,7 @@ const FLAGS: Record<string, "json" | "dryRun" | "strict" | "yes" | "help"> = {
   "-h": "help",
 }
 
-const VALUE_FLAGS = new Set(["facet", "device", "set", "to", "from", "kind", "subject", "ref", "body", "seconds"])
+const VALUE_FLAGS = new Set(["facet", "device", "set", "to", "from", "kind", "subject", "ref", "body", "seconds", "query", "only", "platform", "rule"])
 
 export function parseArgs(argv: readonly string[]): Args {
   const args: Args = {

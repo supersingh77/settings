@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react"
 import { api, useLoad, type DeviceDetail } from "../api"
-import { StateStore } from "./StateStore"
-import { Card, Empty, Failure, Heading, Loading, Pre, Segmented, Th, ghostButton } from "./ui"
+import { verbs } from "../verbs"
+import { RawState, StateStore } from "./StateStore"
+import { Card, Empty, Failure, Heading, Loading, Segmented, Th, ghostButton } from "./ui"
 
 type Tab = "state" | "tasks" | "jsonl"
 
@@ -12,10 +13,10 @@ function Tasks({ detail, onConsole }: { detail: DeviceDetail; onConsole: (argv: 
       <div className="p-3 flex items-center justify-between gap-3 border-b border-[#232834]">
         <div className="text-xs font-mono text-[#94A3B8]">data/devices/{id}/tasks.json</div>
         <div className="flex gap-2">
-          <button className={ghostButton} onClick={() => onConsole(["update", id, "--dry-run", "--json"])}>
+          <button className={ghostButton} onClick={() => onConsole(verbs.preview("update", id))}>
             Preview Update
           </button>
-          <button className={ghostButton} onClick={() => onConsole(["cleanup", id, "--dry-run", "--json"])}>
+          <button className={ghostButton} onClick={() => onConsole(verbs.preview("cleanup", id))}>
             Preview Cleanup
           </button>
         </div>
@@ -54,16 +55,17 @@ function Tasks({ detail, onConsole }: { detail: DeviceDetail; onConsole: (argv: 
 }
 
 export function DevicesView({ deviceId, onConsole }: { deviceId: string; onConsole: (argv: string[]) => void }) {
-  const { data, error, reload } = useLoad(useCallback(() => api.device(deviceId), [deviceId]))
+  const [rev, setRev] = useState(0)
+  const { data, error } = useLoad(useCallback(() => api.device(deviceId), [deviceId, rev]))
   const [tab, setTab] = useState<Tab>("state")
   const [picked, setPicked] = useState<string | undefined>()
 
   if (error) return <Failure message={error} />
   if (!data) return <Loading />
 
-  const { device, state, tasks } = data
+  const { device, counts, tasks } = data
   const facet = picked && device.facets.includes(picked) ? picked : device.facets[0]
-  const stored = Object.values(state).reduce((sum, items) => sum + items.length, 0)
+  const stored = Object.values(counts).reduce((sum, count) => sum + count, 0)
   const meta = [
     device.platform,
     device.match.hostname,
@@ -109,18 +111,14 @@ export function DevicesView({ deviceId, onConsole }: { deviceId: string; onConso
                     : "bg-[#12151B] border-[#232834] text-[#CBD5E1] hover:bg-[#1A1E26]"
                 }`}
               >
-                {name} <span className="font-mono opacity-80">({state[name]?.length ?? 0})</span>
+                {name} <span className="font-mono opacity-80">({counts[name] ?? 0})</span>
               </button>
             ))}
           </div>
-          {facet && tab === "state" ? <StateStore key={facet} detail={data} facet={facet} onRefresh={reload} /> : null}
-          {facet && tab === "jsonl" ? (
-            <Pre className="max-h-[640px]">
-              {(state[facet] ?? [])
-                .map((item) => JSON.stringify(item))
-                .join("\n") || "empty"}
-            </Pre>
+          {facet && tab === "state" ? (
+            <StateStore key={facet} deviceId={device.id} facet={facet} rev={rev} onChanged={() => setRev(rev + 1)} />
           ) : null}
+          {facet && tab === "jsonl" ? <RawState deviceId={device.id} facet={facet} rev={rev} /> : null}
         </>
       ) : null}
     </div>

@@ -1,9 +1,8 @@
 import { Plus, Trash2 } from "lucide-react"
-import { useMemo, useState } from "react"
-import { api, formatRecord, type DeviceDetail, type Item } from "../api"
-import { Card, Empty, Segmented, Th, inputClass, primaryButton } from "./ui"
-
-type Filter = "all" | "asserted" | "observed"
+import { useCallback, useState } from "react"
+import { api, formatRecord, useDebounced, useLoad, type OnlyFilter } from "../api"
+import { verbs } from "../verbs"
+import { Card, Empty, Failure, Pre, Segmented, Th, inputClass, primaryButton } from "./ui"
 
 function AddForm({ device, facet, onDone }: { device: string; facet: string; onDone: () => void }) {
   const [id, setId] = useState("")
@@ -16,9 +15,8 @@ function AddForm({ device, facet, onDone }: { device: string; facet: string; onD
       .split("\n")
       .map((line) => line.trim())
       .filter((line) => line !== "")
-      .flatMap((line) => ["--set", line])
     setBusy(true)
-    const res = await api.run(["want", "add", id.trim(), "--facet", facet, "--device", device, ...sets, "--json"])
+    const res = await api.run(verbs.want.add(device, facet, id.trim(), sets))
     setBusy(false)
     if (res.code === 0) {
       setId("")
@@ -47,33 +45,39 @@ function AddForm({ device, facet, onDone }: { device: string; facet: string; onD
   )
 }
 
+function useStateList(deviceId: string, facet: string, query: string, filter: OnlyFilter, rev: number) {
+  const settled = useDebounced(query)
+  return useLoad(useCallback(() => api.state(deviceId, facet, settled, filter), [deviceId, facet, settled, filter, rev]))
+}
+
+export function RawState({ deviceId, facet, rev }: { deviceId: string; facet: string; rev: number }) {
+  const { data, error } = useStateList(deviceId, facet, "", "all", rev)
+  if (error) return <Failure message={error} />
+  return <Pre className="max-h-[640px]">{data ? data.items.map((item) => JSON.stringify(item)).join("\n") || "empty" : "Loading…"}</Pre>
+}
+
 export function StateStore({
-  detail,
+  deviceId,
   facet,
-  onRefresh,
+  rev,
+  onChanged,
 }: {
-  detail: DeviceDetail
+  deviceId: string
   facet: string
-  onRefresh: () => void
+  rev: number
+  onChanged: () => void
 }) {
   const [query, setQuery] = useState("")
-  const [filter, setFilter] = useState<Filter>("all")
+  const [filter, setFilter] = useState<OnlyFilter>("all")
   const [adding, setAdding] = useState(false)
-  const items = detail.state[facet] ?? []
-
-  const shown = useMemo(() => {
-    const needle = query.trim().toLowerCase()
-    return items.filter((item: Item) => {
-      if (filter === "observed" && !item.o) return false
-      const haystack = `${item.id} ${formatRecord(item.a)} ${formatRecord(item.o)}`.toLowerCase()
-      return haystack.includes(needle)
-    })
-  }, [items, query, filter])
+  const { data, error } = useStateList(deviceId, facet, query, filter, rev)
+  const shown = data?.items ?? []
+  const total = data?.total ?? 0
 
   async function remove(id: string) {
     if (!window.confirm(`Remove ${id} from ${facet}?`)) return
-    const res = await api.run(["want", "rm", id, "--facet", facet, "--device", detail.device.id, "--json"])
-    if (res.code === 0) onRefresh()
+    const res = await api.run(verbs.want.rm(deviceId, facet, id))
+    if (res.code === 0) onChanged()
   }
 
   return (
@@ -99,10 +103,11 @@ export function StateStore({
           <Plus className="w-3.5 h-3.5" /> Add
         </button>
       </div>
-      {adding ? <AddForm device={detail.device.id} facet={facet} onDone={onRefresh} /> : null}
+      {adding ? <AddForm device={deviceId} facet={facet} onDone={onChanged} /> : null}
+      {error ? <Failure message={error} /> : null}
       {shown.length === 0 ? (
-        <Empty title={items.length === 0 ? "No stored items" : "No matches"}>
-          {items.length === 0
+        <Empty title={total === 0 ? "No stored items" : "No matches"}>
+          {total === 0
             ? `Nothing is recorded for ${facet} yet. Run capture on the device or add an item above.`
             : "Try a different search or filter."}
         </Empty>
@@ -143,7 +148,7 @@ export function StateStore({
         </div>
       )}
       <div className="px-4 py-2 border-t border-[#232834] text-xs font-mono text-[#94A3B8]">
-        {shown.length} of {items.length} items
+        {shown.length} of {total} items
       </div>
     </Card>
   )

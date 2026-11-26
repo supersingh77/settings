@@ -1,20 +1,22 @@
 import { useCallback, useState } from "react"
-import { api, useLoad } from "../api"
+import { api, useDebounced, useLoad } from "../api"
 import { Card, Empty, Failure, Heading, Loading, Markdown, inputClass } from "./ui"
 
 export function NotesView() {
-  const { data, error } = useLoad(useCallback(() => api.notes(), []))
   const [query, setQuery] = useState("")
+  const settled = useDebounced(query)
+  const list = useLoad(useCallback(() => api.notes(settled), [settled]))
   const [picked, setPicked] = useState<string | undefined>()
-  if (error) return <Failure message={error} />
-  if (!data) return <Loading />
-  const needle = query.trim().toLowerCase()
-  const shown = data.notes.filter((note) => `${note.path} ${note.title} ${note.refs.join(" ")}`.toLowerCase().includes(needle))
-  const note = shown.find((entry) => entry.path === picked) ?? shown[0]
+  const shown = list.data?.notes ?? []
+  const path = (shown.find((entry) => entry.path === picked) ?? shown[0])?.path
+  const detail = useLoad(useCallback(() => (path ? api.note(path) : Promise.resolve(undefined)), [path]))
+  const note = detail.data?.note
+  if (list.error) return <Failure message={list.error} />
+  if (!list.data) return <Loading />
 
   return (
     <div>
-      <Heading title="Notes">{data.notes.length} reference guides for knowledge the code cannot derive.</Heading>
+      <Heading title="Notes">Reference guides for knowledge the code cannot derive.</Heading>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4 self-start space-y-3">
           <input className={`${inputClass} w-full`} placeholder="Search notes…" value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -25,7 +27,7 @@ export function NotesView() {
                 key={entry.path}
                 onClick={() => setPicked(entry.path)}
                 className={`w-full text-left px-4 py-2.5 border-b border-[#1D222C] last:border-b-0 ${
-                  entry.path === note?.path ? "bg-[#1A1E26]" : "hover:bg-[#171B23]"
+                  entry.path === path ? "bg-[#1A1E26]" : "hover:bg-[#171B23]"
                 }`}
               >
                 <div className="text-sm text-[#F1F5F9] truncate">{entry.title}</div>
@@ -44,7 +46,7 @@ export function NotesView() {
               <Markdown text={note.body} />
             </>
           ) : (
-            <Empty title="Select a note" />
+            <Empty title={detail.error ?? "Select a note"} />
           )}
         </Card>
       </div>

@@ -5,11 +5,12 @@ import type { Verb } from "./ctx"
 
 const check: Verb = {
   name: "check",
-  usage: "check [--json]",
+  usage: "check [--rule name] [--json]",
   mutates: "no",
   run: async (ctx) => {
     const files = await loadSources(ctx.root)
-    const violations = lint(files)
+    const only = ctx.args.values.rule?.[0]
+    const violations = lint(files).filter((violation) => only === undefined || violation.group === only || violation.rule === only)
     const text = violations.length
       ? violations.map((v) => `${v.path}:${v.line} ${v.rule}: ${v.message}`).join("\n")
       : `ok, ${files.length} files`

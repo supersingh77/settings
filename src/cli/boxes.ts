@@ -15,6 +15,14 @@ async function resolveName(ctx: Ctx, directory: string, wanted: string | undefin
   return hits[0]
 }
 
+function tryParse(text: string, name: string): { head?: MessageHead; body?: string } {
+  try {
+    return parseMessage(text, name.replace(/\.md$/, ""))
+  } catch {
+    return {}
+  }
+}
+
 async function list(ctx: Ctx, label: string, directory: string): Promise<Outcome> {
   const entries = []
   for (const name of await listBox(ctx.root, directory)) {
@@ -82,7 +90,8 @@ function boxVerb(name: "inbox" | "outbox", directory: string): Verb {
       if (action === "show") {
         const resolved = await resolveName(ctx, directory, wanted)
         const text = await readBox(ctx.root, directory, resolved)
-        return { code: Exit.ok, data: { name: resolved, text }, text }
+        const parsed = tryParse(text, resolved)
+        return { code: Exit.ok, data: { name: resolved, text, ...parsed }, text }
       }
       if (action === "ack") {
         const resolved = await resolveName(ctx, directory, wanted)

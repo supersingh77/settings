@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react"
-import { api, useLoad, type Mail } from "../api"
+import { api, useLoad, type Box, type MailShow } from "../api"
+import { verbs } from "../verbs"
 import { Card, Empty, Failure, Heading, Loading, Pre, Segmented, inputClass, primaryButton, ghostButton } from "./ui"
-
-type Box = "inbox" | "outbox"
 
 function Compose({ devices, onDone }: { devices: string[]; onDone: () => void }) {
   const [to, setTo] = useState(devices[0] ?? "")
@@ -12,7 +11,7 @@ function Compose({ devices, onDone }: { devices: string[]; onDone: () => void })
   const [error, setError] = useState("")
 
   async function send() {
-    const res = await api.run(["outbox", "put", "--to", to, "--subject", subject, "--kind", kind, "--body", body, "--json"])
+    const res = await api.run(verbs.mail.put(to, subject, kind, body))
     if (res.code === 0) {
       setSubject("")
       setBody("")
@@ -51,25 +50,28 @@ function Compose({ devices, onDone }: { devices: string[]; onDone: () => void })
 }
 
 export function MailView() {
-  const { data, error, reload } = useLoad(useCallback(() => api.mail(), []))
-  const describe = useLoad(useCallback(() => api.describe(), []))
   const [box, setBox] = useState<Box>("inbox")
+  const [rev, setRev] = useState(0)
+  const inbox = useLoad(useCallback(() => api.mail("inbox"), [rev]))
+  const outbox = useLoad(useCallback(() => api.mail("outbox"), [rev]))
+  const data = { inbox: inbox.data?.entries, outbox: outbox.data?.entries }
+  const error = inbox.error ?? outbox.error
+  const reload = () => setRev(rev + 1)
+  const describe = useLoad(useCallback(() => api.describe(), []))
   const [composing, setComposing] = useState(false)
-  const [open, setOpen] = useState<{ name: string; text: string } | undefined>()
+  const [open, setOpen] = useState<MailShow | undefined>()
 
   if (error) return <Failure message={error} />
-  if (!data) return <Loading />
-  const messages: Mail[] = data[box]
+  const messages = data[box]
+  if (!messages) return <Loading />
 
   async function show(name: string) {
-    const res = await api.run([box, "show", name, "--json"])
-    const text = (res.data as { text?: string } | undefined)?.text ?? res.err
-    setOpen({ name, text })
+    setOpen(await api.mailShow(box, name))
   }
 
   async function ack(name: string) {
     if (!window.confirm(`Remove ${name} from ${box}?`)) return
-    await api.run([box, "ack", name, "--json"])
+    await api.run(verbs.mail.ack(box, name))
     setOpen(undefined)
     reload()
   }
@@ -87,8 +89,8 @@ export function MailView() {
               setOpen(undefined)
             }}
             options={[
-              { id: "inbox", label: `Inbox (${data.inbox.length})` },
-              { id: "outbox", label: `Outbox (${data.outbox.length})` },
+              { id: "inbox", label: `Inbox (${data.inbox?.length ?? 0})` },
+              { id: "outbox", label: `Outbox (${data.outbox?.length ?? 0})` },
             ]}
           />
           <button className={ghostButton} onClick={() => setComposing(!composing)}>
@@ -151,7 +153,15 @@ export function MailView() {
         {open ? (
           <Card className="lg:col-span-7 p-4 min-w-0">
             <div className="text-xs font-mono text-[#94A3B8] mb-3">{open.name}</div>
-            <Pre className="max-h-[520px]">{open.text}</Pre>
+            {open.head ? (
+              <div className="mb-3 text-xs font-mono text-[#CBD5E1] space-y-0.5">
+                <div>from: {open.head.from}</div>
+                <div>to: {open.head.to}</div>
+                <div>kind: {open.head.kind}</div>
+                {open.head.refs.length > 0 ? <div>refs: {open.head.refs.join(", ")}</div> : null}
+              </div>
+            ) : null}
+            <Pre className="max-h-[520px]">{open.body ?? open.text}</Pre>
           </Card>
         ) : null}
       </div>

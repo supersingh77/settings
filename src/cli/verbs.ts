@@ -1,4 +1,5 @@
 import { boxVerbs } from "./boxes"
+import { browseVerbs } from "./browse"
 import { checkVerbs } from "./check"
 import type { Verb } from "./ctx"
 import { describeVerbs } from "./describe"
@@ -21,4 +22,5 @@ export const verbs: Verb[] = [
   ...wantVerbs,
   ...fixtureVerbs,
   ...boxVerbs,
+  ...browseVerbs,
 ]

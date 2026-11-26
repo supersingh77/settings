@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { api, useLoad, type Fixture } from "../api"
+import { api, useLoad } from "../api"
 import { Card, Empty, Failure, Heading, Loading, Pre, Segmented } from "./ui"
 
 type Kind = "recipes" | "fixtures"
@@ -12,25 +12,26 @@ function listButton(active: boolean): string {
 }
 
 function Recipes() {
-  const { data, error } = useLoad(useCallback(() => api.recipes(), []))
+  const list = useLoad(useCallback(() => api.recipes(), []))
   const [picked, setPicked] = useState<string | undefined>()
-  if (error) return <Failure message={error} />
-  if (!data) return <Loading />
-  const recipe = data.recipes.find((entry) => entry.id === picked) ?? data.recipes[0]
+  const id = picked ?? list.data?.recipes[0]
+  const detail = useLoad(useCallback(() => (id ? api.recipe(id) : Promise.resolve(undefined)), [id]))
+  if (list.error) return <Failure message={list.error} />
+  if (!list.data) return <Loading />
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <Card className="lg:col-span-4 overflow-hidden self-start">
-        {data.recipes.map((entry) => (
-          <button key={entry.id} className={listButton(entry.id === recipe?.id)} onClick={() => setPicked(entry.id)}>
-            <span className="font-mono text-xs">{entry.id}</span>
+        {list.data.recipes.map((entry) => (
+          <button key={entry} className={listButton(entry === id)} onClick={() => setPicked(entry)}>
+            <span className="font-mono text-xs">{entry}</span>
           </button>
         ))}
       </Card>
       <Card className="lg:col-span-8 p-4">
-        {recipe ? (
+        {id ? (
           <>
-            <div className="text-xs font-mono text-[#94A3B8] mb-3">data/recipes/{recipe.id}.json</div>
-            <Pre className="max-h-[640px]">{JSON.stringify(recipe, null, 2)}</Pre>
+            <div className="text-xs font-mono text-[#94A3B8] mb-3">data/recipes/{id}.json</div>
+            <Pre className="max-h-[640px]">{detail.data ? JSON.stringify(detail.data.recipe, null, 2) : "Loading…"}</Pre>
           </>
         ) : (
           <Empty title="No recipes" />
@@ -41,13 +42,15 @@ function Recipes() {
 }
 
 function Fixtures() {
-  const { data, error } = useLoad(useCallback(() => api.fixtures(), []))
   const [platform, setPlatform] = useState<Platform>("all")
+  const list = useLoad(useCallback(() => api.fixtures(platform), [platform]))
   const [picked, setPicked] = useState<string | undefined>()
-  if (error) return <Failure message={error} />
-  if (!data) return <Loading />
-  const shown = data.fixtures.filter((entry) => platform === "all" || entry.platform === platform)
-  const fixture: Fixture | undefined = shown.find((entry) => entry.path === picked) ?? shown[0]
+  const shown = list.data?.fixtures ?? []
+  const chosen = shown.find((entry) => entry.path === picked) ?? shown[0]
+  const key = chosen ? `${chosen.platform}/${chosen.facet}/${chosen.name}` : undefined
+  const detail = useLoad(useCallback(() => (key ? api.fixture(key) : Promise.resolve(undefined)), [key]))
+  const fixture = detail.data?.fixture
+  if (list.error) return <Failure message={list.error} />
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-4 self-start space-y-3">
@@ -64,7 +67,7 @@ function Fixtures() {
         />
         <Card className="overflow-hidden">
           {shown.map((entry) => (
-            <button key={entry.path} className={listButton(entry.path === fixture?.path)} onClick={() => setPicked(entry.path)}>
+            <button key={entry.path} className={listButton(entry.path === chosen?.path)} onClick={() => setPicked(entry.path)}>
               <span className="font-mono text-xs">{entry.facet}</span>
               <span className="ml-2 text-xs text-[#94A3B8]">
                 {entry.platform} · {entry.name}
@@ -87,7 +90,7 @@ function Fixtures() {
           </>
         ) : (
           <Card>
-            <Empty title="No fixtures for this platform" />
+            <Empty title={list.data ? "No fixtures for this platform" : "Loading…"} />
           </Card>
         )}
       </div>

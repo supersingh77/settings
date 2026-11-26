@@ -12,15 +12,6 @@ const presets: { label: string; argv: string[] }[] = [
   { label: "cleanup --dry-run", argv: ["cleanup", "--dry-run"] },
 ]
 
-const exitLabels: Record<number, string> = {
-  0: "Nominal",
-  1: "Found",
-  2: "Bad usage",
-  3: "Precondition failed",
-  4: "Step failed",
-  5: "Internal error",
-}
-
 export function tokenize(line: string): string[] {
   return [...line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map((m) => m[1] ?? m[2] ?? m[3] ?? "")
 }
@@ -99,7 +90,7 @@ export function ConsoleView({ describe, initial }: { describe: Describe; initial
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <div className={`text-sm font-medium font-mono ${exitColor(result.code)}`}>
-              Exit {result.code} · {exitLabels[result.code] ?? "Unknown"}
+              Exit {result.code} · {describe.exit[String(result.code)] ?? "unknown"}
             </div>
             <Segmented
               label="Output format"
