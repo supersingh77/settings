@@ -7,13 +7,29 @@
     "check": "bun src/cli/main.ts check",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build --compile src/cli/main.ts --outfile dist/dev"
+    "build": "tsc --noEmit && tsc -p web/tsconfig.json --noEmit && vite build",
+    "build:cli": "bun build --compile src/cli/main.ts --outfile dist/dev",
+    "lint": "bun src/cli/main.ts check",
+    "web": "bun src/cli/server.ts",
+    "web:dev": "vite"
   },
   "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "lucide-react": "^1.81.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "@types/bun": "^1.4.5",
-    "typescript": "5.9.3"
+    "@types/react": "^19.3.3",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "5.9.3",
+    "vite": "^8.3.8"
   }
 }
