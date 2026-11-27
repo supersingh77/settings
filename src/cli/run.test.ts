@@ -122,3 +122,31 @@ test("read verbs list devices, state, recipes, notes and fixtures", async () => 
   expect(await exec(repoRoot, "fixtures", "list", "--platform", "android", "--json")).toBe(0)
   expect(JSON.parse(out[0] ?? "").fixtures.length).toBe(2)
 })
+
+test("update streams progress via say and reports stdout-only failures with exit code", async () => {
+  const tasks = [
+    { id: "first", group: "update", argv: ["tool", "one"], destructive: false },
+    { id: "second", group: "update", argv: ["tool", "two"], destructive: false },
+  ]
+  await writeFile(join(dir, "data/devices/toybox/tasks.json"), JSON.stringify(tasks))
+  const seen: { argv: string[]; stream?: boolean }[] = []
+  out = []
+  err = []
+  const env = {
+    ...realEnv(dir, (line) => err.push(line)),
+    run: async (cmd: { argv: string[]; stream?: boolean }) => {
+      seen.push({ argv: cmd.argv, stream: cmd.stream })
+      if (cmd.argv[1] === "two") return { code: 5, out: "checking...\nNo available upgrade found.\n", err: "" }
+      return { code: 0, out: "updated\n", err: "" }
+    },
+  }
+  expect(await run(["update", "--json"], { root: dir, io: io(), env })).toBe(4)
+  expect(seen.every((entry) => entry.stream === true)).toBe(true)
+  expect(err.some((line) => line.includes("[1/2] first: tool one"))).toBe(true)
+  expect(err.some((line) => line.includes("second: failed (exit 5: No available upgrade found.)"))).toBe(true)
+  const payload = JSON.parse(out[0] ?? "")
+  expect(payload.results).toEqual([
+    { id: "first", code: 0, err: "" },
+    { id: "second", code: 5, err: "No available upgrade found." },
+  ])
+})

@@ -18,6 +18,37 @@ async function toolboxName(): Promise<string> {
   }
 }
 
+async function readStream(
+  stream: ReadableStream<Uint8Array>,
+  onLine?: (line: string) => void,
+): Promise<string> {
+  const reader = stream.getReader()
+  const decoder = new TextDecoder()
+  let full = ""
+  let buffer = ""
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    const chunk = decoder.decode(value, { stream: true })
+    full += chunk
+    if (!onLine) continue
+    buffer += chunk
+    const parts = buffer.split("\n")
+    buffer = parts.pop() ?? ""
+    for (const part of parts) {
+      const clean = part.split("\r").pop()?.trimEnd() ?? ""
+      if (clean !== "") onLine(clean)
+    }
+  }
+  const tail = decoder.decode()
+  full += tail
+  if (onLine) {
+    const clean = (buffer + tail).split("\r").pop()?.trimEnd() ?? ""
+    if (clean !== "") onLine(clean)
+  }
+  return full
+}
+
 export function realEnv(root: string, say: (line: string) => void): Env {
   const run = async (cmd: Cmd): Promise<RunResult> => {
     try {
@@ -27,9 +58,10 @@ export function realEnv(root: string, say: (line: string) => void): Env {
         stdout: "pipe",
         stderr: "pipe",
       })
+      const onLine = cmd.stream ? say : undefined
       const [out, err, code] = await Promise.all([
-        new Response(proc.stdout).text(),
-        new Response(proc.stderr).text(),
+        readStream(proc.stdout, onLine),
+        readStream(proc.stderr, onLine),
         proc.exited,
       ])
       return { code, out, err }

@@ -1,11 +1,17 @@
 import { Exit, UsageError } from "../core/errors"
+import { failureSummary } from "../core/facet"
 import { planTasks } from "../core/tasks"
 import { loadTasks } from "../runtime/files"
 import type { Outcome, Verb } from "./ctx"
 import { deviceOf } from "./target"
 
-function firstLine(text: string): string {
-  return text.trim().split("\n")[0] ?? ""
+type StepOutcome = { id: string; code: number; err: string }
+
+function formatStepOutcome(entry: StepOutcome): string {
+  if (entry.code === 0) return `${entry.id}: ok`
+  const exitLabel = `exit ${entry.code}`
+  const detail = entry.err !== "" && entry.err !== exitLabel ? `: ${entry.err}` : ""
+  return `${entry.id}: failed (${exitLabel}${detail})`
 }
 
 function maintenance(group: "update" | "cleanup"): Verb {
@@ -25,15 +31,21 @@ function maintenance(group: "update" | "cleanup"): Verb {
       if (risky.length > 0 && !ctx.args.yes) {
         throw new UsageError(`destructive tasks need --yes: ${risky.map((step) => step.id).join(", ")}`)
       }
-      const results: Array<{ id: string; code: number; err: string }> = []
-      for (const step of planned.steps) {
-        const result = await ctx.env.run({ argv: step.argv, needs: step.needs })
-        results.push({ id: step.id, code: result.code, err: firstLine(result.err) })
+      const results: StepOutcome[] = []
+      const total = planned.steps.length
+      for (const [index, step] of planned.steps.entries()) {
+        ctx.env.say(`[${index + 1}/${total}] ${step.id}: ${step.argv.join(" ")}`)
+        const result = await ctx.env.run({ argv: step.argv, needs: step.needs, stream: true })
+        const entry = { id: step.id, code: result.code, err: failureSummary(result) }
+        results.push(entry)
+        ctx.env.say(`[${index + 1}/${total}] ${formatStepOutcome(entry)}`)
       }
       const failed = results.filter((entry) => entry.code !== 0)
       const text = failed.length
-        ? failed.map((entry) => `${entry.id} failed: ${entry.err}`).join("\n")
-        : `ran ${results.length} tasks`
+        ? results.map(formatStepOutcome).join("\n")
+        : results.length === 0
+          ? "nothing to do"
+          : `ran ${results.length} tasks`
       return { code: failed.length > 0 ? Exit.failed : Exit.ok, data: { dryRun: false, ...planned, results }, text }
     },
   }

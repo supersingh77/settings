@@ -1,6 +1,6 @@
 import { diff, ignored } from "./diff"
 import { PreconditionError, ProbeError } from "./errors"
-import type { Env, Facet, Repo, RunResult } from "./facet"
+import { failureSummary, type Env, type Facet, type Repo, type RunResult } from "./facet"
 import { type Delta, plan } from "./plan"
 import { formatJsonl, parseJsonl, sortItems } from "./store"
 import { type Device, Item, type Plan, type Step } from "./types"
@@ -13,14 +13,10 @@ export function statePath(device: string, facet: string): string {
   return `data/devices/${device}/state/${facet}.jsonl`
 }
 
-function firstLine(text: string): string {
-  return text.trim().split("\n")[0] ?? ""
-}
-
 export async function probe(env: Env, device: Device, facet: Facet, repo: Repo): Promise<Item[]> {
   const result = await env.run(facet.command(device, repo))
   if (result.code !== 0) {
-    throw new ProbeError(`${facet.name}: ${firstLine(result.err) || `exit ${result.code}`}`)
+    throw new ProbeError(`${facet.name}: ${failureSummary(result)}`)
   }
   let items: Item[]
   try {
@@ -82,7 +78,7 @@ async function executeStep(env: Env, repo: Repo, step: Step): Promise<RunResult>
     if (!recipe) return { code: 3, out: "", err: `no recipe ${step.recipe}` }
     return env.install(recipe, step.action ?? "install")
   }
-  return env.run({ argv: step.argv ?? [], needs: step.needs })
+  return env.run({ argv: step.argv ?? [], needs: step.needs, stream: true })
 }
 
 export async function restore(
@@ -98,9 +94,13 @@ export async function restore(
     return { plan: planned, results: [], remaining: deltas }
   }
   const results: StepResult[] = []
-  for (const step of planned.steps) {
+  const total = planned.steps.length
+  for (const [index, step] of planned.steps.entries()) {
+    const label = step.argv?.join(" ") ?? `recipe ${step.action ?? "install"} ${step.recipe ?? ""}`
+    env.say(`[${index + 1}/${total}] ${step.id}: ${label}`)
     const run = await executeStep(env, repo, step)
-    results.push({ step, code: run.code, err: firstLine(run.err) })
+    const err = failureSummary(run)
+    results.push({ step, code: run.code, err })
     if (run.code !== 0) return { plan: planned, results, remaining: deltas }
   }
   const remaining = await compare(env, device, facets, options, repo)

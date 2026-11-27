@@ -1,9 +1,23 @@
 import type { Recipe } from "./recipe"
 import type { Device, Item, Needs, Platform, Step } from "./types"
 
-export type Cmd = { argv: string[]; needs?: Needs; cwd?: string }
+export type Cmd = { argv: string[]; needs?: Needs; cwd?: string; stream?: boolean }
 
 export type RunResult = { code: number; out: string; err: string }
+
+export function failureSummary(result: RunResult): string {
+  if (result.code === 0) return ""
+  const errLine = result.err
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line !== "")
+  if (errLine !== undefined) return errLine
+  const outLines = result.out
+    .split(/\r?\n/)
+    .map((line) => line.split("\r").pop()?.trim() ?? "")
+    .filter((line) => line !== "")
+  return outLines.at(-1) ?? `exit ${result.code}`
+}
 
 export type InstallAction = "install" | "remove"
 export type Installer = (recipe: Recipe, action: InstallAction) => Promise<RunResult>
